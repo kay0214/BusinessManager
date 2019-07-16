@@ -1,0 +1,63 @@
+server:
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 10
+
+# 用户配置
+user:
+  password:
+    # 密码错误{maxRetryCount}次锁定10分钟
+    maxRetryCount: 5
+
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+
+#多数据源 1主1从
+datasource:
+ #从库数量
+  readSize: 1
+   # 使用druid数据源
+  type: com.alibaba.druid.pool.DruidDataSource
+#主库
+  write:
+    url: jdbc:mysql://localhost:3306/business?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: spkzq521
+    driver-class-name: com.mysql.jdbc.Driver
+    filters: stat
+    maxActive: 100
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQueryTimeout: 900000
+    validationQuery: SELECT SYSDATE() from dual
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: -1
+  read1:
+    url: jdbc:mysql://localhost:3306/business?useUnicode=true&characterEncoding=utf-8
+    username: sandman
+    password: spkzq521
+    driver-class-name: com.mysql.jdbc.Driver
+    filters: stat
+    maxActive: 100
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQueryTimeout: 900000
+    validationQuery: SELECT SYSDATE() from dual
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: -1
