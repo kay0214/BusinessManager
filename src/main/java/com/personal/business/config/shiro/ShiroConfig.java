@@ -47,11 +47,10 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         // Shiro连接约束配置，即过滤链的定义
         LinkedHashMap<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
-        filterChainDefinitionMap.put("/system/captcha/make", "anon");
         // 退出 logout地址，shiro去清除session
         filterChainDefinitionMap.put("/system/logout", "logout");
-        filterChainDefinitionMap.put("/system/login", "anon,captchaValidate");
-        filterChainDefinitionMap.put("/user/password/sendCode", "anon,captchaValidate");
+        filterChainDefinitionMap.put("/system/login", "anon");
+        filterChainDefinitionMap.put("/user/password/sendCode", "anon");
         // shiro 不过滤swagger相关
         filterChainDefinitionMap.put("/swagger-ui.html", "anon");
         filterChainDefinitionMap.put("/swagger-resources/**", "anon");
