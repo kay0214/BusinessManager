@@ -1,0 +1,27 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <div th:fragment="header" class="left-58">
+        <ul class="layui-nav">
+            <li class="layui-nav-item"><a href="/"><img class="logo" src="/images/logo.png" alt="BusinessManager"></a></li>
+            <li class="layui-nav-item layui-this left-58"><a href="javascript:;">产品</a></li>
+            <!-- 登录状态 -->
+            <div th:if="${session.user}">
+                <li class="layui-nav-item float-right">
+                    <a href="javascript:;"><img th:src="${session.user.avatar}" class="layui-nav-img"/><span th:text="${session.user.userName}"></span></a>
+                    <dl class="layui-nav-child"> <!-- 二级菜单 -->
+                        <dd><a href="/forget/init">修改密码</a></dd>
+                        <dd><a href="/login/logOut">退出登录</a></dd>
+                    </dl>
+                </li>
+            </div>
+            <!-- 未登录状态 -->
+            <div th:unless="${session.user}" class="float-right">
+                <li class="layui-nav-item">
+                    <a href="/login/init">登录</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="/register/init">注册</a>
+                </li>
+            </div>
+        </ul>
+    </div>
+</html>

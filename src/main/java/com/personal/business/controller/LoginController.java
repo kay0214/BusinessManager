@@ -7,6 +7,7 @@ import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.entity.BtUser;
 import com.personal.business.request.LoginRequest;
+import com.personal.business.utils.SessionUtils;
 import com.personal.business.utils.ShiroUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -46,6 +47,8 @@ public class LoginController extends BaseController {
     @ResponseBody
     public Return<Object> logout(){
         //退出操作已经在logout拦截器进行了处理，此处不再重复退出
+        // 删除session
+        SessionUtils.removeSessionAttribute("user");
         return Return.success("退出成功");
     }
 

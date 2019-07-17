@@ -3,7 +3,7 @@
 <mapper namespace="com.personal.business.mapper.BtMenuMapper">
 
     <select id="selectMenusByUserId" parameterType="Integer" resultType="com.personal.business.dto.MenuTree">
-		select distinct m.menu_id, m.parent_id , m.menu_name, m.url, m.perms, m.menu_type, m.icon, m.order_num, m.visible, m.create_time
+		select distinct m.menu_id, m.parent_id , m.menu_name, m.url, m.perms, m.menu_type, m.icon, m.order_num, m.visible, m.create_time,m.is_default,m.remark
 		from bt_menu m
 			 left join bt_user_menu um on m.menu_id = um.menu_id
 		where um.user_id = #{userId} and m.visible = 0 and m.del_flag = 0
@@ -11,7 +11,7 @@
 	</select>
 
     <select id="selectPermsByUserId" parameterType="Integer" resultType="com.personal.business.dto.MenuTree">
-		select distinct m.menu_id , m.parent_id , m.menu_name , m.url, m.perms, m.menu_type, m.icon, m.order_num, m.visible, m.create_time
+		select distinct m.menu_id , m.parent_id , m.menu_name , m.url, m.perms, m.menu_type, m.icon, m.order_num, m.visible, m.create_time,m.is_default,m.remark
 		  from bt_menu m
 			 left join bt_user_menu um on m.menu_id = um.menu_id
 			 left join bt_menu m2 ON m.parent_id = m2.menu_id
@@ -19,7 +19,7 @@
 	</select>
 
     <select id="selectParentMenu" resultType="com.personal.business.dto.MenuTree">
-        select distinct m.menu_id , m.parent_id , m.menu_name , m.url, m.perms, m.menu_type, m.icon, m.order_num, m.visible, m.create_time
+        select distinct m.menu_id , m.parent_id , m.menu_name , m.url, m.perms, m.menu_type, m.icon, m.order_num, m.visible, m.create_time,m.is_default,m.remark
         from bt_menu m where  m.visible = 0 and m.del_flag = 0 and m.menu_id in ( <foreach collection="list" item="item" separator=",">#{item}</foreach>)
 
     </select>

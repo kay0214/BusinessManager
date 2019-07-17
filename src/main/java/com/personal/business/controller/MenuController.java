@@ -28,7 +28,7 @@ public class MenuController extends BaseController {
     @GetMapping(value = "/getMenus")
     public Return getMenus(){
         Integer userId = getCurrentUserId();
-        log.info("entry getMenus , userId:[{}]",userId);
+        log.info("get user menus , userId:[{}]",userId);
         return Return.data(iBtMenuService.getUserMenus(userId));
     }
 }

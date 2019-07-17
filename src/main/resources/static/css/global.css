@@ -1,0 +1,17 @@
+.logo{
+    height: 31px;
+    width: 82px;
+}
+.sider{
+    top: 60px;
+    overflow-x: hidden;
+}
+.content{
+    margin-left: 200px;
+}
+.float-right{
+    float: right;
+}
+.left-58{
+    left: 58px;
+}

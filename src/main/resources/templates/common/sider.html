@@ -1,6 +1,17 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <div th:fragment="home" style="height: 100%">
-        <ul class="layui-nav layui-nav-tree layui-nav-side layui-bg-cyan" lay-filter="demo">
+    <div th:fragment="sider">
+        <ul id="sider" class="layui-nav layui-nav-tree layui-nav-side sider" lay-shrink="all" lay-filter="sider">
+
+            <!--<div th:if=""></div>-->
+
+            <li class="layui-nav-item">
+                <a href="javascript:;">解决方案</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">移动模块</a></dd>
+                    <dd><a href="">后台模版</a></dd>
+                    <dd><a href="">电商平台</a></dd>
+                </dl>
+            </li>
             <li class="layui-nav-item layui-nav-itemed">
                 <a href="javascript:;">默认展开</a>
                 <dl class="layui-nav-child">
@@ -21,5 +32,24 @@
             <li class="layui-nav-item"><a href="">云市场</a></li>
             <li class="layui-nav-item"><a href="">社区</a></li>
         </ul>
+
+        <!-- script -->
+        <script src="/layui/layui.js" charset="utf-8"></script>
+        <script>
+            layui.use(['element','jquery','layer'], function(){
+                //导航的hover效果、二级菜单等功能，需要依赖element模块
+                var element = layui.element;
+                var $ = layui.$;
+                var layer = layui.layer;
+                $.get("/system/getMenus", function(result){
+                    console.info(result);
+                });
+                //监听导航点击
+                element.on('nav(sider)', function(elem){
+                    //console.log(elem)
+                    layer.msg(elem.text());
+                });
+            });
+        </script>
     </div>
 </html>

@@ -10,6 +10,7 @@ import com.personal.business.service.IBtUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.personal.business.utils.LoginUtils;
 import com.personal.business.utils.Md5Utils;
+import com.personal.business.utils.SessionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -66,6 +67,8 @@ public class BtUserServiceImpl extends ServiceImpl<BtUserMapper, BtUser> impleme
             throw new LoginException(ResultEnum.ERROR_USERNAME_OR_PASSWORD);
         }
 
+        // 放到session
+        SessionUtils.setSessionAttribute("user",user);
         return user;
     }
 }
