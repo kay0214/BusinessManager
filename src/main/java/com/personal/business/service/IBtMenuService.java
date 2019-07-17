@@ -1,8 +1,10 @@
 package com.personal.business.service;
 
+import com.personal.business.dto.MenuTree;
 import com.personal.business.entity.BtMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -22,4 +24,12 @@ public interface IBtMenuService extends IService<BtMenu> {
      * @return
      */
     Set<String> getPermsByUserId(Integer userId);
+
+    /**
+     * 根据用户id查询有权限的菜单列表
+     * @author zhangyk
+     * @date 2019/3/27 14:12
+     */
+    List<MenuTree> getUserMenus(Integer userId);
+
 }

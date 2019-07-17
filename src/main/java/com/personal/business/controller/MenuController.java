@@ -25,10 +25,10 @@ public class MenuController extends BaseController {
     @Autowired
     private IBtMenuService iBtMenuService;
 
-/*    @GetMapping(value = "/getMenus")
+    @GetMapping(value = "/getMenus")
     public Return getMenus(){
         Integer userId = getCurrentUserId();
         log.info("entry getMenus , userId:[{}]",userId);
         return Return.data(iBtMenuService.getUserMenus(userId));
-    }*/
+    }
 }

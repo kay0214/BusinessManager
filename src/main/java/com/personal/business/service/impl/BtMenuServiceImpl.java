@@ -7,12 +7,10 @@ import com.personal.business.entity.BtMenu;
 import com.personal.business.mapper.BtMenuMapper;
 import com.personal.business.service.IBtMenuService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.personal.business.utils.ZtreeUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>
@@ -43,6 +41,15 @@ public class BtMenuServiceImpl extends ServiceImpl<BtMenuMapper, BtMenu> impleme
             }
         }
         return permsSet;
+    }
+
+    @Override
+    public List<MenuTree> getUserMenus(Integer userId) {
+        List<MenuTree> menus = getBaseMapper().selectMenusByUserId(userId);
+        menus = new ArrayList<>(getParentMenu(menus,Boolean.FALSE));
+        // set无序，重新排序
+        Collections.sort(menus,(z1,z2) -> z1.getOrderNum().compareTo(z2.getOrderNum()));
+        return ZtreeUtils.getChildPerms(menus, 0);
     }
 
 
