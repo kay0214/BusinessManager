@@ -13,10 +13,10 @@
     <properties>
         <java.version>1.8</java.version>
         <mybatis.plus.version>3.1.0</mybatis.plus.version>
-        <mysql.connect.version>5.1.46</mysql.connect.version>
-        <alibaba.druid>1.1.14</alibaba.druid>
-        <aspectj.version>1.9.2</aspectj.version>
-        <mybatis.starter.version>2.0.1</mybatis.starter.version>
+        <!--<mysql.connect.version>5.1.46</mysql.connect.version>-->
+        <!--<alibaba.druid>1.1.14</alibaba.druid>-->
+        <!--<aspectj.version>1.9.2</aspectj.version>-->
+        <!--<mybatis.starter.version>2.0.1</mybatis.starter.version>-->
     </properties>
 
     <dependencies>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.connect.version}</version>
+            <!--<version>${mysql.connect.version}</version>-->
             <scope>runtime</scope>
         </dependency>
         <dependency>

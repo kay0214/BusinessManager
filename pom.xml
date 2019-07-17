@@ -21,8 +21,9 @@
     <properties>
         <java.version>1.8</java.version>
         <mybatis.plus.version>3.1.0</mybatis.plus.version>
-        <mysql.connect.version>5.1.46</mysql.connect.version>
-        <alibaba.druid>1.1.14</alibaba.druid>
+        <!--<mysql.connect.version>5.1.46</mysql.connect.version>-->
+        <alibaba.druid>1.1.17</alibaba.druid>
+        <hikaricp.version>3.3.1</hikaricp.version>
         <aspectj.version>1.9.2</aspectj.version>
         <mybatis.starter.version>2.0.1</mybatis.starter.version>
         <lombok.version>1.18.6</lombok.version>
@@ -72,12 +73,16 @@
             <artifactId>jetcache-starter-redis</artifactId>
             <version>${jetcache.version}</version>
         </dependency>
-
         <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikaricp.version}</version>
+        </dependency>
+<!--        <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
             <version>${alibaba.druid}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
@@ -87,7 +92,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.connect.version}</version>
+            <!--<version>${mysql.connect.version}</version>-->
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

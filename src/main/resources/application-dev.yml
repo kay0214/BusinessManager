@@ -20,14 +20,15 @@ mybatis:
 datasource:
  #从库数量
   readSize: 1
-   # 使用druid数据源
-  type: com.alibaba.druid.pool.DruidDataSource
+  #不使用druid数据源 - mybatis-plus跟druid没有兼容好
+  #com.alibaba.druid.pool.DruidDataSource
+  type: com.zaxxer.hikari.HikariDataSource
 #主库
   write:
-    url: jdbc:mysql://localhost:3306/business?useUnicode=true&characterEncoding=utf-8
+    jdbcUrl: jdbc:mysql://localhost:3306/business?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
     username: root
     password: spkzq521
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     filters: stat
     maxActive: 100
     initialSize: 1
@@ -43,10 +44,10 @@ datasource:
     poolPreparedStatements: true
     maxOpenPreparedStatements: -1
   read1:
-    url: jdbc:mysql://localhost:3306/business?useUnicode=true&characterEncoding=utf-8
+    jdbcUrl: jdbc:mysql://localhost:3306/business?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
     username: sandman
     password: spkzq521
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     filters: stat
     maxActive: 100
     initialSize: 1
