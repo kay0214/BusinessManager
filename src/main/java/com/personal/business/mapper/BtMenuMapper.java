@@ -28,7 +28,7 @@ public interface BtMenuMapper extends BaseMapper<BtMenu> {
 
     /**
      * 循环父级菜单
-     * @author zhangyk
+     * @author spk
      * @date 2019/5/6 18:06
      */
     List<MenuTree> selectParentMenu(@Param("list") Set<Integer> menuTrees);

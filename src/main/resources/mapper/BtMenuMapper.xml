@@ -2,6 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.personal.business.mapper.BtMenuMapper">
 
+    <select id="selectMenusByUserId" parameterType="Integer" resultType="com.personal.business.dto.MenuTree">
+		select distinct m.menu_id, m.parent_id , m.menu_name, m.url, m.perms, m.menu_type, m.icon, m.order_num, m.visible, m.create_time
+		from bt_menu m
+			 left join bt_user_menu um on m.menu_id = um.menu_id
+		where um.user_id = #{userId} and m.visible = 0 and m.del_flag = 0
+		order by m.order_num,m.menu_id
+	</select>
+
     <select id="selectPermsByUserId" parameterType="Integer" resultType="com.personal.business.dto.MenuTree">
 		select distinct m.menu_id , m.parent_id , m.menu_name , m.url, m.perms, m.menu_type, m.icon, m.order_num, m.visible, m.create_time
 		  from bt_menu m

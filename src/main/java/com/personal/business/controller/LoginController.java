@@ -50,6 +50,7 @@ public class LoginController extends BaseController {
     }
 
     @GetMapping("/test")
+    @ResponseBody
     public Return<Object> test(){
         BtUser user = getCurrentUser();
         return Return.data(user);
