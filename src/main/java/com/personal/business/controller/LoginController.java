@@ -3,6 +3,7 @@
  */
 package com.personal.business.controller;
 
+import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.entity.BtUser;
 import com.personal.business.request.LoginRequest;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Controller
 @RequestMapping(value = "/system")
-public class LoginController {
+public class LoginController extends BaseController {
 
     @ResponseBody
     @PostMapping(value = "/login")
@@ -50,7 +51,7 @@ public class LoginController {
 
     @GetMapping("/test")
     public Return<Object> test(){
-        BtUser user = ShiroUtils.getBtUser();
+        BtUser user = getCurrentUser();
         return Return.data(user);
     }
 }

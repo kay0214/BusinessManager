@@ -3,7 +3,10 @@
  */
 package com.personal.business.base;
 
+import com.personal.business.entity.BtUser;
+import com.personal.business.utils.ShiroUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.UnavailableSecurityManagerException;
 
 /**
  * @author sunpeikai
@@ -12,4 +15,30 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class BaseController {
+
+    public String getIp(){
+        return ShiroUtils.getIp();
+    }
+
+    public String getCurrentUsername(){
+        return getCurrentUser().getUserName();
+    }
+
+    public Integer getCurrentUserId(){
+        return getCurrentUser().getUserId();
+    }
+
+    public BtUser getCurrentUser(){
+        BtUser sysUser;
+        try {
+            sysUser = ShiroUtils.getBtUser();
+        } catch (UnavailableSecurityManagerException e) {
+            log.error(">>>>>>>>shiro未正确启动<<<<<<");
+            sysUser = new BtUser();
+            sysUser.setUserId(0);
+            sysUser.setUserName("静态用户");
+        }
+        return sysUser;
+    }
+
 }

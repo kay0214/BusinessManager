@@ -10,7 +10,7 @@ public interface CommonConstant {
     /**
      * 用户名最小长度
      * */
-    Integer USERNAME_MIN_LENGTH = 6;
+    Integer USERNAME_MIN_LENGTH = 5;
 
     /**
      * 用户名最大长度
