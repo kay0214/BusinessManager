@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>首页-Sandman影片分享</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="icon" href="/icon/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/icon/favicon.ico" type="image/x-icon"/>
+    <meta name="keywords" content="sandman,download,影片分享">
+    <meta name="description" content="Sandman影片分享">
+    <link rel="stylesheet" href="/layui/css/layui.css">
+</head>
+<body>
+<div th:replace="common/sider :: home"></div>
+123456
+</body>
+<script src="/layui/layui.js" charset="utf-8"></script>
+<script>
+    layui.use('element', function(){
+        //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var element = layui.element;
+
+        //监听导航点击
+        element.on('nav(demo)', function(elem){
+            //console.log(elem)
+            layer.msg(elem.text());
+        });
+    });
+</script>
+</html>
