@@ -24,4 +24,16 @@ public class IndexController extends BaseController {
         log.info("entry the index");
         return "index";
     }
+
+    @GetMapping(value = "/iframe")
+    public String iframe(){
+        log.info("get iframe page");
+        return "iframe/iframe";
+    }
+
+    @GetMapping(value = "/test2")
+    public String test2(){
+        log.info("get iframe test2 page");
+        return "iframe/test2";
+    }
 }

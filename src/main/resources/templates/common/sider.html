@@ -1,37 +1,31 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
     <div th:fragment="sider">
-        <ul id="sider" class="layui-nav layui-nav-tree layui-nav-side sider" lay-shrink="all" lay-filter="sider">
 
-            <!--<div th:if=""></div>-->
-
-            <li class="layui-nav-item">
-                <a href="javascript:;">解决方案</a>
-                <dl class="layui-nav-child">
-                    <dd><a href="">移动模块</a></dd>
-                    <dd><a href="">后台模版</a></dd>
-                    <dd><a href="">电商平台</a></dd>
-                </dl>
-            </li>
-            <li class="layui-nav-item layui-nav-itemed">
-                <a href="javascript:;">默认展开</a>
-                <dl class="layui-nav-child">
-                    <dd><a href="javascript:;">选项一</a></dd>
-                    <dd><a href="javascript:;">选项二</a></dd>
-                    <dd><a href="javascript:;">选项三</a></dd>
-                    <dd><a href="">跳转项</a></dd>
-                </dl>
-            </li>
-            <li class="layui-nav-item">
-                <a href="javascript:;">解决方案</a>
-                <dl class="layui-nav-child">
-                    <dd><a href="">移动模块</a></dd>
-                    <dd><a href="">后台模版</a></dd>
-                    <dd><a href="">电商平台</a></dd>
-                </dl>
-            </li>
-            <li class="layui-nav-item"><a href="">云市场</a></li>
-            <li class="layui-nav-item"><a href="">社区</a></li>
-        </ul>
+        <div class="layui-side layui-bg-black">
+            <div class="layui-side-scroll">
+                <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+                <ul class="layui-nav layui-nav-tree" lay-shrink="all" lay-filter="sider">
+                    <li class="layui-nav-item layui-nav-itemed">
+                        <a class="" href="javascript:;">所有商品</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="javascript:;" data-url="www.baidu.com">列表一</a></dd>
+                            <dd><a href="javascript:;" data-url="www.youku.com">列表二</a></dd>
+                            <dd><a href="javascript:;" data-url="www.iqiyi.com">列表三</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:;">解决方案</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="javascript:;" data-url="www.yahoo.com">列表一</a></dd>
+                            <dd><a href="javascript:;" data-url="www.google.com">列表二</a></dd>
+                            <dd><a href="">超链接</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item"><a href="">云市场</a></li>
+                    <li class="layui-nav-item"><a href="">发布商品</a></li>
+                </ul>
+            </div>
+        </div>
 
         <!-- script -->
         <script src="/layui/layui.js" charset="utf-8"></script>
@@ -41,12 +35,19 @@
                 var element = layui.element;
                 var $ = layui.$;
                 var layer = layui.layer;
-                $.get("/system/getMenus", function(result){
+/*                $.get("/system/getMenus", function(result){
                     console.info(result);
-                });
+                });*/
                 //监听导航点击
+                var page = 1;
                 element.on('nav(sider)', function(elem){
-                    //console.log(elem)
+                    page ++ ;
+                    if(page%2===0){
+                        $("#iframe").attr("src","/test2");
+                    }else{
+                        $("#iframe").attr("src","/iframe");
+                    }
+                    console.log(elem);
                     layer.msg(elem.text());
                 });
             });
