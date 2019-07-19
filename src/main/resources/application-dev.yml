@@ -17,7 +17,7 @@ user:
 shiro:
   user:
     # 验证码开关
-    captchaEnabled: false
+    captchaEnabled: true
     # 验证码类型 math 数组计算 char 字符
     captchaType: math
   session:

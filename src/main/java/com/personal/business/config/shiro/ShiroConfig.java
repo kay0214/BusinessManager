@@ -56,7 +56,7 @@ public class ShiroConfig {
         // 退出 logout地址，shiro去清除session
         shiroFilterFactoryBean.setLoginUrl("/system/loginInit");
         filterChainDefinitionMap.put("/system/logout", "logout");
-        filterChainDefinitionMap.put("/system/login", "anon");
+        filterChainDefinitionMap.put("/system/login", "anon,captchaValidate");
         filterChainDefinitionMap.put("/user/password/sendCode", "anon");
         //filterChainDefinitionMap.put("/system/getMenus","authc");
         // shiro 不过滤swagger相关

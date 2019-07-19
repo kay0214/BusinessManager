@@ -2,7 +2,7 @@
     <div th:fragment="header" class="layui-header">
         <div class="layui-logo">layui 后台布局</div>
         <ul class="layui-nav layui-layout-left">
-            <li class="layui-nav-item"><a href="">产品</a></li>
+            <li class="layui-nav-item"><a href="javascript:;"><i class="layui-icon">&#xe666;</i>刷新</a></li>
         </ul>
         <ul class="layui-nav layui-layout-right">
             <!-- 登录状态 -->
@@ -11,14 +11,14 @@
                     <a href="javascript:;"><img th:src="${session.user.avatar}" class="layui-nav-img"/><span th:text="${session.user.userName}"></span></a>
                     <dl class="layui-nav-child"> <!-- 二级菜单 -->
                         <dd><a href="/forget/init">修改密码</a></dd>
-                        <dd><a href="/login/logOut">退出登录</a></dd>
+                        <dd><a href="/system/logout">退出登录</a></dd>
                     </dl>
                 </li>
             </div>
             <!-- 未登录状态 -->
             <div th:unless="${session.user}" class="float-right">
                 <li class="layui-nav-item">
-                    <a href="/login/init">登录</a>
+                    <a href="/system/init">登录</a>
                 </li>
                 <li class="layui-nav-item">
                     <a href="/register/init">注册</a>

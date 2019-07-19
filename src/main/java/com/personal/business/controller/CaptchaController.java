@@ -69,7 +69,6 @@ public class CaptchaController extends BaseController {
             } else{
                 log.error("验证码生成方式[{}]配置不合法",type);
             }
-            log.info("生成验证码：" + code);
             request.getSession().setAttribute(Constants.KAPTCHA_SESSION_KEY, code);
             out = response.getOutputStream();
             ImageIO.write(bi, "jpg", out);

@@ -25,15 +25,8 @@ public class IndexController extends BaseController {
         return "redirect:system/init";
     }
 
-    @GetMapping(value = "/iframe")
-    public String iframe(){
-        log.info("get iframe page");
-        return "iframe/iframe";
-    }
-
-    @GetMapping(value = "/test2")
-    public String test2(){
-        log.info("get iframe test2 page");
-        return "iframe/test2";
+    @GetMapping(value = "/index")
+    public String home(){
+        return "index";
     }
 }
