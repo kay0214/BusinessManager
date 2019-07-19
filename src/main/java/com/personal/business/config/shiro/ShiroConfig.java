@@ -3,6 +3,7 @@
  */
 package com.personal.business.config.shiro;
 
+import com.personal.business.filter.CaptchaValidateFilter;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -22,6 +23,11 @@ import java.util.Map;
  */
 @Configuration
 public class ShiroConfig {
+
+    // 验证码开关
+    @Value("${shiro.user.captchaEnabled}")
+    private boolean captchaEnabled;
+
     // Session超时时间，单位为毫秒（默认30分钟）
     @Value("${shiro.session.expireTime}")
     private int expireTime;
@@ -61,14 +67,24 @@ public class ShiroConfig {
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         // 过滤器列表
-        //Map<String, Filter> filters = new LinkedHashMap<>();
+        Map<String, Filter> filters = new LinkedHashMap<>();
         // 验证码过滤器
-        //filters.put("captchaValidate", captchaValidateFilter());
+        filters.put("captchaValidate", captchaValidateFilter());
         // 登出处理器
         //filters.put("logout", logoutFilter());
-        //shiroFilterFactoryBean.setFilters(filters);
+        shiroFilterFactoryBean.setFilters(filters);
 
         return shiroFilterFactoryBean;
+    }
+
+    /**
+     * 自定义验证码过滤器
+     */
+    @Bean
+    public CaptchaValidateFilter captchaValidateFilter() {
+        CaptchaValidateFilter captchaValidateFilter = new CaptchaValidateFilter();
+        captchaValidateFilter.setCaptchaEnabled(captchaEnabled);
+        return captchaValidateFilter;
     }
 
     /**

@@ -8,6 +8,36 @@ package com.personal.business.constant;
 public interface CommonConstant {
 
     /**
+     * 验证码key
+     */
+    String CURRENT_CAPTCHA = "captcha";
+
+    /**
+     * 验证码错误
+     */
+    String CAPTCHA_ERROR = "captchaError";
+
+    /**
+     * 验证码
+     */
+    String CURRENT_VALIDATECODE = "validateCode";
+
+    /**
+     * 验证码开关
+     */
+    String CURRENT_ENABLED = "captchaEnabled";
+
+    /**
+     * 验证码类型：math
+     */
+    String CAPTCHA_TYPE_MATH = "math";
+
+    /**
+     * 验证码类型：char
+     */
+    String CAPTCHA_TYPE_CHAR = "char";
+
+    /**
      * 用户名最小长度
      * */
     Integer USERNAME_MIN_LENGTH = 5;

@@ -22,7 +22,7 @@ public class IndexController extends BaseController {
     @GetMapping(value = "/")
     public String init(){
         log.info("entry the index");
-        return "index";
+        return "redirect:system/init";
     }
 
     @GetMapping(value = "/iframe")

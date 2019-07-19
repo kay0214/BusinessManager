@@ -35,6 +35,10 @@ public class BtUserServiceImpl extends ServiceImpl<BtUserMapper, BtUser> impleme
      */
     @Override
     public BtUser login(String username, String password) {
+        // 验证码校验
+        if (!StringUtils.isEmpty(SessionUtils.getHttpServletRequest().getAttribute(CommonConstant.CURRENT_CAPTCHA))) {
+            throw new LoginException(ResultEnum.ERROR_VALIDATECODE);
+        }
         // 用户名或密码为空 错误
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             throw new LoginException(ResultEnum.ERROR_USERNAME_OR_PASSWORD);

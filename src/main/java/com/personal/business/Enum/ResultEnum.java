@@ -19,7 +19,7 @@ public enum  ResultEnum implements Serializable {
     ERROR_USERNAME_OR_PASSWORD("E010","用户名或密码错误"),
     ERROR_USERNAME_LENGTH("E011","用户名长度不符"),
     ERROR_USER_EXIST("E012","用户不存在或已被禁用"),
-
+    ERROR_VALIDATECODE("E013","图形验证码错误"),
 
 
     END("","枚举结束");

@@ -8,16 +8,16 @@
                     <li class="layui-nav-item layui-nav-itemed">
                         <a class="" href="javascript:;">所有商品</a>
                         <dl class="layui-nav-child">
-                            <dd><a href="javascript:;" data-url="www.baidu.com">列表一</a></dd>
-                            <dd><a href="javascript:;" data-url="www.youku.com">列表二</a></dd>
-                            <dd><a href="javascript:;" data-url="www.iqiyi.com">列表三</a></dd>
+                            <dd><a href="javascript:;" data-url="https://www.baidu.com">列表一</a></dd>
+                            <dd><a href="javascript:;" data-url="https://www.youku.com">列表二</a></dd>
+                            <dd><a href="javascript:;" data-url="https://www.iqiyi.com">列表三</a></dd>
                         </dl>
                     </li>
                     <li class="layui-nav-item">
                         <a href="javascript:;">解决方案</a>
                         <dl class="layui-nav-child">
-                            <dd><a href="javascript:;" data-url="www.yahoo.com">列表一</a></dd>
-                            <dd><a href="javascript:;" data-url="www.google.com">列表二</a></dd>
+                            <dd><a href="javascript:;" data-url="https://www.yahoo.com">列表一</a></dd>
+                            <dd><a href="javascript:;" data-url="https://www.google.com">列表二</a></dd>
                             <dd><a href="">超链接</a></dd>
                         </dl>
                     </li>
@@ -41,13 +41,9 @@
                 //监听导航点击
                 var page = 1;
                 element.on('nav(sider)', function(elem){
-                    page ++ ;
-                    if(page%2===0){
-                        $("#iframe").attr("src","/test2");
-                    }else{
-                        $("#iframe").attr("src","/iframe");
-                    }
-                    console.log(elem);
+                    var url = elem.data("url");
+                    // 点击了菜单，设置上url
+                    $("#iframe").attr("src",url);
                     layer.msg(elem.text());
                 });
             });

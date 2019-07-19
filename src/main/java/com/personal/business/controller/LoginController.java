@@ -27,6 +27,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/system")
 public class LoginController extends BaseController {
 
+    @GetMapping(value = "/init")
+    public String init(){
+        return "login";
+    }
+
     @ResponseBody
     @PostMapping(value = "/login")
     public Return<Object> login(@RequestBody LoginRequest loginRequest){
