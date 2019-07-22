@@ -11,22 +11,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author sunpeikai
- * @version IndexController, v0.1 2019/7/17 9:24
+ * @version UserManagerController, v0.1 2019/7/22 14:53
  * @description
  */
 @Slf4j
 @Controller
-@RequestMapping(value = "/")
-public class IndexController extends BaseController {
+@RequestMapping(value = "/user")
+public class UserManagerController extends BaseController {
 
-    @GetMapping(value = "/")
+    @GetMapping(value = "/init")
     public String init(){
-        log.info("entry the index");
-        return "redirect:system/login/init";
-    }
-
-    @GetMapping(value = "/index")
-    public String home(){
-        return "index";
+        return "iframe/userManager";
     }
 }

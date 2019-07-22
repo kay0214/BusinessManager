@@ -16,8 +16,7 @@
                 var $ = layui.$;
                 var htmlText = "";
 
-                $.get("/system/getMenus", function(result){
-                    console.info(result);
+                $.get("/system/menu/getMenus", function(result){
                     var fatherLength = result.data.length;
                     if(fatherLength>0){
                         var sider = $("#sider");
@@ -50,9 +49,7 @@
                             }
                             // 父菜单结束
                             htmlText += "</li>";
-                            console.info("菜单:[" + menu.menuName + "]");
                         }
-                        console.info(htmlText);
                         sider.html(htmlText);
                     }
 
@@ -65,7 +62,7 @@
                             var url = elem.data("url");
                             // 点击了菜单，设置上url
                             $("#iframe").attr("src",url);
-                            layer.msg(elem.text());
+                            layer.msg(elem.text() + "===url===" + url);
                         });
 
                         element.init();

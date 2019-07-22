@@ -8,8 +8,10 @@ import com.personal.business.base.Return;
 import com.personal.business.service.IBtMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -18,14 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
  * @description
  */
 @Slf4j
-@RestController
-@RequestMapping(value = "/system")
+@Controller
+@RequestMapping(value = "/system/menu")
 public class MenuController extends BaseController {
 
     @Autowired
     private IBtMenuService iBtMenuService;
 
+    @GetMapping(value = "/init")
+    public String init(){
+        return "iframe/menuManager";
+    }
+
     @GetMapping(value = "/getMenus")
+    @ResponseBody
     public Return getMenus(){
         Integer userId = getCurrentUserId();
         log.info("get user menus , userId:[{}]",userId);

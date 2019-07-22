@@ -1,20 +1,19 @@
 // 监听回车事件
 function keyPress(obj){
     if (obj.keyCode == 13) {
-        $("#login").click();
+        document.getElementById("login").click();
         obj.returnValue = false;
     }
-};
+}
 layui.use(['form', 'layedit', 'laydate'], function() {
     var form = layui.form,
         layer = layui.layer,
         $ = layui.$;
-
     //监听提交
     form.on('submit(login)', function(data) {
         $.ajax({
             type: 'POST',
-            url: "/system/login?validateCode=" + data.field.validateCode,
+            url: "/system/login/login?validateCode=" + data.field.validateCode,
             contentType: "application/json;charset=utf-8",
             data: JSON.stringify(data.field),
             success: function(result){
@@ -27,7 +26,6 @@ layui.use(['form', 'layedit', 'laydate'], function() {
                     layer.msg(result.statusDesc,{icon: 5});
                     $("img[name='verifyImg']").click();
                 }
-                console.info(result);
             }
         });
         return false;

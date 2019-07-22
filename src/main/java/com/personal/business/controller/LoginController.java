@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @Controller
-@RequestMapping(value = "/system")
+@RequestMapping(value = "/system/login")
 public class LoginController extends BaseController {
 
     @GetMapping(value = "/init")
