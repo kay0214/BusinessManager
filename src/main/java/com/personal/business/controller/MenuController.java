@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author sunpeikai
@@ -38,5 +37,12 @@ public class MenuController extends BaseController {
         Integer userId = getCurrentUserId();
         log.info("get user menus , userId:[{}]",userId);
         return Return.data(iBtMenuService.getUserMenus(userId));
+    }
+
+    @GetMapping(value = "/getAllMenus")
+    @ResponseBody
+    public Return getAllMenus(){
+        log.info("get all menus");
+        return Return.data(iBtMenuService.list());
     }
 }
