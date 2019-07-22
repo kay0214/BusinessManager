@@ -4,49 +4,78 @@
         <div class="layui-side layui-bg-black">
             <div class="layui-side-scroll">
                 <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-                <ul class="layui-nav layui-nav-tree" lay-shrink="all" lay-filter="sider">
-                    <li class="layui-nav-item layui-nav-itemed">
-                        <a class="" href="javascript:;">所有商品</a>
-                        <dl class="layui-nav-child">
-                            <dd><a href="javascript:;" data-url="https://www.baidu.com">列表一</a></dd>
-                            <dd><a href="javascript:;" data-url="https://www.youku.com">列表二</a></dd>
-                            <dd><a href="javascript:;" data-url="https://www.iqiyi.com">列表三</a></dd>
-                        </dl>
-                    </li>
-                    <li class="layui-nav-item">
-                        <a href="javascript:;">解决方案</a>
-                        <dl class="layui-nav-child">
-                            <dd><a href="javascript:;" data-url="https://www.yahoo.com">列表一</a></dd>
-                            <dd><a href="javascript:;" data-url="https://www.google.com">列表二</a></dd>
-                            <dd><a href="">超链接</a></dd>
-                        </dl>
-                    </li>
-                    <li class="layui-nav-item"><a href="">云市场</a></li>
-                    <li class="layui-nav-item"><a href="">发布商品</a></li>
+                <ul class="layui-nav layui-nav-tree" lay-shrink="all" lay-filter="sider" id="sider">
+
                 </ul>
             </div>
         </div>
 
         <!-- script -->
-        <script src="/layui/layui.js" charset="utf-8"></script>
         <script>
-            layui.use(['element','jquery','layer'], function(){
-                //导航的hover效果、二级菜单等功能，需要依赖element模块
-                var element = layui.element;
+            layui.use('jquery', function(){
                 var $ = layui.$;
-                var layer = layui.layer;
-/*                $.get("/system/getMenus", function(result){
+                var htmlText = "";
+
+                $.get("/system/getMenus", function(result){
                     console.info(result);
-                });*/
-                //监听导航点击
-                var page = 1;
-                element.on('nav(sider)', function(elem){
-                    var url = elem.data("url");
-                    // 点击了菜单，设置上url
-                    $("#iframe").attr("src",url);
-                    layer.msg(elem.text());
+                    var fatherLength = result.data.length;
+                    if(fatherLength>0){
+                        var sider = $("#sider");
+                        for(var i=0;i<fatherLength;i++){
+                            var menu = result.data[i];
+                            // 父菜单开始
+                            if(menu.url.search(/dashboard/i)>0){
+                                htmlText += "<li class='layui-nav-item layui-this'>";
+                            }else{
+                                htmlText += "<li class='layui-nav-item'>";
+                            }
+
+                            // 父菜单名称
+                            if(menu.url.length>1){
+                                htmlText += "<a href='javascript:;' data-url=" + menu.url + ">" + menu.menuName + "</a>";
+                            }else{
+                                htmlText += "<a href='javascript:;'>" + menu.menuName + "</a>";
+                            }
+                            var childrenLength = menu.children.length;
+                            if(childrenLength>0){
+                                // 子菜单列表开始
+                                htmlText += "<dl class='layui-nav-child'>";
+                                for(var j=0;j<childrenLength;j++){
+                                    var child = menu.children[j];
+                                    // 遍历加入每一个子菜单
+                                    htmlText += "<dd><a href='javascript:;' data-url=" + child.url + ">" + child.menuName + "</a></dd>";
+                                }
+                                // 子菜单列表结束
+                                htmlText += "</dl>";
+                            }
+                            // 父菜单结束
+                            htmlText += "</li>";
+                            console.info("菜单:[" + menu.menuName + "]");
+                        }
+                        console.info(htmlText);
+                        sider.html(htmlText);
+                    }
+
+                    layui.use(['element','layer'], function(){
+                        //导航的hover效果、二级菜单等功能，需要依赖element模块
+                        var element = layui.element;
+                        var layer = layui.layer;
+                        //监听导航点击
+                        element.on('nav(sider)', function(elem){
+                            var url = elem.data("url");
+                            // 点击了菜单，设置上url
+                            $("#iframe").attr("src",url);
+                            layer.msg(elem.text());
+                        });
+
+                        element.init();
+
+                    });
+
                 });
             });
+
+
         </script>
     </div>
 </html>

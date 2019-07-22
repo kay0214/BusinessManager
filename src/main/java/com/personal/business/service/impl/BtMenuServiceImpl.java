@@ -76,9 +76,9 @@ public class BtMenuServiceImpl extends ServiceImpl<BtMenuMapper, BtMenu> impleme
         do{
             parentIdSet = new HashSet<>();
             for (MenuTree menuTree : originList){
-                if (CommonConstant.MENU_TYPE_M.equalsIgnoreCase(menuTree.getMenuType())){
+/*                if (CommonConstant.MENU_TYPE_M.equalsIgnoreCase(menuTree.getMenuType())){
                     menuTree.setUrl("/" +menuTree.getMenuId());
-                }
+                }*/
                 /*特殊处理 shiro查询菜单(不用权限)和查询权限,查询数据不一样，要特殊处理一下*/
                 if (!isAllowF && CommonConstant.MENU_TYPE_F.equalsIgnoreCase(menuTree.getMenuType())){
 

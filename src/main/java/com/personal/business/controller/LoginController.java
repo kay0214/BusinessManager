@@ -57,10 +57,15 @@ public class LoginController extends BaseController {
         return Return.success("退出成功");
     }
 
-    @GetMapping("/test")
+    @GetMapping("/isLogin")
     @ResponseBody
-    public Return<Object> test(){
+    public Return<Object> isLogin(){
         BtUser user = getCurrentUser();
-        return Return.data(user);
+        if(user!=null){
+            log.info("isLogin username[{}]",user.getUserName());
+            return Return.data(true);
+        }
+        return Return.data("");
+
     }
 }

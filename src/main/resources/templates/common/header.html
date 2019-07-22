@@ -1,8 +1,8 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <div th:fragment="header" class="layui-header">
+    <div th:fragment="header" class="layui-header header-fixed">
         <div class="layui-logo">layui 后台布局</div>
         <ul class="layui-nav layui-layout-left">
-            <li class="layui-nav-item"><a href="javascript:;"><i class="layui-icon">&#xe666;</i>刷新</a></li>
+            <li class="layui-nav-item"><a href="javascript:;"><i class="layui-icon">&#xe6af;</i>刷新</a></li><!--&#xe669;-->
         </ul>
         <ul class="layui-nav layui-layout-right">
             <!-- 登录状态 -->
@@ -26,5 +26,19 @@
             </div>
         </ul>
 
+        <!-- script -->
+        <script src="/layui/layui.js" charset="utf-8"></script>
+        <script>
+            layui.use("jquery", function(){
+                var $ = layui.$;
+                $.get("/system/isLogin", function(result){
+                    var isLogin = result.data;
+                    if(isLogin===null || isLogin===undefined || isLogin==='' || isLogin==='null' || isLogin==='undefined'){
+                        // 如果没有登录，则先去登录
+                        location.href = "/system/init";
+                    }
+                });
+            });
+        </script>
     </div>
 </html>
