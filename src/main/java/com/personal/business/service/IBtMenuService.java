@@ -39,4 +39,12 @@ public interface IBtMenuService extends IService<BtMenu> {
      * @return
      */
     List<BtMenu> getAllMenus();
+
+    /**
+     * @description 删除菜单(如果有子菜单则一并删除)
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    boolean deleteMenus(Integer menuId);
 }

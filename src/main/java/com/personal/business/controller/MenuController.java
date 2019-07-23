@@ -11,7 +11,6 @@ import com.personal.business.service.IBtMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -56,6 +55,18 @@ public class MenuController extends BaseController {
             return Return.success();
         }else{
             return Return.fail("更新失败");
+        }
+    }
+
+    @GetMapping(value = "/delete/{menuId}")
+    @ResponseBody
+    public Return delete(@PathVariable Integer menuId){
+        log.info("delete menu [{}]",menuId);
+        boolean success = iBtMenuService.deleteMenus(menuId);
+        if(success){
+            return Return.success();
+        }else{
+            return Return.fail("删除失败");
         }
     }
 

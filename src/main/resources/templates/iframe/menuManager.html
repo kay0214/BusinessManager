@@ -213,6 +213,35 @@
             // 删除菜单
             function delMenu(menuId){
                 console.info("menuId[" + menuId + "]");
+                layer.open({
+                    type: 1
+                    ,content: '<div style="text-align: center;margin-top: 30px;">如果存在下级节点则一并删除，确定？</div>'
+                    ,title:'删除'
+                    ,skin: 'layui-layer-rim'
+                    ,area:['300px','200px']
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        $.get("/system/menu/delete/" + menuId, function(result){
+                            layer.closeAll();
+                            if(result.status === 'S001'){
+                                // 更新成功 - 关掉
+                                treeGrid.reload(tableId);
+                                layer.msg("删除成功",{icon: 6});
+                            }else{
+                                // 更新失败 - 给出错误提示
+                                layer.msg(result.statusDesc,{icon: 5});
+                            }
+                        });
+                    }
+                    ,btn2: function(index, layero){
+                        //按钮【按钮二】的回调
+                        layer.closeAll();
+                    }
+                    ,cancel: function(){
+                        //右上角关闭回调
+                        layer.closeAll();
+                    }
+                });
             }
             // 添加下级菜单
             function addChild(menu){

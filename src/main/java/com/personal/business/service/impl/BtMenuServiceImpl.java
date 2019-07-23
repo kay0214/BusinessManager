@@ -1,6 +1,7 @@
 package com.personal.business.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.personal.business.constant.CommonConstant;
 import com.personal.business.dto.MenuTree;
@@ -64,6 +65,19 @@ public class BtMenuServiceImpl extends ServiceImpl<BtMenuMapper, BtMenu> impleme
         QueryWrapper<BtMenu> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().select().orderByAsc(BtMenu::getOrderNum);
         return list(queryWrapper);
+    }
+
+    /**
+     * @description 删除菜单(如果有子菜单则一并删除)
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public boolean deleteMenus(Integer menuId) {
+        UpdateWrapper<BtMenu> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.lambda().eq(BtMenu::getMenuId,menuId).or().eq(BtMenu::getParentId,menuId);
+        return getBaseMapper().delete(updateWrapper)>0;
     }
 
     /**
