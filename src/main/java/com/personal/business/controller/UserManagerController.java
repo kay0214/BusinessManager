@@ -44,10 +44,23 @@ public class UserManagerController extends BaseController {
         // 实体转换
         IPage<UserDto> result = users.convert(btUser -> {
             UserDto userDto = CommonUtils.convertBean(btUser,UserDto.class);
-            userDto.setEmail(DataMaskUtils.email(userDto.getEmail()));
-            userDto.setMobile(DataMaskUtils.mobile(userDto.getMobile()));
+            // 数据脱敏是否需要做
+/*            userDto.setEmail(DataMaskUtils.email(userDto.getEmail()));
+            userDto.setMobile(DataMaskUtils.mobile(userDto.getMobile()));*/
             return userDto;
         });
         return Return.data(result);
+    }
+
+    @PostMapping(value = "/update")
+    @ResponseBody
+    public Return update(@RequestBody BtUser user){
+        log.info(JSON.toJSONString(user));
+        boolean success = iBtUserService.updateById(user);
+        if(success){
+            return Return.success();
+        }else{
+            return Return.fail("更新失败");
+        }
     }
 }

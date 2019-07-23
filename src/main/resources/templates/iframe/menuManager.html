@@ -187,7 +187,7 @@
                                 if(result.status === 'S001'){
                                     // 更新成功 - 关掉
                                     treeGrid.reload(tableId);
-                                    layer.msg("更新成功",{icon: 6});
+                                    layer.msg(result.statusDesc,{icon: 6});
                                 }else{
                                     // 更新失败 - 给出错误提示
                                     layer.msg(result.statusDesc,{icon: 5});
@@ -221,7 +221,7 @@
                             if(result.status === 'S001'){
                                 // 更新成功 - 关掉
                                 treeGrid.reload(tableId);
-                                layer.msg("删除成功",{icon: 6});
+                                layer.msg(result.statusDesc,{icon: 6});
                             }else{
                                 // 更新失败 - 给出错误提示
                                 layer.msg(result.statusDesc,{icon: 5});
@@ -304,7 +304,7 @@
                                 if(result.status === 'S001'){
                                     // 更新成功 - 关掉
                                     treeGrid.reload(tableId);
-                                    layer.msg("新增成功",{icon: 6});
+                                    layer.msg(result.statusDesc,{icon: 6});
                                 }else{
                                     // 更新失败 - 给出错误提示
                                     layer.msg(result.statusDesc,{icon: 5});
@@ -388,7 +388,7 @@
                             if(result.status === 'S001'){
                                 // 更新成功 - 关掉
                                 treeGrid.reload(tableId);
-                                layer.msg("新增成功",{icon: 6});
+                                layer.msg(result.statusDesc,{icon: 6});
                             }else{
                                 // 更新失败 - 给出错误提示
                                 layer.msg(result.statusDesc,{icon: 5});
