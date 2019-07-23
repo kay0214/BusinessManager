@@ -1,5 +1,6 @@
 package com.personal.business.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.personal.business.constant.CommonConstant;
 import com.personal.business.dto.MenuTree;
@@ -52,6 +53,18 @@ public class BtMenuServiceImpl extends ServiceImpl<BtMenuMapper, BtMenu> impleme
         return ZtreeUtils.getChildPerms(menus, 0);
     }
 
+    /**
+     * @description 获取所有菜单，排序
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public List<BtMenu> getAllMenus() {
+        QueryWrapper<BtMenu> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().select().orderByAsc(BtMenu::getOrderNum);
+        return list(queryWrapper);
+    }
 
     /**
      *        图一                            图二

@@ -27,9 +27,16 @@ public interface IBtMenuService extends IService<BtMenu> {
 
     /**
      * 根据用户id查询有权限的菜单列表
-     * @author zhangyk
+     * @author spk
      * @date 2019/3/27 14:12
      */
     List<MenuTree> getUserMenus(Integer userId);
 
+    /**
+     * @description 获取所有菜单，排序
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<BtMenu> getAllMenus();
 }

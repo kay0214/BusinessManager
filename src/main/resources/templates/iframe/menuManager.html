@@ -9,16 +9,25 @@
 <body>
 <div class="layui-body">
     <!-- 内容主体区域 -->
-    <div style="padding: 15px;"><table class="layui-hide" id="menu"></table></div>
+    <div style="padding: 15px;">
+        <div class="layui-row">
+            <button class="layui-btn layui-btn-radius layui-btn-normal">+ 添加菜单</button>
+        </div>
+        <div class="layui-row" style="margin-top: 10px">
+            <table class="layui-hide" id="menus" lay-filter="menus"></table>
+        </div>
+
+    </div>
     <script src="/layui/layui.js"></script>
     <script>
-        var editObj=null,ptable=null,treeGrid=null,tableId='menu',layer=null;
+        var editObj=null,ptable=null,treeGrid=null,tableId='menus',layer=null;
         layui.config({
             base: '/layui/'
         }).extend({
             treeGrid:'treeGrid'
-        }).use(['jquery','treeGrid','layer'], function(){
-            var $=layui.jquery;
+        }).use(['jquery','treeGrid','layer','form'], function(){
+            var form = layui.form;
+            var $=layui.$;
             treeGrid = layui.treeGrid;//很重要
             layer=layui.layer;
             ptable=treeGrid.render({
@@ -30,7 +39,7 @@
                 ,treeId:'menuId'//树形id字段名称
                 ,treeUpId:'parentId'//树形父id字段名称
                 ,treeShowName:'menuName'//以树形式显示的字段
-                ,heightRemove:[".dHead",30]//不计算的高度,表格设定的是固定高度，此项不生效
+                ,heightRemove:[".dHead",100]//不计算的高度,表格设定的是固定高度，此项不生效
                 ,isFilter:false
                 ,height: '50%'
                 ,iconOpen:false//是否显示图标【默认显示】
@@ -49,7 +58,7 @@
                 ,cols: [
                     [
                         {field:'menuName', width:150, title: '菜单名'}
-                        ,{field:'orderNum', width:80, title: '排序'}
+                        ,{field:'orderNum', width:60, title: '排序'}
                         ,{field:'url', width:150, title: '请求地址'}
                         ,{field:'menuType', title: '类型',width:80,templet:function (data) {
                             if(data.menuType==='M'){
@@ -62,7 +71,7 @@
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
                         }}
-                        ,{field:'visible', title: '显示与隐藏',templet:function (data) {
+                        ,{field:'visible', width:120, title: '显示与隐藏',templet:function (data) {
                             if(data.visible===0){
                                 return "<span class='layui-badge'>显示</span>";
                             }else if(data.visible===1){
@@ -71,48 +80,113 @@
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
                         }}
-                        ,{field:'perms', title: '权限标识'}
-                        ,{field:'isDefault', title: '默认权限',templet:function (data) {
+                        ,{field:'perms', minWidth:100, title: '权限标识'}
+                        ,{field:'isDefault', width:110, title: '默认权限',templet:function (data) {
                             if(data.isDefault===0){
-                                return "否";
+                                return "<span class='layui-badge'>否</span>";
                             }else if(data.isDefault===1){
-                                return "是";
+                                return "<span class='layui-badge layui-bg-blue'>是</span>";
                             }else{
                                 return "预留状态";
                             }
                         }}
+                        ,{fixed:'right', width:220, title: '操作',templet:function (data) {
+                            return "<button class='layui-btn layui-btn-sm layui-btn-normal' lay-event='editMenu'>编辑</button>"
+                                +"<button class='layui-btn layui-btn-sm layui-btn-danger' lay-event='delMenu'>删除</button>"
+                                +"<button class='layui-btn layui-btn-sm' lay-event='addChild'>添加下级菜单</button>";
+                        }}
                     ]
                 ]
-                ,parseData:function (res) {//数据加载后回调
-                    return res;
-                }
-                ,onClickRow:function (index, o) {
-                    console.log(index,o,"单击！");
-                    console.info("单击！,按F12，在控制台查看详细参数！");
-                }
-                ,onDblClickRow:function (index, o) {
-                    console.log(index,o,"双击");
-                    console.info("双击！,按F12，在控制台查看详细参数！");
-                }
-                ,onCheck:function (obj,checked,isAll) {//复选事件
-                    console.log(obj,checked,isAll,"复选");
-                    console.info("复选,按F12，在控制台查看详细参数！");
-                }
-                ,onRadio:function (obj) {//单选事件
-                    console.log(obj,"单选");
-                    console.info("单选,按F12，在控制台查看详细参数！");
-                }
             });
 
-            treeGrid.on('tool('+tableId+')',function (obj) {
-                if(obj.event === 'del'){//删除行
-                    console.info(obj);
-                }else if(obj.event==="add"){//添加行
-                    console.info(obj);
+            treeGrid.on('tool(menus)',function (obj) {
+                console.info(obj);
+                if(obj.event === 'editMenu'){//编辑
+                    editMenu(obj.data);
+                }else if(obj.event==="delMenu"){//删除
+                    delMenu(obj.data.menuId);
+                }else if(obj.event==='addChild'){
+                    addChild(obj.data);
                 }
             });
+            // 编辑菜单
+            function editMenu(menu){
+                var parentMenuName = "主目录";
+                if(menu.parentId !== 0){
+                    // 请求获取父亲节点
+                    $.get("/system/menu/getById/" + menu.parentId, function(result){
+                        console.info(result.data.menuName);
+                        parentMenuName = result.data.menuName;
+                    });
+                }
+                console.info("name[" + parentMenuName + "]");
+                var formText = '<form class="layui-form" style="margin-right: 30px" action="/system/menu/update" method="post"><div class="layui-form-item"><label class="layui-form-label">菜单名称</label>'
+                    + '<div class="layui-input-block"><input type="text" name="menuName" required  lay-verify="required" placeholder="请输入名称" value="' + menu.menuName + '" autocomplete="off" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
+                    + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" value="' + menu.orderNum + '" autocomplete="off" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">请求地址</label>'
+                    + '<div class="layui-input-block"><input type="text" name="url" required  lay-verify="required" placeholder="请输入地址" value="' + menu.url + '" autocomplete="off" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">菜单类型</label>';
+                if(menu.menuType==='M'){
+                    formText+='<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录" checked><input type="radio" name="menuType" value="C" title="菜单"><input type="radio" name="menuType" value="F" title="权限"></div></div>';
+                }else if(menu.menuType==='C'){
+                    formText+='<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录"><input type="radio" name="menuType" value="C" title="菜单" checked><input type="radio" name="menuType" value="F" title="权限"></div></div>';
+                }else if(menu.menuType==='F'){
+                    formText+='<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录"><input type="radio" name="menuType" value="C" title="菜单"><input type="radio" name="menuType" value="F" title="权限" checked></div></div>';
+                }
+                // 是否可见
+                formText+='<div class="layui-form-item"><label class="layui-form-label">菜单状态</label>';
+                if(menu.visible===0){
+                    formText+='<div class="layui-input-block"><input type="radio" name="visible" value="0" title="显示" checked><input type="radio" name="visible" value="1" title="隐藏"></div></div>';
+                }else if(menu.visible===1){
+                    formText+='<div class="layui-input-block"><input type="radio" name="visible" value="0" title="显示"><input type="radio" name="visible" value="1" title="隐藏" checked></div></div>';
+                }
+                formText += '<div class="layui-form-item"><label class="layui-form-label">权限标识</label>'
+                    + '<div class="layui-input-block"><input type="text" name="perms" required  lay-verify="required" placeholder="请输入权限" value="' + menu.perms + '" autocomplete="off" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">图标</label>'
+                    + '<div class="layui-input-block"><input type="text" name="icon" required  lay-verify="required" placeholder="请输入图标" value="' + menu.icon + '" autocomplete="off" class="layui-input"></div></div>';
+                // 是否默认权限
+                formText+='<div class="layui-form-item"><label class="layui-form-label">默认赋权</label>';
+                if(menu.visible===0){
+                    formText+='<div class="layui-input-block"><input type="radio" name="isDefault" value="0" title="否" checked><input type="radio" name="isDefault" value="1" title="是"></div></div>';
+                }else if(menu.visible===1){
+                    formText+='<div class="layui-input-block"><input type="radio" name="isDefault" value="0" title="否"><input type="radio" name="isDefault" value="1" title="是" checked></div></div>';
+                }
+                formText += '</form>';
+                layer.open({
+                    type: 1
+                    ,content: formText
+                    ,title:'编辑'
+                    ,area:['400px','600px']
+                    ,btn: ['确定', '取消']
+                    ,success: function(layero, index){
+                        form.render('radio');
+                    }
+                    ,yes: function(index, layero){
+                        //按钮【按钮一】的回调
+                        console.info("confirm");
+                    }
+                    ,btn2: function(index, layero){
+                        //按钮【按钮二】的回调
+                        console.info("取消");
+                        layer.closeAll();
+                    }
+                    ,cancel: function(){
+                        //右上角关闭回调
+                        console.info("cancel");
+                        layer.closeAll();
+                    }
+                });
+            }
+            // 删除菜单
+            function delMenu(menuId){
+                console.info("menuId[" + menuId + "]");
+            }
+            // 添加下级菜单
+            function addChild(menu){
+                console.info(menu);
+            }
         });
-
     </script>
 </div>
 </body>
