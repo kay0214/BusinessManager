@@ -43,7 +43,7 @@
                     <button class="layui-btn layui-btn-radius" data-type="reload" id="search"><i class="layui-icon">&#xe615;</i>&nbsp;搜索</button>
                 </div>
                 <div class="layui-col-md1">
-                    <button class="layui-btn layui-btn-radius layui-btn-normal" onclick="addMenu()">+ 添加用户</button>
+                    <button class="layui-btn layui-btn-radius layui-btn-normal" onclick="addUser()">+ 添加用户</button>
                 </div>
             </div>
         </div>
@@ -55,10 +55,12 @@
 
     <script src="/layui/layui.js"></script>
     <script>
-        var tableId = 'users';
+        var tableId='users',layer=null,$,form;
         layui.use(['table','form'], function(){
+            $ = layui.$;
+            layer=layui.layer;
+            form=layui.form;
             var table = layui.table;
-            var form = layui.form;
             table.render({
                 elem: '#' + tableId
                 ,id:tableId
@@ -81,7 +83,7 @@
                 }
                 ,cols: [
                     [
-                        {field:'userId', width:70, title: 'ID', sort: true,style:'text-align: left;'}
+                        {field:'userId', width:70, title: 'ID',style:'text-align: left;'}
                         ,{field:'userName', width:100, title: '用户名',style:'text-align: left;'}
                         ,{field:'trueName', width:100, title: '真实姓名',style:'text-align: left;'}
                         ,{field:'mobile', width:120, title: '手机号',style:'text-align: left;'}
@@ -105,18 +107,43 @@
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
                         }}
-                        ,{field:'createTime', width:180, title: '注册时间',style:'text-align: left;', sort: true,templet:function (data) {
+                        ,{field:'createTime', width:180, title: '注册时间',style:'text-align: left;',templet:function (data) {
                             return timeFormat(data.createTime);
                         }}
                         ,{fixed:'right', width:220, title: '操作',style:'text-align: left;',templet:function (data) {
-                            return "<button class='layui-btn layui-btn-sm layui-btn-normal' lay-event='editMenu'>授权</button>"
-                                +"<button class='layui-btn layui-btn-sm layui-btn-danger' lay-event='delMenu'>修改</button>"
-                                +"<button class='layui-btn layui-btn-sm' lay-event='addChild'>重置密码</button>";
+                            return "<button class='layui-btn layui-btn-sm layui-btn-normal' lay-event='authorize'>授权</button>"
+                                +"<button class='layui-btn layui-btn-sm layui-btn-danger' lay-event='modify'>修改</button>"
+                                +"<button class='layui-btn layui-btn-sm' lay-event='reset'>重置密码</button>";
                         }}
                     ]
                 ]
             });
-            var $ = layui.$, active = {
+            // 监听点击按钮
+            table.on('tool(users)',function (obj) {
+                if(obj.event === 'authorize'){//编辑
+                    authorize(obj.data);
+                }else if(obj.event==="modify"){//删除
+                    modify(obj.data);
+                }else if(obj.event==='reset'){
+                    reset(obj.data);
+                }
+            });
+            // 授权操作
+            function authorize(user) {
+                console.info("authorize");
+                console.info(user);
+            }
+            // 修改用户信息
+            function modify(user) {
+                console.info("modify");
+                console.info(user);
+            }
+            // 重置用户密码
+            function reset(user) {
+                console.info("reset");
+                console.info(user);
+            }
+            var active = {
                 reload: function(){
                     var username = $('#username');
                     var mobile = $('#mobile');
@@ -141,6 +168,10 @@
                 active[type] ? active[type].call(this) : '';
             });
         });
+        // 添加用户
+        function addUser() {
+            console.info("addUser");
+        }
     </script>
     <script type="text/javascript">
         function timeFormat(v){
