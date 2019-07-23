@@ -100,7 +100,6 @@
             });
 
             treeGrid.on('tool(menus)',function (obj) {
-                console.info(obj);
                 if(obj.event === 'editMenu'){//编辑
                     editMenu(obj.data);
                 }else if(obj.event==="delMenu"){//删除
@@ -111,7 +110,7 @@
             });
             // 编辑菜单
             function editMenu(menu){
-                var parentMenuName = "主目录";
+/*                var parentMenuName = "主目录";
                 if(menu.parentId !== 0){
                     // 请求获取父亲节点
                     $.get("/system/menu/getById/" + menu.parentId, function(result){
@@ -119,8 +118,8 @@
                         parentMenuName = result.data.menuName;
                     });
                 }
-                console.info("name[" + parentMenuName + "]");
-                var formText = '<form class="layui-form" style="margin-right: 30px" action="/system/menu/update" method="post"><div class="layui-form-item"><label class="layui-form-label">菜单名称</label>'
+                console.info("name[" + parentMenuName + "]");*/
+                var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px" action="/system/menu/update" method="post"><div class="layui-form-item"><label class="layui-form-label">菜单名称</label>'
                     + '<div class="layui-input-block"><input type="text" name="menuName" required  lay-verify="required" placeholder="请输入名称" value="' + menu.menuName + '" autocomplete="off" class="layui-input"></div></div>'
                     + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
                     + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" value="' + menu.orderNum + '" autocomplete="off" class="layui-input"></div></div>'
@@ -128,11 +127,11 @@
                     + '<div class="layui-input-block"><input type="text" name="url" required  lay-verify="required" placeholder="请输入地址" value="' + menu.url + '" autocomplete="off" class="layui-input"></div></div>'
                     + '<div class="layui-form-item"><label class="layui-form-label">菜单类型</label>';
                 if(menu.menuType==='M'){
-                    formText+='<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录" checked><input type="radio" name="menuType" value="C" title="菜单"><input type="radio" name="menuType" value="F" title="权限"></div></div>';
+                    formText+='<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录" disabled checked><input type="radio" name="menuType" value="C" title="菜单" disabled><input type="radio" name="menuType" value="F" title="权限" disabled></div></div>';
                 }else if(menu.menuType==='C'){
-                    formText+='<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录"><input type="radio" name="menuType" value="C" title="菜单" checked><input type="radio" name="menuType" value="F" title="权限"></div></div>';
+                    formText+='<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录" disabled><input type="radio" name="menuType" value="C" title="菜单" disabled checked><input type="radio" name="menuType" value="F" title="权限" disabled></div></div>';
                 }else if(menu.menuType==='F'){
-                    formText+='<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录"><input type="radio" name="menuType" value="C" title="菜单"><input type="radio" name="menuType" value="F" title="权限" checked></div></div>';
+                    formText+='<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录" disabled><input type="radio" name="menuType" value="C" title="菜单" disabled><input type="radio" name="menuType" value="F" title="权限" disabled checked></div></div>';
                 }
                 // 是否可见
                 formText+='<div class="layui-form-item"><label class="layui-form-label">菜单状态</label>';
@@ -147,9 +146,9 @@
                     + '<div class="layui-input-block"><input type="text" name="icon" required  lay-verify="required" placeholder="请输入图标" value="' + menu.icon + '" autocomplete="off" class="layui-input"></div></div>';
                 // 是否默认权限
                 formText+='<div class="layui-form-item"><label class="layui-form-label">默认赋权</label>';
-                if(menu.visible===0){
+                if(menu.isDefault===0){
                     formText+='<div class="layui-input-block"><input type="radio" name="isDefault" value="0" title="否" checked><input type="radio" name="isDefault" value="1" title="是"></div></div>';
-                }else if(menu.visible===1){
+                }else if(menu.isDefault===1){
                     formText+='<div class="layui-input-block"><input type="radio" name="isDefault" value="0" title="否"><input type="radio" name="isDefault" value="1" title="是" checked></div></div>';
                 }
                 formText += '</form>';
@@ -157,23 +156,56 @@
                     type: 1
                     ,content: formText
                     ,title:'编辑'
+                    ,skin: 'layui-layer-rim'
                     ,area:['400px','600px']
                     ,btn: ['确定', '取消']
                     ,success: function(layero, index){
                         form.render('radio');
                     }
                     ,yes: function(index, layero){
-                        //按钮【按钮一】的回调
-                        console.info("confirm");
+                        var menuName = $("input[name='menuName']").val();
+                        var orderNum = $("input[name='orderNum']").val();
+                        var url = $("input[name='url']").val();
+                        var menuType = $("input[name='menuType']:checked").val();
+                        var visible = $("input[name='visible']:checked").val();
+                        var perms = $("input[name='perms']").val();
+                        var icon = $("input[name='icon']").val();
+                        var isDefault = $("input[name='isDefault']:checked").val();
+                        $.ajax({
+                            type: 'POST',
+                            url: "/system/menu/update",
+                            contentType: "application/json;charset=utf-8",
+                            data: JSON.stringify({
+                                menuId:menu.menuId,
+                                menuName:menuName,
+                                orderNum:orderNum,
+                                url:url,
+                                menuType:menuType,
+                                visible:visible,
+                                perms:perms,
+                                icon:icon,
+                                isDefault:isDefault
+                            }),
+                            success: function(result){
+                                // 关掉弹出层
+                                layer.closeAll();
+                                if(result.status === 'S001'){
+                                    // 更新成功 - 关掉
+                                    treeGrid.reload(tableId);
+                                    layer.msg("更新成功",{icon: 6});
+                                }else{
+                                    // 更新失败 - 给出错误提示
+                                    layer.msg(result.statusDesc,{icon: 5});
+                                }
+                            }
+                        });
                     }
                     ,btn2: function(index, layero){
                         //按钮【按钮二】的回调
-                        console.info("取消");
                         layer.closeAll();
                     }
                     ,cancel: function(){
                         //右上角关闭回调
-                        console.info("cancel");
                         layer.closeAll();
                     }
                 });

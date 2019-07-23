@@ -49,10 +49,14 @@ public class MenuController extends BaseController {
 
     @PostMapping(value = "/update")
     @ResponseBody
-    public Return update(BtMenu menu){
-
+    public Return update(@RequestBody BtMenu menu){
         log.info(JSON.toJSONString(menu));
-        return Return.success();
+        boolean success = iBtMenuService.updateById(menu);
+        if(success){
+            return Return.success();
+        }else{
+            return Return.fail("更新失败");
+        }
     }
 
     @GetMapping(value = "/getById/{menuId}")
@@ -60,11 +64,5 @@ public class MenuController extends BaseController {
     public Return getById(@PathVariable Integer menuId){
         log.info("get menu by id[{}]",menuId);
         return Return.data(iBtMenuService.getById(menuId));
-    }
-
-    @GetMapping(value = "/edit/init/{menuId}")
-    public String editInit(@PathVariable Integer menuId, Model model){
-        model.addAttribute("parent",iBtMenuService.getById(menuId));
-        return "iframe/menu/edit";
     }
 }
