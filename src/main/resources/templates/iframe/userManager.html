@@ -5,11 +5,161 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>工作台</title>
     <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/global.css">
 </head>
 <body>
 <div class="layui-body">
     <!-- 内容主体区域 -->
-    <div style="padding: 15px;"><img width="100%" height="830px" src="/images/dashboard.png"></div>
+    <div class="center" style="padding: 15px;">
+        <div class="layui-form">
+            <div class="layui-row layui-col-space15">
+
+                <div class="layui-col-md2 layui-col-md-offset1">
+                    <div class="layui-inline">
+                        <input class="layui-input" placeholder="用户名" name="id" id="username" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-col-md2">
+                    <div class="layui-inline">
+                        <input class="layui-input" placeholder="手机号" name="id" id="mobile" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="layui-col-md2">
+                    <div class="layui-inline">
+                        <input class="layui-input" placeholder="邮箱" name="id" id="email" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-col-md2">
+                    <div class="layui-input-inline">
+                        <select id="status">
+                            <option value="">状态</option>
+                            <option value="0">启用</option>
+                            <option value="1">禁用</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-col-md1">
+                    <button class="layui-btn layui-btn-radius" data-type="reload" id="search"><i class="layui-icon">&#xe615;</i>&nbsp;搜索</button>
+                </div>
+                <div class="layui-col-md1">
+                    <button class="layui-btn layui-btn-radius layui-btn-normal" onclick="addMenu()">+ 添加用户</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row" style="margin-top: 10px">
+            <table class="layui-hide" id="users" lay-filter="users"></table>
+        </div>
+
+    </div>
+
+    <script src="/layui/layui.js"></script>
+    <script>
+        var tableId = 'users';
+        layui.use(['table','form'], function(){
+            var table = layui.table;
+            var form = layui.form;
+            table.render({
+                elem: '#' + tableId
+                ,id:tableId
+                ,url:'/user/searchList'
+                ,method:'post'
+                ,contentType: 'application/json'
+                ,page: true
+                ,limits : [10,15,20,25]
+                ,limit : 10
+                ,response:{
+                    statusCode:'S001'
+                }
+                ,parseData: function(res){
+                    return {
+                        "code": res.status,
+                        "msg": res.statusDesc,
+                        "count": res.data.total,
+                        "data": res.data.records
+                    };
+                }
+                ,cols: [
+                    [
+                        {field:'userId', width:70, title: 'ID', sort: true,style:'text-align: left;'}
+                        ,{field:'userName', width:100, title: '用户名',style:'text-align: left;'}
+                        ,{field:'trueName', width:100, title: '真实姓名',style:'text-align: left;'}
+                        ,{field:'mobile', width:120, title: '手机号',style:'text-align: left;'}
+                        ,{field:'email', minWidth:150, title: '邮箱',style:'text-align: left;'}
+                        ,{field:'gender', width:60, title: '性别',style:'text-align: left;',templet:function (data) {
+                            if(data.gender===1){
+                                return "男";
+                            }else if(data.gender===2){
+                                return "女";
+                            }else{
+                                return "未知";
+                            }
+                        }}
+                        ,{field:'age', width:70, title: '年龄',style:'text-align: left;'}
+                        ,{field:'status', width:80, title: '状态',style:'text-align: left;' ,templet:function (data) {
+                            if(data.status===0){
+                                return "<span class='layui-badge'>可用</span>";
+                            }else if(data.status===1){
+                                return "<span class='layui-badge'>禁用</span>";
+                            }else{
+                                return "<span class='layui-badge-rim'>预留状态</span>";
+                            }
+                        }}
+                        ,{field:'createTime', width:180, title: '注册时间',style:'text-align: left;', sort: true,templet:function (data) {
+                            return timeFormat(data.createTime);
+                        }}
+                        ,{fixed:'right', width:220, title: '操作',style:'text-align: left;',templet:function (data) {
+                            return "<button class='layui-btn layui-btn-sm layui-btn-normal' lay-event='editMenu'>授权</button>"
+                                +"<button class='layui-btn layui-btn-sm layui-btn-danger' lay-event='delMenu'>修改</button>"
+                                +"<button class='layui-btn layui-btn-sm' lay-event='addChild'>重置密码</button>";
+                        }}
+                    ]
+                ]
+            });
+            var $ = layui.$, active = {
+                reload: function(){
+                    var username = $('#username');
+                    var mobile = $('#mobile');
+                    var email = $('#email');
+                    var status = $('#status');
+                    //执行重载
+                    table.reload(tableId, {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        ,where: {
+                            username: username.val(),
+                            mobile:mobile.val(),
+                            email:email.val(),
+                            status:status.val()
+                        }
+                    });
+                }
+            };
+            $('#search').on('click', function(){
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        function timeFormat(v){
+            var date = new Date(v);
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            m = m<10?'0'+m:m;
+            var d = date.getDate();
+            d = d<10?("0"+d):d;
+            var h = date.getHours();
+            h = h<10?("0"+h):h;
+            var M = date.getMinutes();
+            M = M<10?("0"+M):M;
+            var s = date.getSeconds();
+            s = s<10?("0"+s):s;
+            var str = y+"-"+m+"-"+d+" "+h+":"+M + ":" + s;
+            return str;
+        }
+    </script>
 </div>
 </body>
 </html>

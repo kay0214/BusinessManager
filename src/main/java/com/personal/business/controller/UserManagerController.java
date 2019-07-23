@@ -3,11 +3,20 @@
  */
 package com.personal.business.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.personal.business.base.BaseController;
+import com.personal.business.base.Return;
+import com.personal.business.dto.UserDto;
+import com.personal.business.entity.BtUser;
+import com.personal.business.request.UserRequest;
+import com.personal.business.service.IBtUserService;
+import com.personal.business.utils.CommonUtils;
+import com.personal.business.utils.DataMaskUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author sunpeikai
@@ -19,8 +28,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value = "/user")
 public class UserManagerController extends BaseController {
 
+    @Autowired
+    private IBtUserService iBtUserService;
+
     @GetMapping(value = "/init")
     public String init(){
         return "iframe/userManager";
+    }
+
+    @PostMapping(value = "/searchList")
+    @ResponseBody
+    public Return searchList(@RequestBody UserRequest userRequest){
+        log.info("search user[{}]", JSON.toJSONString(userRequest));
+        IPage<BtUser> users = iBtUserService.getAllUsers(userRequest);
+        // 实体转换
+        IPage<UserDto> result = users.convert(btUser -> {
+            UserDto userDto = CommonUtils.convertBean(btUser,UserDto.class);
+            userDto.setEmail(DataMaskUtils.email(userDto.getEmail()));
+            userDto.setMobile(DataMaskUtils.mobile(userDto.getMobile()));
+            return userDto;
+        });
+        return Return.data(result);
     }
 }

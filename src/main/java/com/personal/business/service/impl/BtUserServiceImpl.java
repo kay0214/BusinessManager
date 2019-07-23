@@ -1,19 +1,26 @@
 package com.personal.business.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.personal.business.Enum.ResultEnum;
 import com.personal.business.constant.CommonConstant;
+import com.personal.business.dto.UserDto;
 import com.personal.business.entity.BtUser;
 import com.personal.business.exception.LoginException;
 import com.personal.business.mapper.BtUserMapper;
+import com.personal.business.request.UserRequest;
 import com.personal.business.service.IBtUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.personal.business.utils.CommonUtils;
 import com.personal.business.utils.LoginUtils;
 import com.personal.business.utils.Md5Utils;
 import com.personal.business.utils.SessionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.function.Function;
 
 /**
  * <p>
@@ -74,5 +81,22 @@ public class BtUserServiceImpl extends ServiceImpl<BtUserMapper, BtUser> impleme
         // 放到session
         SessionUtils.setSessionAttribute("user",user);
         return user;
+    }
+
+    /**
+     * @description 分页查询所有用户
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public IPage<BtUser> getAllUsers(UserRequest userRequest) {
+        QueryWrapper<BtUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().select().orderByDesc(BtUser::getCreateTime)
+                .and(!StringUtils.isEmpty(userRequest.getUsername()),obj->obj.like(BtUser::getUserName,userRequest.getUsername()))
+                .and(!StringUtils.isEmpty(userRequest.getMobile()),obj->obj.like(BtUser::getMobile,userRequest.getMobile()))
+                .and(!StringUtils.isEmpty(userRequest.getEmail()),obj->obj.like(BtUser::getEmail,userRequest.getEmail()))
+                .and(userRequest.getStatus()!=null,obj->obj.eq(BtUser::getStatus,userRequest.getStatus()));
+        return page(new Page<>(userRequest.getPage(),userRequest.getLimit()),queryWrapper);
     }
 }

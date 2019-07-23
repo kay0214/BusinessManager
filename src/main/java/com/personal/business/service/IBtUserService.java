@@ -1,7 +1,9 @@
 package com.personal.business.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.personal.business.entity.BtUser;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.personal.business.request.UserRequest;
 
 /**
  * <p>
@@ -20,5 +22,13 @@ public interface IBtUserService extends IService<BtUser> {
      * @return
      */
     BtUser login(String username,String password);
+
+    /**
+     * @description 分页查询所有用户
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    IPage<BtUser> getAllUsers(UserRequest userRequest);
 
 }
