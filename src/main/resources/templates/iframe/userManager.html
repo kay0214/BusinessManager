@@ -127,9 +127,9 @@
             });
             // 监听点击按钮
             table.on('tool(users)',function (obj) {
-                if(obj.event === 'authorize'){//编辑
+                if(obj.event === 'authorize'){//授权
                     authorize(obj.data);
-                }else if(obj.event==="modify"){//删除
+                }else if(obj.event==="modify"){//修改
                     modify(obj.data);
                 }else if(obj.event==='reset'){
                     reset(obj.data.userId);
@@ -206,7 +206,6 @@
                     }
                     ,yes: function(index, layero){
                         return ;
-
                         $.ajax({
                             type: 'POST',
                             url: "/user/update",
@@ -358,8 +357,105 @@
                 });
             }
             // 取消用户授权
-            function unauthorize() {
-                console.info("unauthorize");
+            function unauthorize(user) {
+                var ids = "";
+                var treeText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">姓名</label>'
+                    + '<div class="layui-input-block"><input type="text" placeholder="请输入用户名" disabled value="' + user.trueName + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">菜单</label>'
+                    + '<div class="layui-input-block"><input type="text" class="layui-input" id="menuTree"></div></div>'
+                    + '</form>';
+                layer.open({
+                    type: 1
+                    ,content: treeText
+                    ,title:'取消授权'
+                    ,skin: 'layui-layer-rim'
+                    ,area:['450px','500px']
+                    ,btn: ['确定', '取消']
+                    ,success: function(layero, index){
+                        treeSelect.render({
+                            // 选择器
+                            elem: '#menuTree',
+                            // 数据
+                            data: '/system/menu/getAuthorizeMenus/' + user.userId,
+                            // 请求头
+                            headers: {},
+                            // 异步加载方式：get/post，默认get
+                            type: 'get',
+                            id: 'menus',
+                            // 占位符
+                            placeholder: '选择取消授权菜单',
+                            // 是否开启搜索功能：true/false，默认false
+                            search: true,
+                            // 一些可定制的样式
+                            style: {
+                                folder: {
+                                    enable: true
+                                },
+                                line: {
+                                    enable: true
+                                }
+                            },
+                            // 点击回调
+                            click: function(data){
+                                console.log(data);
+                                // 清空数据
+                                ids = "";
+                                var one = data.current;
+                                ids += one.id;
+                                if(one.children!==null && one.children.length>0){
+                                    for(var i=0;i<one.children.length;i++){
+                                        var two = one.children[i];
+                                        ids += "," + two.id;
+                                        if(two.children!==null && two.children.length>0){
+                                            for(var j=0;j<two.children.length;j++){
+                                                var three = two.children[j];
+                                                ids += "," + three.id;
+                                            }
+                                        }
+                                    }
+                                }
+                                console.info("ids[" + ids + "]");
+                            },
+                            // 加载完成后的回调函数
+                            success: function (d) {
+
+                            }
+                        });
+
+                    }
+                    ,yes: function(index, layero){
+                        return ;
+                        $.ajax({
+                            type: 'POST',
+                            url: "/user/update",
+                            contentType: "application/json;charset=utf-8",
+                            data: JSON.stringify({
+                                userId:user.userId
+                            }),
+                            success: function(result){
+                                // 关掉弹出层
+                                layer.closeAll();
+                                if(result.status === 'S001'){
+                                    // 更新成功 - 关掉
+                                    table.reload(tableId);
+                                    layer.msg(result.statusDesc,{icon: 6});
+                                }else{
+                                    // 更新失败 - 给出错误提示
+                                    layer.msg(result.statusDesc,{icon: 5});
+                                }
+                            }
+                        });
+                    }
+                    ,btn2: function(index, layero){
+                        //按钮【按钮二】的回调
+                        layer.closeAll();
+                    }
+                    ,cancel: function(){
+                        //右上角关闭回调
+                        layer.closeAll();
+                    }
+                });
+                //console.info(user);
             }
             var active = {
                 reload: function(){
