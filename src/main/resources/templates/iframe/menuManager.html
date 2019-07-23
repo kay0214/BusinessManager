@@ -11,7 +11,7 @@
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">
         <div class="layui-row">
-            <button class="layui-btn layui-btn-radius layui-btn-normal">+ 添加菜单</button>
+            <button class="layui-btn layui-btn-radius layui-btn-normal" onclick="addMenu()">+ 添加菜单</button>
         </div>
         <div class="layui-row" style="margin-top: 10px">
             <table class="layui-hide" id="menus" lay-filter="menus"></table>
@@ -20,14 +20,14 @@
     </div>
     <script src="/layui/layui.js"></script>
     <script>
-        var editObj=null,ptable=null,treeGrid=null,tableId='menus',layer=null;
+        var editObj=null,ptable=null,treeGrid=null,tableId='menus',layer=null,$,form;
         layui.config({
             base: '/layui/'
         }).extend({
             treeGrid:'treeGrid'
         }).use(['jquery','treeGrid','layer','form'], function(){
-            var form = layui.form;
-            var $=layui.$;
+            form = layui.form;
+            $=layui.$;
             treeGrid = layui.treeGrid;//很重要
             layer=layui.layer;
             ptable=treeGrid.render({
@@ -39,7 +39,7 @@
                 ,treeId:'menuId'//树形id字段名称
                 ,treeUpId:'parentId'//树形父id字段名称
                 ,treeShowName:'menuName'//以树形式显示的字段
-                ,heightRemove:[".dHead",100]//不计算的高度,表格设定的是固定高度，此项不生效
+                ,heightRemove:[".dHead",300]//不计算的高度,表格设定的是固定高度，此项不生效
                 ,isFilter:false
                 ,height: '50%'
                 ,iconOpen:false//是否显示图标【默认显示】
@@ -323,6 +323,89 @@
                 });
             }
         });
+        // 添加目录菜单
+        function addMenu(){
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级菜单</label>'
+                + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="主目录" autocomplete="off" class="layui-input layui-disabled"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">菜单名称</label>'
+                + '<div class="layui-input-block"><input type="text" name="menuName" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
+                + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">请求地址</label>'
+                + '<div class="layui-input-block"><input type="text" name="url" required  lay-verify="required" placeholder="请输入地址" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">菜单类型</label>'
+                + '<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录" checked><input type="radio" name="menuType" value="C" title="菜单" disabled><input type="radio" name="menuType" value="F" title="权限" disabled></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">菜单状态</label>'
+                + '<div class="layui-input-block"><input type="radio" name="visible" value="0" title="显示" checked><input type="radio" name="visible" value="1" title="隐藏"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">权限标识</label>'
+                + '<div class="layui-input-block"><input type="text" name="perms" required  lay-verify="required" placeholder="请输入权限" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">图标</label>'
+                + '<div class="layui-input-block"><input type="text" name="icon" required  lay-verify="required" placeholder="请输入图标" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">默认赋权</label>'
+                + '<div class="layui-input-block"><input type="radio" name="isDefault" value="0" title="否" checked><input type="radio" name="isDefault" value="1" title="是"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
+                + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" autocomplete="off" class="layui-input"></div></div>'
+                + '</form>';
+            layer.open({
+                type: 1
+                ,content: formText
+                ,title:'编辑'
+                ,skin: 'layui-layer-rim'
+                ,area:['450px','670px']
+                ,btn: ['确定', '取消']
+                ,success: function(layero, index){
+                    form.render('radio');
+                }
+                ,yes: function(index, layero){
+                    var menuName = $("input[name='menuName']").val();
+                    var orderNum = $("input[name='orderNum']").val();
+                    var url = $("input[name='url']").val();
+                    var menuType = $("input[name='menuType']:checked").val();
+                    var visible = $("input[name='visible']:checked").val();
+                    var perms = $("input[name='perms']").val();
+                    var icon = $("input[name='icon']").val();
+                    var isDefault = $("input[name='isDefault']:checked").val();
+                    var remark = $("input[name='remark']").val();
+                    $.ajax({
+                        type: 'POST',
+                        url: "/system/menu/insert",
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify({
+                            menuName:menuName,
+                            parentId:0,
+                            orderNum:orderNum,
+                            url:url,
+                            menuType:menuType,
+                            visible:visible,
+                            perms:perms,
+                            icon:icon,
+                            isDefault:isDefault,
+                            remark:remark
+                        }),
+                        success: function(result){
+                            // 关掉弹出层
+                            layer.closeAll();
+                            if(result.status === 'S001'){
+                                // 更新成功 - 关掉
+                                treeGrid.reload(tableId);
+                                layer.msg("新增成功",{icon: 6});
+                            }else{
+                                // 更新失败 - 给出错误提示
+                                layer.msg(result.statusDesc,{icon: 5});
+                            }
+                        }
+                    });
+                }
+                ,btn2: function(index, layero){
+                    //按钮【按钮二】的回调
+                    layer.closeAll();
+                }
+                ,cancel: function(){
+                    //右上角关闭回调
+                    layer.closeAll();
+                }
+            });
+        }
     </script>
 </div>
 </body>
