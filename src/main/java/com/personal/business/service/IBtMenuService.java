@@ -47,4 +47,12 @@ public interface IBtMenuService extends IService<BtMenu> {
      * @return
      */
     boolean deleteMenus(Integer menuId);
+
+    /**
+     * @description 获取用户未授权菜单 - 菜单授权
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<MenuTree> getUnAuthorizeMenus(Integer userId);
 }

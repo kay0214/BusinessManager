@@ -81,6 +81,21 @@ public class BtMenuServiceImpl extends ServiceImpl<BtMenuMapper, BtMenu> impleme
     }
 
     /**
+     * @description 获取用户未授权菜单 - 菜单授权
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public List<MenuTree> getUnAuthorizeMenus(Integer userId) {
+        List<MenuTree> menus = getBaseMapper().selectUnAuthorizeMenusByUserId(userId);
+        menus = new ArrayList<>(getParentMenu(menus,Boolean.FALSE));
+        // set无序，重新排序
+        Collections.sort(menus,(z1,z2) -> z1.getOrderNum().compareTo(z2.getOrderNum()));
+        return ZtreeUtils.getChildPerms(menus, 0);
+    }
+
+    /**
      *        图一                            图二
      *           -----父菜单---                   -----父菜单---√
      *              ---子菜单1---                     ---子菜单1---√
