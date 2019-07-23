@@ -7,11 +7,14 @@ import com.alibaba.fastjson.JSON;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.entity.BtMenu;
+import com.personal.business.entity.BtUser;
 import com.personal.business.service.IBtMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 /**
  * @author sunpeikai
@@ -63,6 +66,24 @@ public class MenuController extends BaseController {
     public Return delete(@PathVariable Integer menuId){
         log.info("delete menu [{}]",menuId);
         boolean success = iBtMenuService.deleteMenus(menuId);
+        if(success){
+            return Return.success();
+        }else{
+            return Return.fail("删除失败");
+        }
+    }
+
+    @PostMapping(value = "/insert")
+    @ResponseBody
+    public Return delete(@RequestBody BtMenu menu){
+        log.info("insert menu [{}]",JSON.toJSONString(menu));
+        BtUser user = getCurrentUser();
+        menu.setDelFlag(0);
+        menu.setCreateBy(user.getUserName());
+        menu.setCreateTime(LocalDateTime.now());
+        menu.setUpdateBy(user.getUserName());
+        menu.setUpdateTime(LocalDateTime.now());
+        boolean success = iBtMenuService.save(menu);
         if(success){
             return Return.success();
         }else{
