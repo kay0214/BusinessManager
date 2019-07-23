@@ -4,6 +4,7 @@
 package com.personal.business.base;
 
 import com.personal.business.entity.BtUser;
+import com.personal.business.utils.SessionUtils;
 import com.personal.business.utils.ShiroUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.UnavailableSecurityManagerException;
@@ -17,7 +18,7 @@ import org.apache.shiro.UnavailableSecurityManagerException;
 public class BaseController {
 
     public String getIp(){
-        return ShiroUtils.getIp();
+        return SessionUtils.getIp();
     }
 
     public String getCurrentUsername(){

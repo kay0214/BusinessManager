@@ -32,6 +32,10 @@ public class RandomUtils {
     }
 
     public static String getSalt(){
+        return getRandomCode(8);
+    }
+
+    public static String getPassword(){
         return getRandomCode(12);
     }
 

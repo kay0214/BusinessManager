@@ -12,4 +12,12 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class SystemConfig {
 
+    @Value("${user.password.defaultPasswordEnabled}")
+    private boolean defaultPasswordEnabled;
+
+    @Value("${user.password.defaultPassword}")
+    private String defaultPassword;
+
+    @Value("${user.avatar}")
+    private String avatar;
 }

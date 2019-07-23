@@ -62,10 +62,6 @@ public class ShiroUtils {
         return getBtUser().getUserName();
     }
 
-    public static String getIp() {
-        return getSubject().getSession().getHost();
-    }
-
     public static String getSessionId() {
         return String.valueOf(getSubject().getSession().getId());
     }

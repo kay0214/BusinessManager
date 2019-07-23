@@ -55,12 +55,12 @@
 
     <script src="/layui/layui.js"></script>
     <script>
-        var tableId='users',layer=null,$,form;
+        var tableId='users',layer,$,form,table;
         layui.use(['table','form'], function(){
             $ = layui.$;
             layer=layui.layer;
             form=layui.form;
-            var table = layui.table;
+            table = layui.table;
             table.render({
                 elem: '#' + tableId
                 ,id:tableId
@@ -84,7 +84,7 @@
                 ,cols: [
                     [
                         {field:'userId', width:70, title: 'ID',style:'text-align: left;'}
-                        ,{field:'userName', width:100, title: '用户名',style:'text-align: left;'}
+                        ,{field:'userName', width:130, title: '用户名',style:'text-align: left;'}
                         ,{field:'trueName', width:100, title: '真实姓名',style:'text-align: left;'}
                         ,{field:'mobile', width:120, title: '手机号',style:'text-align: left;'}
                         ,{field:'email', minWidth:100, title: '邮箱',style:'text-align: left;'}
@@ -126,7 +126,7 @@
                 }else if(obj.event==="modify"){//删除
                     modify(obj.data);
                 }else if(obj.event==='reset'){
-                    reset(obj.data);
+                    reset(obj.data.userId);
                 }else if(obj.event==='unauthorize'){
                     unauthorize(obj.data);
                 }
@@ -223,9 +223,36 @@
                 });
             }
             // 重置用户密码
-            function reset(user) {
-                console.info("reset");
-                console.info(user);
+            function reset(userId) {
+                layer.open({
+                    type: 1
+                    ,content: '<div style="text-align: center;margin-top: 30px;">确定要重置密码？</div>'
+                    ,title:'删除'
+                    ,skin: 'layui-layer-rim'
+                    ,area:['300px','180px']
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        $.get("/user/password/reset/" + userId, function(result){
+                            layer.closeAll();
+                            if(result.status === 'S001'){
+                                // 更新成功 - 关掉
+                                table.reload(tableId);
+                                layer.msg(result.statusDesc,{icon: 6});
+                            }else{
+                                // 更新失败 - 给出错误提示
+                                layer.msg(result.statusDesc,{icon: 5});
+                            }
+                        });
+                    }
+                    ,btn2: function(index, layero){
+                        //按钮【按钮二】的回调
+                        layer.closeAll();
+                    }
+                    ,cancel: function(){
+                        //右上角关闭回调
+                        layer.closeAll();
+                    }
+                });
             }
             // 取消用户授权
             function unauthorize() {
@@ -258,7 +285,75 @@
         });
         // 添加用户
         function addUser() {
-            console.info("addUser");
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">用户名</label>'
+                + '<div class="layui-input-block"><input type="text" name="userName" required  lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">姓名</label>'
+                + '<div class="layui-input-block"><input type="text" name="trueName" required  lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">手机</label>'
+                + '<div class="layui-input-block"><input type="text" name="mobile" required  lay-verify="required" placeholder="请输入手机号" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">邮箱</label>'
+                + '<div class="layui-input-block"><input type="text" name="email" required  lay-verify="required" placeholder="请输入邮箱地址" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">年龄</label>'
+                + '<div class="layui-input-block"><input type="text" name="age" required  lay-verify="required" placeholder="请输入年龄" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">性别</label>'
+                + '<div class="layui-input-block"><input type="radio" name="gender" value="1" title="男" checked><input type="radio" name="gender" value="2" title="女"><input type="radio" name="gender" value="0" title="未知"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">状态</label>'
+                + '<div class="layui-input-block"><input type="radio" name="status" value="0" title="启用" checked><input type="radio" name="status" value="1" title="禁用"></div></div>'
+                + '</form>';
+            layer.open({
+                type: 1
+                ,content: formText
+                ,title:'添加用户'
+                ,skin: 'layui-layer-rim'
+                ,area:['450px','500px']
+                ,btn: ['确定', '取消']
+                ,success: function(layero, index){
+                    form.render('radio');
+                }
+                ,yes: function(index, layero){
+                    var trueName = $("input[name='trueName']").val();
+                    var userName = $("input[name='userName']").val();
+                    var mobile = $("input[name='mobile']").val();
+                    var email = $("input[name='email']").val();
+                    var age = $("input[name='age']").val();
+                    var gender = $("input[name='gender']:checked").val();
+                    var status = $("input[name='status']:checked").val();
+                    $.ajax({
+                        type: 'POST',
+                        url: "/user/insert",
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify({
+                            trueName:trueName,
+                            userName:userName,
+                            mobile:mobile,
+                            email:email,
+                            age:age,
+                            gender:gender,
+                            status:status
+                        }),
+                        success: function(result){
+                            // 关掉弹出层
+                            layer.closeAll();
+                            if(result.status === 'S001'){
+                                // 更新成功 - 关掉
+                                table.reload(tableId);
+                                layer.msg(result.statusDesc,{icon: 6});
+                            }else{
+                                // 更新失败 - 给出错误提示
+                                layer.msg(result.statusDesc,{icon: 5});
+                            }
+                        }
+                    });
+                }
+                ,btn2: function(index, layero){
+                    //按钮【按钮二】的回调
+                    layer.closeAll();
+                }
+                ,cancel: function(){
+                    //右上角关闭回调
+                    layer.closeAll();
+                }
+            });
         }
     </script>
     <script type="text/javascript">

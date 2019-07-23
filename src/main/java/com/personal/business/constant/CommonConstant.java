@@ -8,6 +8,11 @@ package com.personal.business.constant;
 public interface CommonConstant {
 
     /**
+     * 用户类型 - 系统用户
+     */
+    String USER_TYPE_SYSTEM = "00";
+
+    /**
      * 验证码key
      */
     String CURRENT_CAPTCHA = "captcha";
@@ -46,6 +51,10 @@ public interface CommonConstant {
      * 用户名最大长度
      * */
     Integer USERNAME_MAX_LENGTH = 20;
+
+    Integer DEL_FLAG_EXIST= 0;
+
+    Integer DEL_FLAG_NOT_EXIST = 1;
 
 	/**
 	 *  菜单类型 [M:目录; C:菜单; F:按钮功能]

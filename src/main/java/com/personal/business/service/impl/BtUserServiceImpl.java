@@ -5,22 +5,18 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.personal.business.Enum.ResultEnum;
 import com.personal.business.constant.CommonConstant;
-import com.personal.business.dto.UserDto;
 import com.personal.business.entity.BtUser;
 import com.personal.business.exception.LoginException;
 import com.personal.business.mapper.BtUserMapper;
 import com.personal.business.request.UserRequest;
 import com.personal.business.service.IBtUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.personal.business.utils.CommonUtils;
-import com.personal.business.utils.LoginUtils;
-import com.personal.business.utils.Md5Utils;
-import com.personal.business.utils.SessionUtils;
+import com.personal.business.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.function.Function;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -77,7 +73,10 @@ public class BtUserServiceImpl extends ServiceImpl<BtUserMapper, BtUser> impleme
             log.info(">>>>>用户名密码验证不通过:username[{}],password[{}]<<<<<",user.getUserName(),password);
             throw new LoginException(ResultEnum.ERROR_USERNAME_OR_PASSWORD);
         }
-
+        user.setLoginIp(SessionUtils.getIp());
+        user.setLoginDate(LocalDateTime.now());
+        // 更新登录信息
+        updateById(user);
         // 放到session
         SessionUtils.setSessionAttribute("user",user);
         return user;
