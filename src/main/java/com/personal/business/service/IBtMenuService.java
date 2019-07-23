@@ -55,4 +55,12 @@ public interface IBtMenuService extends IService<BtMenu> {
      * @return
      */
     List<MenuTree> getUnAuthorizeMenus(Integer userId);
+
+    /**
+     * @description 取消用户已授权菜单 - 取消授权
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<MenuTree> getAuthorizeMenus(Integer userId);
 }

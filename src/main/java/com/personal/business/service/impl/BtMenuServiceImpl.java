@@ -1,5 +1,6 @@
 package com.personal.business.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -10,6 +11,7 @@ import com.personal.business.mapper.BtMenuMapper;
 import com.personal.business.service.IBtMenuService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.personal.business.utils.ZtreeUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,6 +24,7 @@ import java.util.*;
  * @author spk
  * @since 2019-07-16
  */
+@Slf4j
 @Service
 public class BtMenuServiceImpl extends ServiceImpl<BtMenuMapper, BtMenu> implements IBtMenuService {
 
@@ -89,7 +92,22 @@ public class BtMenuServiceImpl extends ServiceImpl<BtMenuMapper, BtMenu> impleme
     @Override
     public List<MenuTree> getUnAuthorizeMenus(Integer userId) {
         List<MenuTree> menus = getBaseMapper().selectUnAuthorizeMenusByUserId(userId);
-        menus = new ArrayList<>(getParentMenu(menus,Boolean.FALSE));
+        menus = new ArrayList<>(getParentMenu(menus,Boolean.TRUE));
+        // set无序，重新排序
+        Collections.sort(menus,(z1,z2) -> z1.getOrderNum().compareTo(z2.getOrderNum()));
+        return ZtreeUtils.getChildPerms(menus, 0);
+    }
+
+    /**
+     * @description 取消用户已授权菜单 - 取消授权
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public List<MenuTree> getAuthorizeMenus(Integer userId) {
+        List<MenuTree> menus = getBaseMapper().selectAuthorizeMenusByUserId(userId);
+        menus = new ArrayList<>(getParentMenu(menus,Boolean.TRUE));
         // set无序，重新排序
         Collections.sort(menus,(z1,z2) -> z1.getOrderNum().compareTo(z2.getOrderNum()));
         return ZtreeUtils.getChildPerms(menus, 0);

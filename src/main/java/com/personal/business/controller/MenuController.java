@@ -6,6 +6,7 @@ package com.personal.business.controller;
 import com.alibaba.fastjson.JSON;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
+import com.personal.business.dto.MenuTreeDto;
 import com.personal.business.dto.MenuTree;
 import com.personal.business.entity.BtMenu;
 import com.personal.business.entity.BtUser;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -137,12 +139,28 @@ public class MenuController extends BaseController {
      */
     @GetMapping(value = "/getUnAuthorizeMenus/{userId}")
     @ResponseBody
-    public Return getUnAuthorizeMenus(@PathVariable Integer userId){
+    public List<MenuTreeDto> getUnAuthorizeMenus(@PathVariable Integer userId){
         if(userId!=null){
             List<MenuTree> menus = iBtMenuService.getUnAuthorizeMenus(userId);
-            return Return.data(menus);
+            return getMenuTreeSelector(menus);
         }
-        return Return.fail("参数缺失[userId]");
+        return new ArrayList<>();
+    }
+
+    /**
+     * @description 取消用户已授权菜单 - 取消授权
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @GetMapping(value = "/getAuthorizeMenus/{userId}")
+    @ResponseBody
+    public List<MenuTreeDto> getAuthorizeMenus(@PathVariable Integer userId){
+        if(userId!=null){
+            List<MenuTree> menus = iBtMenuService.getAuthorizeMenus(userId);
+            return getMenuTreeSelector(menus);
+        }
+        return new ArrayList<>();
     }
 
     @GetMapping(value = "/getById/{menuId}")
@@ -150,5 +168,40 @@ public class MenuController extends BaseController {
     public Return getById(@PathVariable Integer menuId){
         log.info("get menu by id[{}]",menuId);
         return Return.data(iBtMenuService.getById(menuId));
+    }
+
+    /**
+     * @description 数据处理
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    private List<MenuTreeDto> getMenuTreeSelector(List<MenuTree> menus){
+        List<MenuTreeDto> result = new ArrayList<>();
+        if(menus!=null && menus.size()>0){
+            for(MenuTree one:menus){
+                MenuTreeDto levelOne = new MenuTreeDto();
+                levelOne.setId(one.getMenuId());
+                levelOne.setName(one.getMenuName());
+                if(one.getChildren()!=null && one.getChildren().size()>0){
+                    for(MenuTree two:one.getChildren()){
+                        MenuTreeDto levelTwo = new MenuTreeDto();
+                        levelTwo.setId(two.getMenuId());
+                        levelTwo.setName(two.getMenuName());
+                        if(two.getChildren()!=null && two.getChildren().size()>0){
+                            for(MenuTree three:two.getChildren()){
+                                MenuTreeDto levelThree = new MenuTreeDto();
+                                levelThree.setId(three.getMenuId());
+                                levelThree.setName(three.getMenuName());
+                                levelTwo.getChildren().add(levelThree);
+                            }
+                        }
+                        levelOne.getChildren().add(levelTwo);
+                    }
+                }
+                result.add(levelOne);
+            }
+        }
+        return result;
     }
 }

@@ -41,4 +41,12 @@ public interface BtMenuMapper extends BaseMapper<BtMenu> {
      */
     List<MenuTree> selectUnAuthorizeMenusByUserId(Integer userId);
 
+    /**
+     * @description 取消用户已授权菜单 - 取消授权
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<MenuTree> selectAuthorizeMenusByUserId(Integer userId);
+
 }
