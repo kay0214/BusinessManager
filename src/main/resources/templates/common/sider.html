@@ -30,10 +30,19 @@
                             }
 
                             // 父菜单名称
-                            if(menu.url.length>1){
-                                htmlText += "<a href='javascript:;' data-url=" + menu.url + ">" + menu.menuName + "</a>";
+                            // 先判断是否有图标
+                            if(menu.icon!==null && menu.icon!==undefined && menu.icon.length>10){
+                                if(menu.url.length>1){
+                                    htmlText += "<a href='javascript:;' data-url=" + menu.url + "><i class='layui-icon " + menu.icon + "'></i>&nbsp;&nbsp;" + menu.menuName + "</a>";
+                                }else{
+                                    htmlText += "<a href='javascript:;'><i class='layui-icon " + menu.icon + "'></i>&nbsp;&nbsp;" + menu.menuName + "</a>";
+                                }
                             }else{
-                                htmlText += "<a href='javascript:;'>" + menu.menuName + "</a>";
+                                if(menu.url.length>1){
+                                    htmlText += "<a href='javascript:;' data-url=" + menu.url + ">" + menu.menuName + "</a>";
+                                }else{
+                                    htmlText += "<a href='javascript:;'>" + menu.menuName + "</a>";
+                                }
                             }
                             var childrenLength = menu.children.length;
                             if(childrenLength>0){
@@ -42,7 +51,7 @@
                                 for(var j=0;j<childrenLength;j++){
                                     var child = menu.children[j];
                                     // 遍历加入每一个子菜单
-                                    htmlText += "<dd><a href='javascript:;' data-url=" + child.url + ">" + child.menuName + "</a></dd>";
+                                    htmlText += "<dd><a href='javascript:;' style='margin-left: 40px;' data-url=" + child.url + ">" + child.menuName + "</a></dd>";
                                 }
                                 // 子菜单列表结束
                                 htmlText += "</dl>";
@@ -62,7 +71,6 @@
                             var url = elem.data("url");
                             // 点击了菜单，设置上url
                             $("#iframe").attr("src",url);
-                            //layer.msg(elem.text() + "===url===" + url);
                         });
 
                         element.init();

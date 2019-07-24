@@ -42,7 +42,7 @@
                 ,treeId:'menuId'//树形id字段名称
                 ,treeUpId:'parentId'//树形父id字段名称
                 ,treeShowName:'menuName'//以树形式显示的字段
-                ,heightRemove:[".dHead",300]//不计算的高度,表格设定的是固定高度，此项不生效
+                ,heightRemove:[".dHead",100]//不计算的高度,表格设定的是固定高度，此项不生效
                 ,isFilter:false
                 ,height: '50%'
                 ,iconOpen:false//是否显示图标【默认显示】
@@ -87,6 +87,7 @@
                             }
                         }}
                         ,{field:'perms', minWidth:100, title: '权限标识'}
+                        ,{field:'icon', width:150, title: '图标'}
                         ,{field:'isDefault', width:110, title: '默认权限',templet:function (data) {
                             if(data.isDefault===0){
                                 return "<span class='layui-badge'>否</span>";
