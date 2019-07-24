@@ -134,16 +134,16 @@
                 }else if(obj.event==='reset'){
                     reset(obj.data.userId);
                 }else if(obj.event==='unauthorize'){
-                    unauthorize(obj.data);
+                    unAuthorize(obj.data);
                 }
             });
             // 授权操作
             function authorize(user) {
-                var ids = "";
+                var ids;
                 var treeText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">姓名</label>'
                     + '<div class="layui-input-block"><input type="text" placeholder="请输入用户名" disabled value="' + user.trueName + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
                     + '<div class="layui-form-item"><label class="layui-form-label">菜单</label>'
-                    + '<div class="layui-input-block"><input type="text" class="layui-input" id="menuTree"></div></div>'
+                    + '<div class="layui-input-block"><input type="text" class="layui-input" id="menuTree" lay-filter="menus"></div></div>'
                     + '</form>';
                 layer.open({
                     type: 1
@@ -178,23 +178,8 @@
                             },
                             // 点击回调
                             click: function(data){
-                                console.log(data);
-                                // 清空数据
-                                ids = "";
-                                var one = data.current;
-                                ids += one.id;
-                                if(one.children!==null && one.children.length>0){
-                                    for(var i=0;i<one.children.length;i++){
-                                        var two = one.children[i];
-                                        ids += "," + two.id;
-                                        if(two.children!==null && two.children.length>0){
-                                            for(var j=0;j<two.children.length;j++){
-                                                var three = two.children[j];
-                                                ids += "," + three.id;
-                                            }
-                                        }
-                                    }
-                                }
+                                // 寻找所有相关节点
+                                ids = findAllNode(data.current);
                                 console.info("ids[" + ids + "]");
                             },
                             // 加载完成后的回调函数
@@ -205,20 +190,19 @@
 
                     }
                     ,yes: function(index, layero){
-                        return ;
                         $.ajax({
                             type: 'POST',
-                            url: "/user/update",
+                            url: "/permissions/authorize",
                             contentType: "application/json;charset=utf-8",
                             data: JSON.stringify({
-                                userId:user.userId
+                                userId:user.userId,
+                                ids:ids
                             }),
                             success: function(result){
                                 // 关掉弹出层
                                 layer.closeAll();
                                 if(result.status === 'S001'){
                                     // 更新成功 - 关掉
-                                    table.reload(tableId);
                                     layer.msg(result.statusDesc,{icon: 6});
                                 }else{
                                     // 更新失败 - 给出错误提示
@@ -357,12 +341,12 @@
                 });
             }
             // 取消用户授权
-            function unauthorize(user) {
-                var ids = "";
+            function unAuthorize(user) {
+                var ids;
                 var treeText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">姓名</label>'
                     + '<div class="layui-input-block"><input type="text" placeholder="请输入用户名" disabled value="' + user.trueName + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
                     + '<div class="layui-form-item"><label class="layui-form-label">菜单</label>'
-                    + '<div class="layui-input-block"><input type="text" class="layui-input" id="menuTree"></div></div>'
+                    + '<div class="layui-input-block"><input type="text" class="layui-input" id="menuTree" lay-filter="menus"></div></div>'
                     + '</form>';
                 layer.open({
                     type: 1
@@ -397,23 +381,7 @@
                             },
                             // 点击回调
                             click: function(data){
-                                console.log(data);
-                                // 清空数据
-                                ids = "";
-                                var one = data.current;
-                                ids += one.id;
-                                if(one.children!==null && one.children.length>0){
-                                    for(var i=0;i<one.children.length;i++){
-                                        var two = one.children[i];
-                                        ids += "," + two.id;
-                                        if(two.children!==null && two.children.length>0){
-                                            for(var j=0;j<two.children.length;j++){
-                                                var three = two.children[j];
-                                                ids += "," + three.id;
-                                            }
-                                        }
-                                    }
-                                }
+                                ids = findAllNode(data.current);
                                 console.info("ids[" + ids + "]");
                             },
                             // 加载完成后的回调函数
@@ -424,20 +392,19 @@
 
                     }
                     ,yes: function(index, layero){
-                        return ;
                         $.ajax({
                             type: 'POST',
-                            url: "/user/update",
+                            url: "/permissions/unAuthorize",
                             contentType: "application/json;charset=utf-8",
                             data: JSON.stringify({
-                                userId:user.userId
+                                userId:user.userId,
+                                ids:ids
                             }),
                             success: function(result){
                                 // 关掉弹出层
                                 layer.closeAll();
                                 if(result.status === 'S001'){
                                     // 更新成功 - 关掉
-                                    table.reload(tableId);
                                     layer.msg(result.statusDesc,{icon: 6});
                                 }else{
                                     // 更新失败 - 给出错误提示
@@ -455,7 +422,6 @@
                         layer.closeAll();
                     }
                 });
-                //console.info(user);
             }
             var active = {
                 reload: function(){
@@ -553,6 +519,37 @@
                     layer.closeAll();
                 }
             });
+        }
+    </script>
+    <script>
+        // 寻找所有相关节点
+        function findAllNode(node) {
+            var me = node;
+            var ids = new Array();
+            ids.push(me.id);
+            // 寻找所有父节点
+            var father = me.getParentNode();
+            if(father!==null){
+                ids.push(father.id);
+                var grandFather = father.getParentNode();
+                if(grandFather!==null){
+                    ids.push(grandFather.id);
+                }
+            }
+            // 寻找所有子节点
+            var sons = me.children;
+            if(sons!==null && sons.length>0){
+                for(var i=0;i<sons.length;i++){
+                    ids.push(sons[i].id);
+                    var grandSons = sons[i].children;
+                    if(grandSons!==null && grandSons.length>0){
+                        for(var j=0;j<grandSons.length;j++){
+                            ids.push(grandSons[j].id);
+                        }
+                    }
+                }
+            }
+            return ids.toString();
         }
     </script>
     <script type="text/javascript">

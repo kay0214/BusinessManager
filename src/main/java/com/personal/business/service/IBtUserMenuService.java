@@ -2,6 +2,7 @@ package com.personal.business.service;
 
 import com.personal.business.entity.BtUserMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.personal.business.request.PermissionsRequest;
 
 /**
  * <p>
@@ -13,4 +14,19 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IBtUserMenuService extends IService<BtUserMenu> {
 
+    /**
+     * @description 用户授权
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    boolean authorize(PermissionsRequest request);
+
+    /**
+     * @description 用户取消授权操作
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    boolean unAuthorize(PermissionsRequest request);
 }
