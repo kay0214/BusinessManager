@@ -8,6 +8,11 @@ package com.personal.business.constant;
 public interface CommonConstant {
 
     /**
+     * 菜单URL - 默认
+     */
+    String MENU_URL_DEFAULT = "#";
+
+    /**
      * 用户类型 - 系统用户
      */
     String USER_TYPE_SYSTEM = "00";

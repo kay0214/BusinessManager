@@ -6,6 +6,7 @@ package com.personal.business.controller;
 import com.alibaba.fastjson.JSON;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
+import com.personal.business.constant.CommonConstant;
 import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.dto.MenuTreeDto;
 import com.personal.business.dto.MenuTree;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -124,6 +126,7 @@ public class MenuController extends BaseController {
     public Return delete(@RequestBody BtMenu menu){
         log.info("insert menu [{}]",JSON.toJSONString(menu));
         BtUser user = getCurrentUser();
+        menu.setUrl(StringUtils.isEmpty(menu.getUrl())? CommonConstant.MENU_URL_DEFAULT :menu.getUrl());
         menu.setDelFlag(0);
         menu.setCreateBy(user.getUserName());
         menu.setCreateTime(LocalDateTime.now());
@@ -133,7 +136,7 @@ public class MenuController extends BaseController {
         if(success){
             return Return.success();
         }else{
-            return Return.fail("删除失败");
+            return Return.fail("添加失败");
         }
     }
 
