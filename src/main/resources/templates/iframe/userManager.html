@@ -80,12 +80,19 @@
                     statusCode:'S001'
                 }
                 ,parseData: function(res){
-                    return {
-                        "code": res.status,
-                        "msg": res.statusDesc,
-                        "count": res.data.total,
-                        "data": res.data.records
-                    };
+                    if(res.status!=='S001'){
+                        return{
+                            "code": res.status,
+                            "msg": res.statusDesc
+                        };
+                    }else{
+                        return {
+                            "code": res.status,
+                            "msg": res.statusDesc,
+                            "count": res.data.total,
+                            "data": res.data.records
+                        };
+                    }
                 }
                 ,cols: [
                     [

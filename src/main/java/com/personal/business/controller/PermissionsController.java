@@ -5,9 +5,11 @@ package com.personal.business.controller;
 
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
+import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.request.PermissionsRequest;
 import com.personal.business.service.IBtUserMenuService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +35,7 @@ public class PermissionsController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_AUTH)
     @PostMapping(value = "/authorize")
     public Return authorize(@RequestBody PermissionsRequest permissionsRequest){
         log.info("authorize userId[{}],menu ids[{}]",permissionsRequest.getUserId(),permissionsRequest.getIds());
@@ -50,6 +53,7 @@ public class PermissionsController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_UNAUTH)
     @PostMapping(value = "/unAuthorize")
     public Return unAuthorize(@RequestBody PermissionsRequest permissionsRequest){
         log.info("unAuthorize userId[{}],menu ids[{}]",permissionsRequest.getUserId(),permissionsRequest.getIds());

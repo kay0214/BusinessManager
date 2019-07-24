@@ -10,13 +10,16 @@
 <div class="layui-body">
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">
-        <div class="layui-row">
-            <button class="layui-btn layui-btn-radius layui-btn-normal" onclick="addMenu()">+ 添加菜单</button>
+        <div class="layui-form">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md1 layui-col-md-offset10">
+                    <button class="layui-btn layui-btn-radius layui-btn-normal" onclick="addMenu()">+ 添加菜单</button>
+                </div>
+            </div>
         </div>
         <div class="layui-row" style="margin-top: 10px">
             <table class="layui-hide" id="menus" lay-filter="menus"></table>
         </div>
-
     </div>
     <script src="/layui/layui.js"></script>
     <script>
@@ -49,11 +52,22 @@
                 ,isPage:false
                 ,skin: 'line'
                 ,response:{
-                    statusName:"status"
-                    ,statusCode:'S001'
-                    ,msgName:"statusDesc"
-                    ,countName:"totalCount"
-                    ,dataName:"data"
+                    statusCode:'S001'
+                }
+                ,parseData: function(res){
+                    if(res.status!=='S001'){
+                        return{
+                            "code": res.status,
+                            "msg": res.statusDesc
+                        };
+                    }else{
+                        return {
+                            "code": res.status,
+                            "msg": res.statusDesc,
+                            "count": res.data.total,
+                            "data": res.data.records
+                        };
+                    }
                 }
                 ,cols: [
                     [

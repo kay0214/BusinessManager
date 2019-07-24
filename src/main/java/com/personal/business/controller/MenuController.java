@@ -6,12 +6,14 @@ package com.personal.business.controller;
 import com.alibaba.fastjson.JSON;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
+import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.dto.MenuTreeDto;
 import com.personal.business.dto.MenuTree;
 import com.personal.business.entity.BtMenu;
 import com.personal.business.entity.BtUser;
 import com.personal.business.service.IBtMenuService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -64,6 +66,7 @@ public class MenuController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_LIST)
     @GetMapping(value = "/getAllMenus")
     @ResponseBody
     public Return getAllMenus(){
@@ -77,6 +80,7 @@ public class MenuController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_EDIT)
     @PostMapping(value = "/update")
     @ResponseBody
     public Return update(@RequestBody BtMenu menu){
@@ -95,6 +99,7 @@ public class MenuController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_DEL)
     @GetMapping(value = "/delete/{menuId}")
     @ResponseBody
     public Return delete(@PathVariable Integer menuId){
@@ -113,6 +118,7 @@ public class MenuController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_ADD)
     @PostMapping(value = "/insert")
     @ResponseBody
     public Return delete(@RequestBody BtMenu menu){

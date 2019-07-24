@@ -9,6 +9,7 @@ import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.config.SystemConfig;
 import com.personal.business.constant.CommonConstant;
+import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.dto.UserDto;
 import com.personal.business.entity.BtUser;
 import com.personal.business.request.UserRequest;
@@ -18,6 +19,7 @@ import com.personal.business.utils.DataMaskUtils;
 import com.personal.business.utils.Md5Utils;
 import com.personal.business.utils.RandomUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +58,7 @@ public class UserManagerController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_USER_LIST)
     @PostMapping(value = "/searchList")
     @ResponseBody
     public Return searchList(@RequestBody UserRequest userRequest){
@@ -78,6 +81,7 @@ public class UserManagerController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_USER_EDIT)
     @PostMapping(value = "/update")
     @ResponseBody
     public Return update(@RequestBody BtUser user){
@@ -96,6 +100,7 @@ public class UserManagerController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_USER_ADD)
     @PostMapping(value = "/insert")
     @ResponseBody
     public Return insert(@RequestBody BtUser user){
@@ -127,6 +132,7 @@ public class UserManagerController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_USER_RESET)
     @GetMapping(value = "/password/reset/{userId}")
     @ResponseBody
     public Return reset(@PathVariable Integer userId){

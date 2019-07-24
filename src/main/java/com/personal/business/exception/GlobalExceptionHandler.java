@@ -6,6 +6,8 @@ package com.personal.business.exception;
 import com.personal.business.Enum.ResultEnum;
 import com.personal.business.base.Return;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.UnauthenticatedException;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -55,5 +57,27 @@ public class GlobalExceptionHandler {
         String errorMsg = e.getBindingResult().getAllErrors().get(0).getDefaultMessage().replace("{}","不能为空");
         log.error("参数校验异常:" + errorMsg);
         return Return.fail(errorMsg);
+    }
+
+    /**
+     * 拦截shiro抛出的未认证异常(未登录)
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(UnauthenticatedException.class)
+    public Return handleException(UnauthenticatedException e) {
+        log.error("[用户未登录:{}]",e.getMessage());
+        return Return.fail(ResultEnum.ERROR_NOT_LOGIN);
+    }
+
+    /**
+     * 拦截shiro抛出的没有权限异常
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(UnauthorizedException.class)
+    public Return handleException(UnauthorizedException e) {
+        log.error("[该用户没有权限:{}]",e.getMessage());
+        return Return.fail(ResultEnum.ERROR_NOT_AUTH);
     }
 }

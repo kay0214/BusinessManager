@@ -21,6 +21,8 @@ public enum  ResultEnum implements Serializable {
     ERROR_USER_EXIST("E012","用户不存在或已被禁用"),
     ERROR_VALIDATECODE("E013","图形验证码错误"),
     ERROR_PASSWORD("E014","密码错误"),
+    ERROR_NOT_LOGIN("E015","您尚未登录"),
+    ERROR_NOT_AUTH("E016","您尚无权限"),
 
 
     END("","枚举结束");
