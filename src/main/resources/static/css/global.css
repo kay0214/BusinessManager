@@ -30,3 +30,11 @@
 .margin-top-30px{
     margin-top: 30px;
 }
+.business-header{
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+.margin-top-60px{
+    margin-top: 60px;
+}
