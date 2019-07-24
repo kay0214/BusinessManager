@@ -55,19 +55,11 @@
                     statusCode:'S001'
                 }
                 ,parseData: function(res){
-                    if(res.status!=='S001'){
-                        return{
-                            "code": res.status,
-                            "msg": res.statusDesc
-                        };
-                    }else{
-                        return {
-                            "code": res.status,
-                            "msg": res.statusDesc,
-                            "count": res.data.total,
-                            "data": res.data.records
-                        };
-                    }
+                    return {
+                        "code": res.status,
+                        "msg": res.statusDesc,
+                        "data": res.data
+                    };
                 }
                 ,cols: [
                     [

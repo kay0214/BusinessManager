@@ -35,7 +35,7 @@ public class PermissionsController extends BaseController {
      * @param
      * @return
      */
-    @RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_AUTH)
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_USER_EDIT)
     @PostMapping(value = "/authorize")
     public Return authorize(@RequestBody PermissionsRequest permissionsRequest){
         log.info("authorize userId[{}],menu ids[{}]",permissionsRequest.getUserId(),permissionsRequest.getIds());
@@ -53,7 +53,7 @@ public class PermissionsController extends BaseController {
      * @param
      * @return
      */
-    @RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_UNAUTH)
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_USER_EDIT)
     @PostMapping(value = "/unAuthorize")
     public Return unAuthorize(@RequestBody PermissionsRequest permissionsRequest){
         log.info("unAuthorize userId[{}],menu ids[{}]",permissionsRequest.getUserId(),permissionsRequest.getIds());
