@@ -3,6 +3,7 @@ package com.personal.business.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.personal.business.entity.BtUser;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.personal.business.request.PasswordRequest;
 import com.personal.business.request.UserRequest;
 
 /**
@@ -30,5 +31,13 @@ public interface IBtUserService extends IService<BtUser> {
      * @return
      */
     IPage<BtUser> getAllUsers(UserRequest userRequest);
+
+    /**
+     * @description 根据旧密码修改密码
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    boolean modifyPasswordByOld(PasswordRequest request);
 
 }

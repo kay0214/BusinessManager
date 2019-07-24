@@ -8,6 +8,7 @@ import com.personal.business.constant.CommonConstant;
 import com.personal.business.entity.BtUser;
 import com.personal.business.exception.LoginException;
 import com.personal.business.mapper.BtUserMapper;
+import com.personal.business.request.PasswordRequest;
 import com.personal.business.request.UserRequest;
 import com.personal.business.service.IBtUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -97,5 +98,31 @@ public class BtUserServiceImpl extends ServiceImpl<BtUserMapper, BtUser> impleme
                 .and(!StringUtils.isEmpty(userRequest.getEmail()),obj->obj.like(BtUser::getEmail,userRequest.getEmail()))
                 .and(userRequest.getStatus()!=null,obj->obj.eq(BtUser::getStatus,userRequest.getStatus()));
         return page(new Page<>(userRequest.getPage(),userRequest.getLimit()),queryWrapper);
+    }
+
+    /**
+     * @description 根据旧密码修改密码
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public boolean modifyPasswordByOld(PasswordRequest request) {
+        BtUser user = getById(request.getUserId());
+        if (user == null) {
+            throw new LoginException(ResultEnum.ERROR_USER_EXIST);
+        }
+        // 校验密码
+        String passwordEncrypt = Md5Utils.encryptPassword(user.getUserName(),request.getOldPassword(),user.getSalt());
+        if(!passwordEncrypt.equals(user.getPassword())){
+            log.info(">>>>>密码验证不通过:username[{}],password[{}]<<<<<",user.getUserName(),request.getOldPassword());
+            throw new LoginException(ResultEnum.ERROR_PASSWORD);
+        }
+        // 验证通过
+        user.setSalt(RandomUtils.getSalt());
+        String newPasswordEncrypt = Md5Utils.encryptPassword(user.getUserName(),request.getPassword(),user.getSalt());
+        user.setPassword(newPasswordEncrypt);
+        user.setUpdateTime(LocalDateTime.now());
+        return updateById(user);
     }
 }

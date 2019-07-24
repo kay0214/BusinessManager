@@ -7,10 +7,10 @@
         <ul class="layui-nav layui-layout-right">
             <!-- 登录状态 -->
             <div th:if="${session.user}">
-                <li class="layui-nav-item">
+                <li class="layui-nav-item" lay-unselect>
                     <a href="javascript:;"><img th:src="${session.user.avatar}" class="layui-nav-img"/><span th:text="${session.user.userName}"></span></a>
                     <dl class="layui-nav-child"> <!-- 二级菜单 -->
-                        <dd><a href="/forget/init">修改密码</a></dd>
+                        <dd><a href="javascript:;" th:onclick="'modifyPassword(' + ${session.user.userId} + ')'">修改密码</a></dd>
                         <dd><a href="/system/login/logout">退出登录</a></dd>
                     </dl>
                 </li>
@@ -29,8 +29,10 @@
         <!-- script -->
         <script src="/layui/layui.js" charset="utf-8"></script>
         <script>
-            layui.use("jquery", function(){
-                var $ = layui.$;
+            var $,layer;
+            layui.use(["jquery",'layer'], function(){
+                $ = layui.$;
+                layer = layui.layer;
                 $("#refresh").click(function () {
                     var url = $("#iframe").attr("src");
                     $("#iframe").attr("src",url);
@@ -43,6 +45,65 @@
                     }
                 });
             });
+            function modifyPassword(userId) {
+                console.info(userId);
+                var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">原密码</label>'
+                    + '<div class="layui-input-block"><input type="text" name="oldPassword" required  lay-verify="required" placeholder="请输入原密码" autocomplete="off" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">新密码</label>'
+                    + '<div class="layui-input-block"><input type="text" name="password" required  lay-verify="required" placeholder="请输入新密码" autocomplete="off" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">确认密码</label>'
+                    + '<div class="layui-input-block"><input type="text" name="passwordAgain" required  lay-verify="required" placeholder="请再次输入" autocomplete="off" class="layui-input"></div></div>'
+                    + '</form>';
+                layer.open({
+                    type: 1
+                    ,content: formText
+                    ,title:'修改密码'
+                    ,skin: 'layui-layer-rim'
+                    ,area:['450px','300px']
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        var oldPassword = $("input[name='oldPassword']").val();
+                        var password = $("input[name='password']").val();
+                        var passwordAgain = $("input[name='passwordAgain']").val();
+                        if(password===passwordAgain){
+                            // 请求
+                            $.ajax({
+                                type: 'POST',
+                                url: "/password/modifyByOld",
+                                contentType: "application/json;charset=utf-8",
+                                data: JSON.stringify({
+                                    userId:userId,
+                                    oldPassword:oldPassword,
+                                    password:password
+                                }),
+                                success: function(result){
+                                    // 关掉弹出层
+                                    layer.closeAll();
+                                    if(result.status === 'S001'){
+                                        // 更新成功 - 退出登录
+                                        layer.msg(result.statusDesc,{icon: 6});
+                                        location.href = "/system/login/logout";
+                                    }else{
+                                        // 更新失败 - 给出错误提示
+                                        layer.msg(result.statusDesc,{icon: 5});
+                                    }
+                                }
+                            });
+                        }else{
+                            layer.msg("两次输入不一致",{icon: 5});
+                        }
+
+                    }
+                    ,btn2: function(index, layero){
+                        //按钮【按钮二】的回调
+                        layer.closeAll();
+                    }
+                    ,cancel: function(){
+                        //右上角关闭回调
+                        layer.closeAll();
+                    }
+                });
+            }
         </script>
     </div>
 </html>
