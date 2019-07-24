@@ -187,7 +187,6 @@
                             click: function(data){
                                 // 寻找所有相关节点
                                 ids = findAllNode(data.current);
-                                console.info("ids[" + ids + "]");
                             },
                             // 加载完成后的回调函数
                             success: function (d) {
@@ -227,7 +226,6 @@
                         layer.closeAll();
                     }
                 });
-                //console.info(user);
             }
             // 修改用户信息
             function modify(user) {
@@ -389,7 +387,6 @@
                             // 点击回调
                             click: function(data){
                                 ids = findAllNode(data.current);
-                                console.info("ids[" + ids + "]");
                             },
                             // 加载完成后的回调函数
                             success: function (d) {
