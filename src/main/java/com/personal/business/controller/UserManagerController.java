@@ -5,6 +5,7 @@ package com.personal.business.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.personal.business.Enum.ResultEnum;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.config.SystemConfig;
@@ -104,7 +105,9 @@ public class UserManagerController extends BaseController {
     @PostMapping(value = "/insert")
     @ResponseBody
     public Return insert(@RequestBody BtUser user){
-        log.info(JSON.toJSONString(user));
+        if(user.getUserName().length()<CommonConstant.USERNAME_MIN_LENGTH || user.getUserName().length()>CommonConstant.USERNAME_MAX_LENGTH){
+            return Return.fail(ResultEnum.ERROR_USERNAME_LENGTH);
+        }
         user.setSalt(RandomUtils.getSalt());
         String password = RandomUtils.getPassword();
         // 默认密码启用 - 则设置默认密码
