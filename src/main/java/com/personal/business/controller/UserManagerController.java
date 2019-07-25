@@ -130,6 +130,27 @@ public class UserManagerController extends BaseController {
     }
 
     /**
+     * @description 删除用户
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_USER_DEL)
+    @GetMapping(value = "/delete/{userId}")
+    @ResponseBody
+    public Return delete(@PathVariable Integer userId){
+        if(userId!=null){
+            boolean success = iBtUserService.removeById(userId);
+            if(success){
+                return Return.success();
+            }
+            return Return.fail("删除失败");
+        }else{
+            return Return.fail(ResultEnum.ERROR_PARAM_NOT_ENOUGH);
+        }
+    }
+
+    /**
      * @description 重置密码
      * @auth sunpeikai
      * @param
