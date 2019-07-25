@@ -6,6 +6,7 @@
     <title>工作台</title>
     <link rel="stylesheet" href="/layui/css/layui.css">
     <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/layui/css/eleTree.css" media="all">
 </head>
 <body>
 <div class="layui-body">
@@ -55,15 +56,14 @@
 
     <script src="/layui/layui.js"></script>
     <script>
-        var tableId='users',layer,$,form,table,tree,treeSelect;
+        var tableId='users',layer,$,form,table,eleTree;
         layui.config({
             base: '/layui/'
         }).extend({
-            treeSelect:'treeSelect'
-        }).use(['table','form','tree','treeSelect'], function(){
+            eleTree:'eleTree'
+        }).use(['table','form','eleTree'], function(){
             $ = layui.$;
-            treeSelect = layui.treeSelect;
-            tree = layui.tree;
+            eleTree = layui.eleTree;
             layer=layui.layer;
             form=layui.form;
             table = layui.table;
@@ -154,6 +154,7 @@
                     type: 1
                     ,content: '<div style="text-align: center;margin-top: 30px;">确定要删除用户？</div>'
                     ,title:'删除'
+                    ,shadeClose: true
                     ,skin: 'layui-layer-rim'
                     ,area:['300px','180px']
                     ,btn: ['确定', '取消']
@@ -170,68 +171,61 @@
                             }
                         });
                     }
-                    ,btn2: function(index, layero){
-                        //按钮【按钮二】的回调
-                        layer.closeAll();
-                    }
-                    ,cancel: function(){
-                        //右上角关闭回调
-                        layer.closeAll();
-                    }
                 });
             }
             // 授权操作
             function authorize(user) {
-                var ids;
+                var ids = "",tree;
                 var treeText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">姓名</label>'
                     + '<div class="layui-input-block"><input type="text" placeholder="请输入用户名" disabled value="' + user.trueName + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
                     + '<div class="layui-form-item"><label class="layui-form-label">菜单</label>'
-                    + '<div class="layui-input-block"><input type="text" class="layui-input" id="menuTree" lay-filter="menus"></div></div>'
+                    + '<div class="layui-input-block"><input type="text" placeholder="选择授权菜单" class="layui-input" id="treeTitle" lay-filter="menus"><div class="eleTree eleTree-hide" id="menuTree" lay-filter="treeData"></div></div></div>'
                     + '</form>';
                 layer.open({
                     type: 1
                     ,content: treeText
                     ,title:'授权'
+                    ,shadeClose: true
                     ,skin: 'layui-layer-rim'
                     ,area:['450px','500px']
                     ,btn: ['确定', '取消']
                     ,success: function(layero, index){
-                        treeSelect.render({
-                            // 选择器
-                            elem: '#menuTree',
-                            // 数据
-                            data: '/system/menu/getUnAuthorizeMenus/' + user.userId,
-                            // 请求头
-                            headers: {},
-                            // 异步加载方式：get/post，默认get
-                            type: 'get',
-                            id: 'menus',
-                            // 占位符
-                            placeholder: '选择授权菜单',
-                            // 是否开启搜索功能：true/false，默认false
-                            search: true,
-                            // 一些可定制的样式
-                            style: {
-                                folder: {
-                                    enable: true
-                                },
-                                line: {
-                                    enable: true
-                                }
-                            },
-                            // 点击回调
-                            click: function(data){
-                                // 寻找所有相关节点
-                                ids = findAllNode(data.current);
-                            },
-                            // 加载完成后的回调函数
-                            success: function (d) {
-
+                        $("#treeTitle").on("click",function (e) {
+                            e.stopPropagation();
+                            $("#treeTitle").val("");
+                            // 渲染树形结构
+                            if (!tree) {
+                                tree = eleTree.render({
+                                    // 选择器
+                                    elem: '#menuTree',
+                                    // 请求数据接口
+                                    url: '/system/menu/getUnAuthorizeMenus/' + user.userId,
+                                    response: {
+                                        statusName: "status",
+                                        statusCode: 'S001',
+                                        dataName: "data"
+                                    },
+                                    // 默认不展开
+                                    defaultExpandAll: false,
+                                    // 点击节点展开
+                                    expandOnClickNode: true,
+                                    // 高亮
+                                    highlightCurrent: true,
+                                    // 开启复选框
+                                    showCheckbox: true,
+                                    // 是否开启连接线。默认 true，若设为 false，则节点左侧出现三角图标。
+                                    showLine: false,
+                                    id: 'menus'
+                                });
                             }
+                            $("#menuTree").toggle();
                         });
-
                     }
                     ,yes: function(index, layero){
+                        if(ids===''){
+                            layer.msg("未选择任何权限",{icon: 5});
+                            return;
+                        }
                         $.ajax({
                             type: 'POST',
                             url: "/permissions/authorize",
@@ -241,6 +235,8 @@
                                 ids:ids
                             }),
                             success: function(result){
+                                // 销毁树
+                                tree = null;
                                 // 关掉弹出层
                                 layer.closeAll();
                                 if(result.status === 'S001'){
@@ -252,15 +248,39 @@
                                 }
                             }
                         });
+                        tree = null;
                     }
                     ,btn2: function(index, layero){
-                        //按钮【按钮二】的回调
+                        tree = null;
                         layer.closeAll();
                     }
                     ,cancel: function(){
-                        //右上角关闭回调
+                        // 销毁树
+                        tree = null;
                         layer.closeAll();
                     }
+                });
+                $(".layui-layer").on("click",function() {
+                    if(tree){
+                        var checked = tree.getChecked(true,false);
+                        if(checked!==null && checked!==undefined && checked.length>0){
+                            ids = "";
+                            var checkedTitle = "";
+                            for(var i=0;i<checked.length;i++){
+                                if(i===0){
+                                    checkedTitle += checked[i].label;
+                                    ids += checked[i].id;
+                                }else{
+                                    checkedTitle += "、" + checked[i].label;
+                                    ids += "," + checked[i].id;
+                                }
+                            }
+                            $("#treeTitle").val(checkedTitle);
+                            // 销毁树
+                            tree = null;
+                        }
+                    }
+                    $("#menuTree").hide();
                 });
             }
             // 修改用户信息
@@ -296,6 +316,7 @@
                     type: 1
                     ,content: formText
                     ,title:'修改'
+                    ,shadeClose: true
                     ,skin: 'layui-layer-rim'
                     ,area:['450px','500px']
                     ,btn: ['确定', '取消']
@@ -339,14 +360,6 @@
                             }
                         });
                     }
-                    ,btn2: function(index, layero){
-                        //按钮【按钮二】的回调
-                        layer.closeAll();
-                    }
-                    ,cancel: function(){
-                        //右上角关闭回调
-                        layer.closeAll();
-                    }
                 });
             }
             // 重置用户密码
@@ -355,6 +368,7 @@
                     type: 1
                     ,content: '<div style="text-align: center;margin-top: 30px;">确定要重置密码？</div>'
                     ,title:'重置密码'
+                    ,shadeClose: true
                     ,skin: 'layui-layer-rim'
                     ,area:['300px','180px']
                     ,btn: ['确定', '取消']
@@ -371,67 +385,61 @@
                             }
                         });
                     }
-                    ,btn2: function(index, layero){
-                        //按钮【按钮二】的回调
-                        layer.closeAll();
-                    }
-                    ,cancel: function(){
-                        //右上角关闭回调
-                        layer.closeAll();
-                    }
                 });
             }
             // 取消用户授权
             function unAuthorize(user) {
-                var ids;
+                var ids = "",tree;
                 var treeText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">姓名</label>'
                     + '<div class="layui-input-block"><input type="text" placeholder="请输入用户名" disabled value="' + user.trueName + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
                     + '<div class="layui-form-item"><label class="layui-form-label">菜单</label>'
-                    + '<div class="layui-input-block"><input type="text" class="layui-input" id="menuTree" lay-filter="menus"></div></div>'
+                    + '<div class="layui-input-block"><input type="text" placeholder="选择取消授权菜单" class="layui-input" id="treeTitle" lay-filter="menus"><div class="eleTree eleTree-hide" id="menuTree" lay-filter="treeData"></div></div></div>'
                     + '</form>';
                 layer.open({
                     type: 1
                     ,content: treeText
                     ,title:'取消授权'
+                    ,shadeClose: true
                     ,skin: 'layui-layer-rim'
                     ,area:['450px','500px']
                     ,btn: ['确定', '取消']
                     ,success: function(layero, index){
-                        treeSelect.render({
-                            // 选择器
-                            elem: '#menuTree',
-                            // 数据
-                            data: '/system/menu/getAuthorizeMenus/' + user.userId,
-                            // 请求头
-                            headers: {},
-                            // 异步加载方式：get/post，默认get
-                            type: 'get',
-                            id: 'menus',
-                            // 占位符
-                            placeholder: '选择取消授权菜单',
-                            // 是否开启搜索功能：true/false，默认false
-                            search: true,
-                            // 一些可定制的样式
-                            style: {
-                                folder: {
-                                    enable: true
-                                },
-                                line: {
-                                    enable: true
-                                }
-                            },
-                            // 点击回调
-                            click: function(data){
-                                ids = findAllNode(data.current);
-                            },
-                            // 加载完成后的回调函数
-                            success: function (d) {
-
+                        $("#treeTitle").on("click",function (e) {
+                            e.stopPropagation();
+                            $("#treeTitle").val("");
+                            // 渲染树形结构
+                            if (!tree) {
+                                tree = eleTree.render({
+                                    // 选择器
+                                    elem: '#menuTree',
+                                    // 请求数据接口
+                                    url: '/system/menu/getAuthorizeMenus/' + user.userId,
+                                    response: {
+                                        statusName: "status",
+                                        statusCode: 'S001',
+                                        dataName: "data"
+                                    },
+                                    // 默认不展开
+                                    defaultExpandAll: false,
+                                    // 点击节点展开
+                                    expandOnClickNode: true,
+                                    // 高亮
+                                    highlightCurrent: true,
+                                    // 开启复选框
+                                    showCheckbox: true,
+                                    // 是否开启连接线。默认 true，若设为 false，则节点左侧出现三角图标。
+                                    showLine: false,
+                                    id: 'menus'
+                                });
                             }
+                            $("#menuTree").toggle();
                         });
-
                     }
                     ,yes: function(index, layero){
+                        if(ids===''){
+                            layer.msg("未选择任何权限",{icon: 5});
+                            return;
+                        }
                         $.ajax({
                             type: 'POST',
                             url: "/permissions/unAuthorize",
@@ -441,6 +449,8 @@
                                 ids:ids
                             }),
                             success: function(result){
+                                // 销毁树
+                                tree = null;
                                 // 关掉弹出层
                                 layer.closeAll();
                                 if(result.status === 'S001'){
@@ -452,15 +462,39 @@
                                 }
                             }
                         });
+                        tree = null;
                     }
                     ,btn2: function(index, layero){
-                        //按钮【按钮二】的回调
+                        tree = null;
                         layer.closeAll();
                     }
                     ,cancel: function(){
-                        //右上角关闭回调
+                        // 销毁树
+                        tree = null;
                         layer.closeAll();
                     }
+                });
+                $(".layui-layer").on("click",function() {
+                    if(tree){
+                        var checked = tree.getChecked(true,false);
+                        if(checked!==null && checked!==undefined && checked.length>0){
+                            ids = "";
+                            var checkedTitle = "";
+                            for(var i=0;i<checked.length;i++){
+                                if(i===0){
+                                    checkedTitle += checked[i].label;
+                                    ids += checked[i].id;
+                                }else{
+                                    checkedTitle += "、" + checked[i].label;
+                                    ids += "," + checked[i].id;
+                                }
+                            }
+                            $("#treeTitle").val(checkedTitle);
+                            // 销毁树
+                            tree = null;
+                        }
+                    }
+                    $("#menuTree").hide();
                 });
             }
             var active = {
@@ -509,6 +543,7 @@
                 type: 1
                 ,content: formText
                 ,title:'添加用户'
+                ,shadeClose: true
                 ,skin: 'layui-layer-rim'
                 ,area:['450px','500px']
                 ,btn: ['确定', '取消']
@@ -549,46 +584,7 @@
                         }
                     });
                 }
-                ,btn2: function(index, layero){
-                    //按钮【按钮二】的回调
-                    layer.closeAll();
-                }
-                ,cancel: function(){
-                    //右上角关闭回调
-                    layer.closeAll();
-                }
             });
-        }
-    </script>
-    <script>
-        // 寻找所有相关节点
-        function findAllNode(node) {
-            var me = node;
-            var ids = new Array();
-            ids.push(me.id);
-            // 寻找所有父节点
-            var father = me.getParentNode();
-            if(father!==null){
-                ids.push(father.id);
-                var grandFather = father.getParentNode();
-                if(grandFather!==null){
-                    ids.push(grandFather.id);
-                }
-            }
-            // 寻找所有子节点
-            var sons = me.children;
-            if(sons!==null && sons.length>0){
-                for(var i=0;i<sons.length;i++){
-                    ids.push(sons[i].id);
-                    var grandSons = sons[i].children;
-                    if(grandSons!==null && grandSons.length>0){
-                        for(var j=0;j<grandSons.length;j++){
-                            ids.push(grandSons[j].id);
-                        }
-                    }
-                }
-            }
-            return ids.toString();
         }
     </script>
     <script type="text/javascript">

@@ -16,6 +16,6 @@ import java.util.List;
 @Data
 public class MenuTreeDto {
     private Integer id;
-    private String name;
+    private String label;
     private List<MenuTreeDto> children = new ArrayList<>();
 }

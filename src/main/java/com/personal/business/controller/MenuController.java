@@ -4,6 +4,7 @@
 package com.personal.business.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.personal.business.Enum.ResultEnum;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.constant.CommonConstant;
@@ -123,7 +124,7 @@ public class MenuController extends BaseController {
     @RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_ADD)
     @PostMapping(value = "/insert")
     @ResponseBody
-    public Return delete(@RequestBody BtMenu menu){
+    public Return insert(@RequestBody BtMenu menu){
         log.info("insert menu [{}]",JSON.toJSONString(menu));
         BtUser user = getCurrentUser();
         menu.setUrl(StringUtils.isEmpty(menu.getUrl())? CommonConstant.MENU_URL_DEFAULT :menu.getUrl());
@@ -148,12 +149,12 @@ public class MenuController extends BaseController {
      */
     @GetMapping(value = "/getUnAuthorizeMenus/{userId}")
     @ResponseBody
-    public List<MenuTreeDto> getUnAuthorizeMenus(@PathVariable Integer userId){
+    public Return<List<MenuTreeDto>> getUnAuthorizeMenus(@PathVariable Integer userId){
         if(userId!=null){
             List<MenuTree> menus = iBtMenuService.getUnAuthorizeMenus(userId);
-            return getMenuTreeSelector(menus);
+            return Return.data(getMenuTreeSelector(menus));
         }
-        return new ArrayList<>();
+        return Return.fail(ResultEnum.ERROR_PARAM_NOT_ENOUGH);
     }
 
     /**
@@ -164,12 +165,12 @@ public class MenuController extends BaseController {
      */
     @GetMapping(value = "/getAuthorizeMenus/{userId}")
     @ResponseBody
-    public List<MenuTreeDto> getAuthorizeMenus(@PathVariable Integer userId){
+    public Return<List<MenuTreeDto>> getAuthorizeMenus(@PathVariable Integer userId){
         if(userId!=null){
             List<MenuTree> menus = iBtMenuService.getAuthorizeMenus(userId);
-            return getMenuTreeSelector(menus);
+            return Return.data(getMenuTreeSelector(menus));
         }
-        return new ArrayList<>();
+        return Return.fail(ResultEnum.ERROR_PARAM_NOT_ENOUGH);
     }
 
     @GetMapping(value = "/getById/{menuId}")
@@ -191,17 +192,17 @@ public class MenuController extends BaseController {
             for(MenuTree one:menus){
                 MenuTreeDto levelOne = new MenuTreeDto();
                 levelOne.setId(one.getMenuId());
-                levelOne.setName(one.getMenuName());
+                levelOne.setLabel(one.getMenuName());
                 if(one.getChildren()!=null && one.getChildren().size()>0){
                     for(MenuTree two:one.getChildren()){
                         MenuTreeDto levelTwo = new MenuTreeDto();
                         levelTwo.setId(two.getMenuId());
-                        levelTwo.setName(two.getMenuName());
+                        levelTwo.setLabel(two.getMenuName());
                         if(two.getChildren()!=null && two.getChildren().size()>0){
                             for(MenuTree three:two.getChildren()){
                                 MenuTreeDto levelThree = new MenuTreeDto();
                                 levelThree.setId(three.getMenuId());
-                                levelThree.setName(three.getMenuName());
+                                levelThree.setLabel(three.getMenuName());
                                 levelTwo.getChildren().add(levelThree);
                             }
                         }

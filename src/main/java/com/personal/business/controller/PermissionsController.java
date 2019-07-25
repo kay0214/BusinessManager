@@ -3,6 +3,7 @@
  */
 package com.personal.business.controller;
 
+import com.personal.business.Enum.ResultEnum;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.constant.ShiroPermissionsConstant;
@@ -11,6 +12,7 @@ import com.personal.business.service.IBtUserMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,12 +41,15 @@ public class PermissionsController extends BaseController {
     @PostMapping(value = "/authorize")
     public Return authorize(@RequestBody PermissionsRequest permissionsRequest){
         log.info("authorize userId[{}],menu ids[{}]",permissionsRequest.getUserId(),permissionsRequest.getIds());
-        boolean success = iBtUserMenuService.authorize(permissionsRequest);
-        if(success){
-            return Return.success();
-        }else{
-            return Return.fail("授权失败");
+        if(!StringUtils.isEmpty(permissionsRequest.getIds())){
+            boolean success = iBtUserMenuService.authorize(permissionsRequest);
+            if(success){
+                return Return.success();
+            }else{
+                return Return.fail("授权失败");
+            }
         }
+        return Return.fail(ResultEnum.ERROR_PARAM_NOT_ENOUGH);
     }
 
     /**
@@ -57,11 +62,14 @@ public class PermissionsController extends BaseController {
     @PostMapping(value = "/unAuthorize")
     public Return unAuthorize(@RequestBody PermissionsRequest permissionsRequest){
         log.info("unAuthorize userId[{}],menu ids[{}]",permissionsRequest.getUserId(),permissionsRequest.getIds());
-        boolean success = iBtUserMenuService.unAuthorize(permissionsRequest);
-        if(success){
-            return Return.success();
-        }else{
-            return Return.fail("取消授权失败");
+        if(!StringUtils.isEmpty(permissionsRequest.getIds())) {
+            boolean success = iBtUserMenuService.unAuthorize(permissionsRequest);
+            if (success) {
+                return Return.success();
+            } else {
+                return Return.fail("取消授权失败");
+            }
         }
+        return Return.fail(ResultEnum.ERROR_PARAM_NOT_ENOUGH);
     }
 }

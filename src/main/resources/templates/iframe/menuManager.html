@@ -162,6 +162,7 @@
                     type: 1
                     ,content: formText
                     ,title:'编辑'
+                    ,shadeClose: true
                     ,skin: 'layui-layer-rim'
                     ,area:['450px','670px']
                     ,btn: ['确定', '取消']
@@ -208,14 +209,6 @@
                             }
                         });
                     }
-                    ,btn2: function(index, layero){
-                        //按钮【按钮二】的回调
-                        layer.closeAll();
-                    }
-                    ,cancel: function(){
-                        //右上角关闭回调
-                        layer.closeAll();
-                    }
                 });
             }
             // 删除菜单
@@ -224,6 +217,7 @@
                     type: 1
                     ,content: '<div style="text-align: center;margin-top: 30px;">如果存在下级节点则一并删除，确定？</div>'
                     ,title:'删除'
+                    ,shadeClose: true
                     ,skin: 'layui-layer-rim'
                     ,area:['300px','200px']
                     ,btn: ['确定', '取消']
@@ -239,14 +233,6 @@
                                 layer.msg(result.statusDesc,{icon: 5});
                             }
                         });
-                    }
-                    ,btn2: function(index, layero){
-                        //按钮【按钮二】的回调
-                        layer.closeAll();
-                    }
-                    ,cancel: function(){
-                        //右上角关闭回调
-                        layer.closeAll();
                     }
                 });
             }
@@ -277,6 +263,7 @@
                     type: 1
                     ,content: formText
                     ,title:'添加下级菜单'
+                    ,shadeClose: true
                     ,skin: 'layui-layer-rim'
                     ,area:['450px','670px']
                     ,btn: ['确定', '取消']
@@ -323,14 +310,6 @@
                             }
                         });
                     }
-                    ,btn2: function(index, layero){
-                        //按钮【按钮二】的回调
-                        layer.closeAll();
-                    }
-                    ,cancel: function(){
-                        //右上角关闭回调
-                        layer.closeAll();
-                    }
                 });
             }
         });
@@ -361,6 +340,7 @@
                 type: 1
                 ,content: formText
                 ,title:'编辑'
+                ,shadeClose: true
                 ,skin: 'layui-layer-rim'
                 ,area:['450px','670px']
                 ,btn: ['确定', '取消']
@@ -406,14 +386,6 @@
                             }
                         }
                     });
-                }
-                ,btn2: function(index, layero){
-                    //按钮【按钮二】的回调
-                    layer.closeAll();
-                }
-                ,cancel: function(){
-                    //右上角关闭回调
-                    layer.closeAll();
                 }
             });
         }
