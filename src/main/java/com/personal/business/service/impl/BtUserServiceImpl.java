@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.personal.business.Enum.ResultEnum;
+import com.personal.business.config.thymeleaf.ShiroPermissionsUtils;
 import com.personal.business.constant.CommonConstant;
 import com.personal.business.entity.BtUser;
 import com.personal.business.exception.LoginException;
@@ -78,6 +79,8 @@ public class BtUserServiceImpl extends ServiceImpl<BtUserMapper, BtUser> impleme
         user.setLoginDate(LocalDateTime.now());
         // 更新登录信息
         updateById(user);
+        // 触发权限缓存
+        ShiroPermissionsUtils.trigger();
         // 放到session
         SessionUtils.setSessionAttribute("user",user);
         return user;

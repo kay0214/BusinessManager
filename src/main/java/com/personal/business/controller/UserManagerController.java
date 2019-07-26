@@ -156,7 +156,7 @@ public class UserManagerController extends BaseController {
      * @param
      * @return
      */
-    @RequiresPermissions(ShiroPermissionsConstant.PERM_USER_RESET)
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_USER_EDIT)
     @GetMapping(value = "/password/reset/{userId}")
     @ResponseBody
     public Return reset(@PathVariable Integer userId){

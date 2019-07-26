@@ -22,11 +22,19 @@ public class BaseController {
     }
 
     public String getCurrentUsername(){
-        return getCurrentUser().getUserName();
+        BtUser sysUser = getCurrentUser();
+        if(sysUser!=null){
+            return getCurrentUser().getUserName();
+        }
+        return null;
     }
 
     public Integer getCurrentUserId(){
-        return getCurrentUser().getUserId();
+        BtUser sysUser = getCurrentUser();
+        if(sysUser!=null){
+            return getCurrentUser().getUserId();
+        }
+        return null;
     }
 
     public BtUser getCurrentUser(){

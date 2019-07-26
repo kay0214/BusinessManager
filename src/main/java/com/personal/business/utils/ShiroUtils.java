@@ -21,6 +21,14 @@ public class ShiroUtils {
         return SecurityUtils.getSubject();
     }
 
+    public static void setSessionAttribute(String key,Object value){
+        getSession().setAttribute(key,value);
+    }
+
+    public static Object getSessionAttribute(String key){
+        return getSession().getAttribute(key);
+    }
+
     public static Session getSession() {
         return SecurityUtils.getSubject().getSession();
     }

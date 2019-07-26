@@ -1,5 +1,6 @@
 package com.personal.business.config.shiro;
 
+import com.personal.business.constant.CommonConstant;
 import com.personal.business.entity.BtUser;
 import com.personal.business.service.IBtMenuService;
 import com.personal.business.service.IBtUserService;
@@ -52,6 +53,8 @@ public class UserRealm extends AuthorizingRealm {
         //info.setRoles(roles);
         // 权限加入AuthorizationInfo认证对象
         info.setStringPermissions(menus);
+        // 缓存权限
+        ShiroUtils.setSessionAttribute(CommonConstant.SESSION_KEY_PERMISSIONS,menus);
         return info;
     }
 

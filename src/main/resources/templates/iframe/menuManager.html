@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -13,7 +13,7 @@
         <div class="layui-form">
             <div class="layui-row layui-col-space15">
                 <div class="layui-col-md1 layui-col-md-offset10">
-                    <button class="layui-btn layui-btn-radius layui-btn-normal" onclick="addMenu()">+ 添加菜单</button>
+                    <button class="layui-btn layui-btn-radius layui-btn-normal" th:disabled="${#permission.hasPermission('business:menu:add')}" onclick="addMenu()">+ 添加菜单</button>
                 </div>
             </div>
         </div>
@@ -22,7 +22,7 @@
         </div>
     </div>
     <script src="/layui/layui.js"></script>
-    <script>
+    <script th:inline="javascript">
         var editObj=null,ptable=null,treeGrid=null,tableId='menus',layer=null,$,form;
         layui.config({
             base: '/layui/'
@@ -104,9 +104,9 @@
                             }
                         }}
                         ,{fixed:'right', width:220, title: '操作',templet:function (data) {
-                            return "<button class='layui-btn layui-btn-sm layui-btn-normal' lay-event='editMenu'>编辑</button>"
-                                +"<button class='layui-btn layui-btn-sm layui-btn-danger' lay-event='delMenu'>删除</button>"
-                                +"<button class='layui-btn layui-btn-sm' lay-event='addChild'>添加下级菜单</button>";
+                            return "<button class='layui-btn layui-btn-sm layui-btn-normal layui-" + [[${#permission.hasPermission('business:menu:edit')}]] + "' " + [[${#permission.hasPermission('business:menu:edit')}]] + " lay-event='editMenu'>编辑</button>"
+                                +"<button class='layui-btn layui-btn-sm layui-btn-danger layui-" + [[${#permission.hasPermission('business:menu:del')}]] + "' " + [[${#permission.hasPermission('business:menu:del')}]] + " lay-event='delMenu'>删除</button>"
+                                +"<button class='layui-btn layui-btn-sm layui-" + [[${#permission.hasPermission('business:menu:add')}]] + "' " + [[${#permission.hasPermission('business:menu:add')}]] + " lay-event='addChild'>添加下级菜单</button>";
                         }}
                     ]
                 ]
