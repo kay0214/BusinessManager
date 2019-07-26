@@ -8,11 +8,6 @@ package com.personal.business.constant;
 public interface CommonConstant {
 
     /**
-     * session中缓存权限的key
-     */
-    String PERMISSION_AUTO_TRIGGER = "business:user:list";
-
-    /**
      * thymeleaf配置 - 权限模板工具
      */
     String THYMELEAF_TEMPLATE_UTILS = "permission";

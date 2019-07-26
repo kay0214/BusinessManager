@@ -44,7 +44,7 @@
                     <button class="layui-btn layui-btn-radius" data-type="reload" id="search"><i class="layui-icon">&#xe615;</i>&nbsp;搜索</button>
                 </div>
                 <div class="layui-col-md1">
-                    <button class="layui-btn layui-btn-radius layui-btn-normal" th:disabled="${#permission.hasPermission('business:user:add')}" onclick="addUser()">+ 添加用户</button>
+                    <button class="layui-btn layui-btn-radius layui-btn-normal" id="addUser" onclick="addUser()">+ 添加用户</button>
                 </div>
             </div>
         </div>
@@ -67,6 +67,12 @@
             layer=layui.layer;
             form=layui.form;
             table = layui.table;
+            var disabled = [[${#permission.hasPermission('business:user:add')}]];
+            if(disabled!==null && disabled!==undefined && disabled!==''){
+                var addUser = $("#addUser");
+                addUser.addClass("layui-disabled");
+                addUser.attr("disabled",true);
+            }
             table.render({
                 elem: '#' + tableId
                 ,id:tableId

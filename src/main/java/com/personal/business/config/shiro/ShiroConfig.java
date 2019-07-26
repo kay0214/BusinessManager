@@ -4,6 +4,7 @@
 package com.personal.business.config.shiro;
 
 import com.personal.business.filter.CaptchaValidateFilter;
+import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -40,10 +41,17 @@ public class ShiroConfig {
         // 设置realm.
         securityManager.setRealm(userRealm);
         // 注入缓存管理器;
-        //securityManager.setCacheManager(cacheManager());
+        securityManager.setCacheManager(ehCacheManager());
         // session管理器
         //securityManager.setSessionManager(sessionManager());
         return securityManager;
+    }
+
+    @Bean
+    public EhCacheManager ehCacheManager(){
+        EhCacheManager cacheManager = new EhCacheManager();
+        cacheManager.setCacheManagerConfigFile("classpath:ehcache.xml");
+        return cacheManager;
     }
 
     @Bean
@@ -93,7 +101,7 @@ public class ShiroConfig {
     @Bean
     public UserRealm userRealm() {
         UserRealm userRealm = new UserRealm();
-        //userRealm.setCacheManager(cacheManager());
+        userRealm.setCacheManager(ehCacheManager());
         return userRealm;
     }
 

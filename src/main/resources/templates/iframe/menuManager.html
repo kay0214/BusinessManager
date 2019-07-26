@@ -13,7 +13,7 @@
         <div class="layui-form">
             <div class="layui-row layui-col-space15">
                 <div class="layui-col-md1 layui-col-md-offset10">
-                    <button class="layui-btn layui-btn-radius layui-btn-normal" th:disabled="${#permission.hasPermission('business:menu:add')}" onclick="addMenu()">+ 添加菜单</button>
+                    <button class="layui-btn layui-btn-radius layui-btn-normal" id="addMenu" onclick="addMenu()">+ 添加菜单</button>
                 </div>
             </div>
         </div>
@@ -33,6 +33,12 @@
             $=layui.$;
             treeGrid = layui.treeGrid;//很重要
             layer=layui.layer;
+            var disabled = [[${#permission.hasPermission('business:menu:add')}]];
+            if(disabled!==null && disabled!==undefined && disabled!==''){
+                var addMenu = $("#addMenu");
+                addMenu.addClass("layui-disabled");
+                addMenu.attr("disabled",true);
+            }
             ptable=treeGrid.render({
                 id:tableId
                 ,elem: '#'+tableId

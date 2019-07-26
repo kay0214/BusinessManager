@@ -79,8 +79,6 @@ public class BtUserServiceImpl extends ServiceImpl<BtUserMapper, BtUser> impleme
         user.setLoginDate(LocalDateTime.now());
         // 更新登录信息
         updateById(user);
-        // 触发权限缓存
-        ShiroPermissionsUtils.trigger();
         // 放到session
         SessionUtils.setSessionAttribute("user",user);
         return user;
