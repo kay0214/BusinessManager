@@ -94,7 +94,7 @@ public class MysqlGenerator {
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://localhost:3306/business?useUnicode=true&useSSL=false&characterEncoding=utf8");
+        dsc.setUrl("jdbc:mysql://localhost:3306/business?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=UTC");
         // dsc.setSchemaName("public");
         dsc.setDriverName("com.mysql.jdbc.Driver");
         dsc.setUsername("root");
@@ -139,7 +139,7 @@ public class MysqlGenerator {
         //strategy.setInclude("sssys_.*");
         
 
-		strategy.setInclude();
+		strategy.setInclude("bt_dictionary");
 
         //strategy.setSuperEntityColumns("id"); 注释掉可以在表结构生成主键
         strategy.setControllerMappingHyphenStyle(true);

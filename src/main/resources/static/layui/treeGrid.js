@@ -2924,12 +2924,23 @@ layui.config({}).extend({}).define(['laytpl', 'laypage', 'layer', 'form'], funct
 					var temf = function(o) {
 						if (o == null) return;
 						if (o && o.children.length > 0) {
-							var temis = true;
+/*							var temis = true;
 							o.children.forEach(function(temo) {
 								if (!temo[table.config.cols.isCheckName]) {
 									temis = false;
 								}
-							});
+							});*/
+                            if (checked) that.setCheckData(o[table.config.indexName], true);
+                            else {
+                                var temis = false;
+                                o.children.forEach(function (temo) {
+                                    if (temo[table.config.cols.isCheckName]) {
+                                        temis = true;
+                                    }
+                                });
+                                that.setCheckData(o[table.config.indexName], temis);
+                            }
+
 							if (temis) {
 								that.setCheckData(o[table.config.indexName], checked);
 							}
