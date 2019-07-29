@@ -69,7 +69,7 @@ public class MenuController extends BaseController {
      * @param
      * @return
      */
-    //@RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_LIST)
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_LIST)
     @GetMapping(value = "/getAllMenus")
     @ResponseBody
     public Return getAllMenus(){

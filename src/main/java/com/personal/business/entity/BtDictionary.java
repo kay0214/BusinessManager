@@ -42,14 +42,14 @@ public class BtDictionary implements Serializable {
     private String name;
 
     /**
+     * 排序字段
+     */
+    private Integer orderNum;
+
+    /**
      * 父节点id
      */
     private Integer parentId;
-
-    /**
-     * 字典状态(0：启用，1：禁用)
-     */
-    private Integer status;
 
     /**
      * 冻结（0：未冻结，1：冻结）

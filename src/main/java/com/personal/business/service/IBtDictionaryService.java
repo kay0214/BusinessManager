@@ -1,7 +1,9 @@
 package com.personal.business.service;
 
-import com.personal.business.entity.BtDictionary;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.personal.business.entity.BtDictionary;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +15,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IBtDictionaryService extends IService<BtDictionary> {
 
+    /**
+     * @description 获取所有字典
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<BtDictionary> getAllDictionary();
 }
