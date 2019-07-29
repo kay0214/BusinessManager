@@ -11,36 +11,30 @@
 <div class="layui-body">
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">
-        <div class="layui-form">
-            <div class="layui-row layui-col-space15">
-                <div class="layui-col-md1 layui-col-md-offset10">
-                    <button class="layui-btn layui-btn-radius layui-btn-normal" id="addMenu" onclick="addDic()">+ 添加字典</button>
-                </div>
-            </div>
-        </div>
         <div class="layui-row" style="margin-top: 10px">
-            <table class="layui-hide" id="dictionary" lay-filter="dictionary"></table>
+            <table class="layui-hide center" id="dictionary" lay-filter="dictionary"></table>
         </div>
         <script type="text/html" id="tools">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-sm" onclick="addDic()" lay-event="addDic">添加基础字典</button>
-                <button class="layui-btn layui-btn-sm" onclick="addChild()" lay-event="addChild">添加下级字典</button>
+                <!--<button class="layui-btn layui-btn-sm" onclick="addChild()" lay-event="addChild">添加下级字典</button>-->
                 <button class="layui-btn layui-btn-sm" onclick="delDic()" lay-event="delDic">删除</button>
-                <button class="layui-btn layui-btn-sm" onclick="editDic()" lay-event="editDic">编辑</button>
-                <button class="layui-btn layui-btn-sm layui-btn-primary float-right" onclick="exportDic()" lay-event="exportDic"><i class="layui-icon layui-icon-export"></i>导出</button>
+                <!--<button class="layui-btn layui-btn-sm" onclick="editDic()" lay-event="editDic">编辑</button>-->
+                <a target="_blank" class="layui-btn layui-btn-sm layui-btn-primary float-right" href="/system/dictionary/exportExcel" lay-event="exportDic"><i class="layui-icon layui-icon-export"></i>导出</a>
             </div>
         </script>
     </div>
     <script src="/layui/layui.js"></script>
     <script th:inline="javascript">
-        var editObj=null,ptable=null,treeGrid=null,tableId='dictionary',layer=null,$,form;
+        var editObj=null,ptable=null,treeGrid=null,tableId='dictionary',layer=null,$,form,table;
         layui.config({
             base: '/layui/'
         }).extend({
             treeGrid:'treeGrid'
-        }).use(['jquery','treeGrid','layer','form'], function(){
+        }).use(['jquery','treeGrid','layer','table','form'], function(){
             form = layui.form;
             $=layui.$;
+            table = layui.table;
             treeGrid = layui.treeGrid;//很重要
             layer=layui.layer;
             ptable=treeGrid.render({
@@ -75,105 +69,93 @@
                 ,cols: [
                     [
                         {type: 'checkbox'}
-                        ,{field:'name', width:150, title: '菜单名'}
+                        ,{field:'name', minWidth:120, title: '字典名'}
+                        ,{field:'value', width:80, title: '字典值'}
+                        ,{field:'type', width:120, title: '区分'}
                         ,{field:'orderNum', width:60, title: '排序'}
-                        ,{field:'url', width:150, title: '请求地址'}
-                        ,{field:'menuType', title: '类型',width:80,templet:function (data) {
-                            if(data.menuType==='M'){
-                                return "<span class='layui-badge layui-bg-blue'>目录</span>";
-                            }else if(data.menuType==='C'){
-                                return "<span class='layui-badge layui-bg-green'>菜单</span>";
-                            }else if(data.menuType==='F'){
-                                return "<span class='layui-badge layui-bg-orange'>权限</span>";
+                        ,{field:'freeze', title: '状态',width:100,templet:function (data) {
+                            if(data.freeze===1){
+                                return "<span class='layui-badge layui-bg-red'>冻结</span>";
+                            }else if(data.freeze===0){
+                                return "<span class='layui-badge layui-bg-blue'>可用</span>";
                             }else{
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
                         }}
-                        ,{field:'visible', width:120, title: '显示与隐藏',templet:function (data) {
-                            if(data.visible===0){
-                                return "<span class='layui-badge'>显示</span>";
-                            }else if(data.visible===1){
-                                return "<span class='layui-badge layui-bg-gray'>隐藏</span>";
+                        ,{field:'used', width:90, title: '已使用',templet:function (data) {
+                            if(data.used===1){
+                                return "<span class='layui-badge layui-bg-blue'>已用</span>";
+                            }else if(data.used===0){
+                                return "<span class='layui-badge layui-bg-green'>未用</span>";
                             }else{
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
                         }}
-                        ,{field:'perms', minWidth:100, title: '权限标识'}
-                        ,{field:'icon', width:100, title: '图标',templet:function (data) {
-                            if(data.icon!==null && data.icon!==undefined && data.icon.length>10){
-                                return "<i class='layui-icon " + data.icon + "'></i>";
-                            }else{
-                                return data.icon;
-                            }
-                        }}
-                        ,{field:'isDefault', width:110, title: '默认权限',templet:function (data) {
-                            if(data.isDefault===0){
-                                return "<span class='layui-badge'>否</span>";
-                            }else if(data.isDefault===1){
+                        ,{field:'builtIn', width:90, title: '内置',templet:function (data) {
+                            if(data.builtIn===1){
                                 return "<span class='layui-badge layui-bg-blue'>是</span>";
+                            }else if(data.builtIn===0){
+                                return "<span class='layui-badge layui-bg-green'>否</span>";
                             }else{
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
+                        }}
+                        ,{field:'remark', minWidth:120, title: '描述'}
+                        ,{fixed:'right', width:180, title: '操作',templet:function (data) {
+                            return "<button class='layui-btn layui-btn-sm layui-btn-normal' lay-event='editDic'>编辑</button>"
+                                +"<button class='layui-btn layui-btn-sm' lay-event='addChild'>添加下级菜单</button>";
                         }}
                     ]
                 ]
             });
 
-/*            treeGrid.on('tool(dictionary)',function (obj) {
-                console.info("click button");
+            treeGrid.on('tool(dictionary)',function (obj) {
                 if(obj.event === 'editDic'){//编辑
-                    console.info("点击了编辑功能");
-                    // editMenu(obj.data);
+                    editDic(obj.data);
                 }else if(obj.event==="delDic"){//删除
                     console.info("点击了删除功能");
                     // delMenu(obj.data.menuId);
                 }else if(obj.event==='addChild'){
-                    console.info("点击了添加下级字典");
-                    // addChild(obj.data);
+                    addChild(obj.data);
                 }else if(obj.event==='exportDic'){
                     console.info("点击了导出功能");
                 }
-            });*/
+            });
 
         });
         // 编辑菜单
-        function editDic(menu){
-            console.info("click edit");
-            return;
-            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">菜单名称</label>'
-                + '<div class="layui-input-block"><input type="text" name="menuName" required  lay-verify="required" placeholder="请输入名称" value="' + menu.menuName + '" autocomplete="off" class="layui-input"></div></div>'
+        function editDic(dic){
+            console.info(dic);
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">字典名称</label>'
+                + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" value="' + dic.name + '" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
+                + '<div class="layui-input-block"><input type="text" name="value" required  lay-verify="required" placeholder="请输入数值" value="' + dic.value + '" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
+                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" value="' + dic.type + '" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
-                + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" value="' + menu.orderNum + '" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">请求地址</label>'
-                + '<div class="layui-input-block"><input type="text" name="url" required  lay-verify="required" placeholder="请输入地址" value="' + menu.url + '" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">菜单类型</label>';
-            if(menu.menuType==='M'){
-                formText+='<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录" disabled checked><input type="radio" name="menuType" value="C" title="菜单" disabled><input type="radio" name="menuType" value="F" title="权限" disabled></div></div>';
-            }else if(menu.menuType==='C'){
-                formText+='<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录" disabled><input type="radio" name="menuType" value="C" title="菜单" disabled checked><input type="radio" name="menuType" value="F" title="权限" disabled></div></div>';
-            }else if(menu.menuType==='F'){
-                formText+='<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录" disabled><input type="radio" name="menuType" value="C" title="菜单" disabled><input type="radio" name="menuType" value="F" title="权限" disabled checked></div></div>';
+                + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" value="' + dic.orderNum + '" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">状态</label>';
+            if(dic.freeze===0){
+                formText+='<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用" checked><input type="radio" name="freeze" value="1" title="冻结"></div></div>';
+            }else if(dic.freeze===1){
+                formText+='<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用"><input type="radio" name="freeze" value="1" title="冻结" checked></div></div>';
             }
-            // 是否可见
-            formText+='<div class="layui-form-item"><label class="layui-form-label">菜单状态</label>';
-            if(menu.visible===0){
-                formText+='<div class="layui-input-block"><input type="radio" name="visible" value="0" title="显示" checked><input type="radio" name="visible" value="1" title="隐藏"></div></div>';
-            }else if(menu.visible===1){
-                formText+='<div class="layui-input-block"><input type="radio" name="visible" value="0" title="显示"><input type="radio" name="visible" value="1" title="隐藏" checked></div></div>';
+            // 是否已用
+            formText+='<div class="layui-form-item"><label class="layui-form-label">是否已用</label>';
+            if(dic.used===0){
+                formText+='<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>';
+            }else if(dic.used===1){
+                formText+='<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用"><input type="radio" name="used" value="1" title="已用" checked></div></div>';
             }
-            formText += '<div class="layui-form-item"><label class="layui-form-label">权限标识</label>'
-                + '<div class="layui-input-block"><input type="text" name="perms" required  lay-verify="required" placeholder="请输入权限" value="' + menu.perms + '" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">图标</label>'
-                + '<div class="layui-input-block"><input type="text" name="icon" required  lay-verify="required" placeholder="请输入图标" value="' + menu.icon + '" autocomplete="off" class="layui-input"></div></div>';
-            // 是否默认权限
-            formText+='<div class="layui-form-item"><label class="layui-form-label">默认赋权</label>';
-            if(menu.isDefault===0){
-                formText+='<div class="layui-input-block"><input type="radio" name="isDefault" value="0" title="否" checked><input type="radio" name="isDefault" value="1" title="是"></div></div>';
-            }else if(menu.isDefault===1){
-                formText+='<div class="layui-input-block"><input type="radio" name="isDefault" value="0" title="否"><input type="radio" name="isDefault" value="1" title="是" checked></div></div>';
+            // 是否内置
+            formText+='<div class="layui-form-item"><label class="layui-form-label">是否内置</label>';
+            if(dic.builtIn===0){
+                formText+='<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否" checked><input type="radio" name="builtIn" value="1" title="是"></div></div>';
+            }else if(dic.builtIn===1){
+                formText+='<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否"><input type="radio" name="builtIn" value="1" title="是" checked></div></div>';
             }
             formText += '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
-                + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" value="' + menu.remark + '" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" value="' + dic.remark + '" autocomplete="off" class="layui-input"></div></div>'
                 + '</form>';
             layer.open({
                 type: 1
@@ -187,29 +169,27 @@
                     form.render('radio');
                 }
                 ,yes: function(index, layero){
-                    var menuName = $("input[name='menuName']").val();
+                    var name = $("input[name='name']").val();
+                    var value = $("input[name='value']").val();
+                    var type = $("input[name='type']").val();
                     var orderNum = $("input[name='orderNum']").val();
-                    var url = $("input[name='url']").val();
-                    var menuType = $("input[name='menuType']:checked").val();
-                    var visible = $("input[name='visible']:checked").val();
-                    var perms = $("input[name='perms']").val();
-                    var icon = $("input[name='icon']").val();
-                    var isDefault = $("input[name='isDefault']:checked").val();
+                    var freeze = $("input[name='freeze']:checked").val();
+                    var used = $("input[name='used']:checked").val();
+                    var builtIn = $("input[name='builtIn']:checked").val();
                     var remark = $("input[name='remark']").val();
                     $.ajax({
                         type: 'POST',
-                        url: "/system/menu/update",
+                        url: "/system/dictionary/update",
                         contentType: "application/json;charset=utf-8",
                         data: JSON.stringify({
-                            menuId:menu.menuId,
-                            menuName:menuName,
+                            id:dic.id,
+                            name:name,
+                            value:value,
+                            type:type,
                             orderNum:orderNum,
-                            url:url,
-                            menuType:menuType,
-                            visible:visible,
-                            perms:perms,
-                            icon:icon,
-                            isDefault:isDefault,
+                            freeze:freeze,
+                            used:used,
+                            builtIn:builtIn,
                             remark:remark
                         }),
                         success: function(result){
@@ -229,9 +209,17 @@
             });
         }
         // 删除菜单
-        function delDic(menuId){
-            console.info("click del");
-            return;
+        function delDic(){
+            var dics = treeGrid.checkStatus(tableId).data;
+            if(dics===null || dics===undefined || dics.length<1){
+                layer.msg("未选择任何字典",{icon:5});
+                return;
+            }
+            var ids = new Array();
+            for(var i=0;i<dics.length;i++){
+                var dic = dics[i];
+                ids.push(dic.id);
+            }
             layer.open({
                 type: 1
                 ,content: '<div style="text-align: center;margin-top: 30px;">如果存在下级节点则一并删除，确定？</div>'
@@ -241,7 +229,7 @@
                 ,area:['300px','200px']
                 ,btn: ['确定', '取消']
                 ,yes: function(index, layero){
-                    $.get("/system/menu/delete/" + menuId, function(result){
+                    $.get("/system/dictionary/delete/" + ids.toString(), function(result){
                         layer.closeAll();
                         if(result.status === 'S001'){
                             // 更新成功 - 关掉
@@ -256,25 +244,23 @@
             });
         }
         // 添加下级菜单
-        function addChild(menu){
-            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级菜单</label>'
-                + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="' + menu.menuName + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">菜单名称</label>'
-                + '<div class="layui-input-block"><input type="text" name="menuName" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input"></div></div>'
+        function addChild(dic){
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级字典</label>'
+                + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="' + dic.name + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典名称</label>'
+                + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
+                + '<div class="layui-input-block"><input type="text" name="value" required  lay-verify="required" placeholder="请输入数值" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
+                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
                 + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">请求地址</label>'
-                + '<div class="layui-input-block"><input type="text" name="url" required  lay-verify="required" placeholder="请输入地址" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">菜单类型</label>'
-                + '<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录" checked><input type="radio" name="menuType" value="C" title="菜单"><input type="radio" name="menuType" value="F" title="权限"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">菜单状态</label>'
-                + '<div class="layui-input-block"><input type="radio" name="visible" value="0" title="显示" checked><input type="radio" name="visible" value="1" title="隐藏"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">权限标识</label>'
-                + '<div class="layui-input-block"><input type="text" name="perms" required  lay-verify="required" placeholder="请输入权限" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">图标</label>'
-                + '<div class="layui-input-block"><input type="text" name="icon" required  lay-verify="required" placeholder="请输入图标" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">默认赋权</label>'
-                + '<div class="layui-input-block"><input type="radio" name="isDefault" value="0" title="否" checked><input type="radio" name="isDefault" value="1" title="是"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">状态</label>'
+                + '<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用" checked><input type="radio" name="freeze" value="1" title="冻结"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">是否已用</label>'
+                + '<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">是否内置</label>'
+                + '<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否" checked><input type="radio" name="builtIn" value="1" title="是"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
                 + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" autocomplete="off" class="layui-input"></div></div>'
                 + '</form>';
@@ -290,29 +276,27 @@
                     form.render('radio');
                 }
                 ,yes: function(index, layero){
-                    var menuName = $("input[name='menuName']").val();
+                    var name = $("input[name='name']").val();
+                    var value = $("input[name='value']").val();
+                    var type = $("input[name='type']").val();
                     var orderNum = $("input[name='orderNum']").val();
-                    var url = $("input[name='url']").val();
-                    var menuType = $("input[name='menuType']:checked").val();
-                    var visible = $("input[name='visible']:checked").val();
-                    var perms = $("input[name='perms']").val();
-                    var icon = $("input[name='icon']").val();
-                    var isDefault = $("input[name='isDefault']:checked").val();
+                    var freeze = $("input[name='freeze']:checked").val();
+                    var used = $("input[name='used']:checked").val();
+                    var builtIn = $("input[name='builtIn']:checked").val();
                     var remark = $("input[name='remark']").val();
                     $.ajax({
                         type: 'POST',
-                        url: "/system/menu/insert",
+                        url: "/system/dictionary/insert",
                         contentType: "application/json;charset=utf-8",
                         data: JSON.stringify({
-                            menuName:menuName,
-                            parentId:menu.menuId,
+                            name:name,
+                            value:value,
+                            type:type,
                             orderNum:orderNum,
-                            url:url,
-                            menuType:menuType,
-                            visible:visible,
-                            perms:perms,
-                            icon:icon,
-                            isDefault:isDefault,
+                            parentId:dic.id,
+                            freeze:freeze,
+                            used:used,
+                            builtIn:builtIn,
                             remark:remark
                         }),
                         success: function(result){
@@ -334,24 +318,22 @@
         // 添加目录菜单
         function addDic(){
             console.info("click add");
-            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级菜单</label>'
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级字典</label>'
                 + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="主目录" autocomplete="off" class="layui-input layui-disabled"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">菜单名称</label>'
-                + '<div class="layui-input-block"><input type="text" name="menuName" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典名称</label>'
+                + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
+                + '<div class="layui-input-block"><input type="text" name="value" required  lay-verify="required" placeholder="请输入数值" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
+                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
                 + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">请求地址</label>'
-                + '<div class="layui-input-block"><input type="text" name="url" required  lay-verify="required" placeholder="请输入地址" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">菜单类型</label>'
-                + '<div class="layui-input-block"><input type="radio" name="menuType" value="M" title="目录" checked><input type="radio" name="menuType" value="C" title="菜单" disabled><input type="radio" name="menuType" value="F" title="权限" disabled></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">菜单状态</label>'
-                + '<div class="layui-input-block"><input type="radio" name="visible" value="0" title="显示" checked><input type="radio" name="visible" value="1" title="隐藏"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">权限标识</label>'
-                + '<div class="layui-input-block"><input type="text" name="perms" required  lay-verify="required" placeholder="请输入权限" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">图标</label>'
-                + '<div class="layui-input-block"><input type="text" name="icon" required  lay-verify="required" placeholder="请输入图标" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">默认赋权</label>'
-                + '<div class="layui-input-block"><input type="radio" name="isDefault" value="0" title="否" checked><input type="radio" name="isDefault" value="1" title="是"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">状态</label>'
+                + '<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用" checked><input type="radio" name="freeze" value="1" title="冻结"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">是否已用</label>'
+                + '<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">是否内置</label>'
+                + '<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否" checked><input type="radio" name="builtIn" value="1" title="是"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
                 + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" autocomplete="off" class="layui-input"></div></div>'
                 + '</form>';
@@ -367,29 +349,27 @@
                     form.render('radio');
                 }
                 ,yes: function(index, layero){
-                    var menuName = $("input[name='menuName']").val();
+                    var name = $("input[name='name']").val();
+                    var value = $("input[name='value']").val();
+                    var type = $("input[name='type']").val();
                     var orderNum = $("input[name='orderNum']").val();
-                    var url = $("input[name='url']").val();
-                    var menuType = $("input[name='menuType']:checked").val();
-                    var visible = $("input[name='visible']:checked").val();
-                    var perms = $("input[name='perms']").val();
-                    var icon = $("input[name='icon']").val();
-                    var isDefault = $("input[name='isDefault']:checked").val();
+                    var freeze = $("input[name='freeze']:checked").val();
+                    var used = $("input[name='used']:checked").val();
+                    var builtIn = $("input[name='builtIn']:checked").val();
                     var remark = $("input[name='remark']").val();
                     $.ajax({
                         type: 'POST',
-                        url: "/system/menu/insert",
+                        url: "/system/dictionary/insert",
                         contentType: "application/json;charset=utf-8",
                         data: JSON.stringify({
-                            menuName:menuName,
-                            parentId:0,
+                            name:name,
+                            value:value,
+                            type:type,
                             orderNum:orderNum,
-                            url:url,
-                            menuType:menuType,
-                            visible:visible,
-                            perms:perms,
-                            icon:icon,
-                            isDefault:isDefault,
+                            parentId:0,
+                            freeze:freeze,
+                            used:used,
+                            builtIn:builtIn,
                             remark:remark
                         }),
                         success: function(result){
@@ -410,7 +390,7 @@
         }
         // 导出
         function exportDic() {
-            console.info("click export");
+            $.post("/system/dictionary/exportExcel");
         }
     </script>
 </div>
