@@ -85,10 +85,12 @@ public class DictionaryController extends BaseController {
         BtDictionary thisNode = iBtDictionaryService.getById(dictionary.getId());
         if(!dictionary.getSelfId().equals(thisNode.getSelfId())){
             List<BtDictionary> children = iBtDictionaryService.getAllChildren(thisNode.getSelfId());
-            children.forEach(btDictionary->{
-                btDictionary.setParentId(dictionary.getSelfId());
-            });
-            iBtDictionaryService.updateBatchById(children);
+            if(CollectionUtils.isNotEmpty(children)){
+                children.forEach(btDictionary->{
+                    btDictionary.setParentId(dictionary.getSelfId());
+                });
+                iBtDictionaryService.updateBatchById(children);
+            }
         }
         boolean success = iBtDictionaryService.updateById(dictionary);
         if(success){
