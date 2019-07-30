@@ -20,7 +20,7 @@ public interface CommonConstant {
     /**
      * 菜单URL - 默认
      */
-    String MENU_URL_DEFAULT = "#";
+    String MENU_INSERT_DEFAULT_VALUE = "#";
 
     /**
      * 用户类型 - 系统用户

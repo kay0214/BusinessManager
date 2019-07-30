@@ -127,7 +127,9 @@ public class MenuController extends BaseController {
     public Return insert(@RequestBody BtMenu menu){
         log.info("insert menu [{}]",JSON.toJSONString(menu));
         BtUser user = getCurrentUser();
-        menu.setUrl(StringUtils.isEmpty(menu.getUrl())? CommonConstant.MENU_URL_DEFAULT :menu.getUrl());
+        menu.setUrl(StringUtils.isEmpty(menu.getUrl())? CommonConstant.MENU_INSERT_DEFAULT_VALUE :menu.getUrl());
+        menu.setPerms(StringUtils.isEmpty(menu.getPerms())?CommonConstant.MENU_INSERT_DEFAULT_VALUE:menu.getPerms());
+        menu.setIcon(StringUtils.isEmpty(menu.getIcon())?CommonConstant.MENU_INSERT_DEFAULT_VALUE:menu.getIcon());
         menu.setDelFlag(0);
         menu.setCreateBy(user.getUserName());
         menu.setCreateTime(LocalDateTime.now());
