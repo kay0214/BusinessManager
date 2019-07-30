@@ -14,15 +14,11 @@
         <div class="layui-row" style="margin-top: 10px">
             <table class="layui-hide center" id="dictionary" lay-filter="dictionary"></table>
         </div>
-        <script type="text/html" id="tools">
-            <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm" onclick="addDic()" lay-event="addDic">添加基础字典</button>
-                <!--<button class="layui-btn layui-btn-sm" onclick="addChild()" lay-event="addChild">添加下级字典</button>-->
-                <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="delDic()" lay-event="delDic">删除</button>
-                <!--<button class="layui-btn layui-btn-sm" onclick="editDic()" lay-event="editDic">编辑</button>-->
-                <a target="_blank" class="layui-btn layui-btn-sm layui-btn-primary float-right" href="/system/dictionary/exportExcel" lay-event="exportDic"><i class="layui-icon layui-icon-export"></i>导出</a>
-            </div>
-        </script>
+        <div class="layui-btn-container" hidden id="tools">
+            <button class="layui-btn layui-btn-sm" onclick="addDic()" id="addDictionary">添加基础字典</button>
+            <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="delDic()" id="delDictionary">删除</button>
+            <a target="_blank" class="layui-btn layui-btn-sm layui-btn-primary float-right" href="/system/dictionary/exportExcel" id="exportDictionary"><i class="layui-icon layui-icon-export"></i>导出</a>
+        </div>
     </div>
     <script src="/layui/layui.js"></script>
     <script th:inline="javascript">
@@ -37,6 +33,25 @@
             table = layui.table;
             treeGrid = layui.treeGrid;//很重要
             layer=layui.layer;
+            // 查询add权限
+            var addDicPerm = [[${#permission.hasPermission('business:dic:add')}]];
+            if(addDicPerm!==null && addDicPerm!==undefined && addDicPerm!==''){
+                var addDictionary = $("#addDictionary");
+                addDictionary.addClass("layui-btn-disabled");
+                addDictionary.attr("disabled",true);
+            }
+            var delDicPerm = [[${#permission.hasPermission('business:dic:del')}]];
+            if(delDicPerm!==null && delDicPerm!==undefined && delDicPerm!==''){
+                var delDictionary = $("#delDictionary");
+                delDictionary.addClass("layui-btn-disabled");
+                delDictionary.attr("disabled",true);
+            }
+            var exportDicPerm = [[${#permission.hasPermission('business:dic:export')}]];
+            if(exportDicPerm!==null && exportDicPerm!==undefined && exportDicPerm!==''){
+                var exportDictionary = $("#exportDictionary");
+                exportDictionary.addClass("layui-btn-disabled");
+                exportDictionary.attr("href","javascript:;");
+            }
             ptable=treeGrid.render({
                 id:tableId
                 ,elem: '#'+tableId
@@ -105,8 +120,8 @@
                         }}
                         ,{field:'remark', minWidth:120, title: '描述'}
                         ,{fixed:'right', width:180, title: '操作',templet:function (data) {
-                            return "<button class='layui-btn layui-btn-sm layui-btn-normal' lay-event='editDic'>编辑</button>"
-                                +"<button class='layui-btn layui-btn-sm' lay-event='addChild'>添加下级菜单</button>";
+                            return "<button class='layui-btn layui-btn-sm layui-btn-normal layui-btn-" + [[${#permission.hasPermission('business:dic:edit')}]] + "' " + [[${#permission.hasPermission('business:dic:edit')}]] + " lay-event='editDic'>编辑</button>"
+                                +"<button class='layui-btn layui-btn-sm layui-btn-" + [[${#permission.hasPermission('business:dic:add')}]] + "' " + [[${#permission.hasPermission('business:dic:add')}]] + " lay-event='addChild'>添加下级菜单</button>";
                         }}
                     ]
                 ]

@@ -36,7 +36,7 @@
             var disabled = [[${#permission.hasPermission('business:menu:add')}]];
             if(disabled!==null && disabled!==undefined && disabled!==''){
                 var addMenu = $("#addMenu");
-                addMenu.addClass("layui-disabled");
+                addMenu.addClass("layui-btn-disabled");
                 addMenu.attr("disabled",true);
             }
             ptable=treeGrid.render({
@@ -110,9 +110,9 @@
                             }
                         }}
                         ,{fixed:'right', width:220, title: '操作',templet:function (data) {
-                            return "<button class='layui-btn layui-btn-sm layui-btn-normal layui-" + [[${#permission.hasPermission('business:menu:edit')}]] + "' " + [[${#permission.hasPermission('business:menu:edit')}]] + " lay-event='editMenu'>编辑</button>"
-                                +"<button class='layui-btn layui-btn-sm layui-btn-danger layui-" + [[${#permission.hasPermission('business:menu:del')}]] + "' " + [[${#permission.hasPermission('business:menu:del')}]] + " lay-event='delMenu'>删除</button>"
-                                +"<button class='layui-btn layui-btn-sm layui-" + [[${#permission.hasPermission('business:menu:add')}]] + "' " + [[${#permission.hasPermission('business:menu:add')}]] + " lay-event='addChild'>添加下级菜单</button>";
+                            return "<button class='layui-btn layui-btn-sm layui-btn-normal layui-btn-" + [[${#permission.hasPermission('business:menu:edit')}]] + "' " + [[${#permission.hasPermission('business:menu:edit')}]] + " lay-event='editMenu'>编辑</button>"
+                                +"<button class='layui-btn layui-btn-sm layui-btn-danger layui-btn-" + [[${#permission.hasPermission('business:menu:del')}]] + "' " + [[${#permission.hasPermission('business:menu:del')}]] + " lay-event='delMenu'>删除</button>"
+                                +"<button class='layui-btn layui-btn-sm layui-btn-" + [[${#permission.hasPermission('business:menu:add')}]] + "' " + [[${#permission.hasPermission('business:menu:add')}]] + " lay-event='addChild'>添加下级菜单</button>";
                         }}
                     ]
                 ]

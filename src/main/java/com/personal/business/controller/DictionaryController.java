@@ -8,6 +8,7 @@ import com.personal.business.Enum.ResultEnum;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.constant.CommonConstant;
+import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.dto.DictionaryExportDto;
 import com.personal.business.entity.BtDictionary;
 import com.personal.business.service.IBtDictionaryService;
@@ -15,6 +16,7 @@ import com.personal.business.utils.CommonUtils;
 import com.personal.business.utils.EasyPoiUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -44,6 +46,7 @@ public class DictionaryController extends BaseController {
         return "iframe/dictionaryManager";
     }
 
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_DIC_LIST)
     @GetMapping(value = "/getAllDics")
     @ResponseBody
     public Return getAllDic(){
@@ -56,7 +59,7 @@ public class DictionaryController extends BaseController {
      * @param
      * @return
      */
-    //@RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_EDIT)
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_DIC_EDIT)
     @PostMapping(value = "/update")
     @ResponseBody
     public Return update(@RequestBody BtDictionary dictionary){
@@ -75,7 +78,7 @@ public class DictionaryController extends BaseController {
      * @param
      * @return
      */
-    //@RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_EDIT)
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_DIC_EDIT)
     @PostMapping(value = "/updateNode")
     @ResponseBody
     public Return updateNode(@RequestBody BtDictionary dictionary){
@@ -101,7 +104,7 @@ public class DictionaryController extends BaseController {
      * @param
      * @return
      */
-    //@RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_ADD)
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_DIC_ADD)
     @PostMapping(value = "/insert")
     @ResponseBody
     public Return insert(@RequestBody BtDictionary dictionary){
@@ -123,7 +126,7 @@ public class DictionaryController extends BaseController {
      * @param
      * @return
      */
-    //@RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_DEL)
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_DIC_DEL)
     @GetMapping(value = "/delete/{ids}")
     @ResponseBody
     public Return delete(@PathVariable String ids){
@@ -147,7 +150,7 @@ public class DictionaryController extends BaseController {
      * @param
      * @return
      */
-    //@RequiresPermissions(ShiroConstants.ORDER_EXPORT_PERM)
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_DIC_EXPORT)
     @GetMapping("/exportExcel")
     public void exportExcel(HttpServletResponse response) {
         log.info("export excel");

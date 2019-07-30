@@ -9,6 +9,7 @@ import com.personal.business.base.Return;
 import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.request.PermissionsRequest;
 import com.personal.business.service.IBtUserMenuService;
+import com.personal.business.utils.ShiroUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ public class PermissionsController extends BaseController {
         if(!StringUtils.isEmpty(permissionsRequest.getIds())){
             boolean success = iBtUserMenuService.authorize(permissionsRequest);
             if(success){
+                ShiroUtils.clearCachedAuthorizationInfo();
                 return Return.success();
             }else{
                 return Return.fail("授权失败");
@@ -65,6 +67,7 @@ public class PermissionsController extends BaseController {
         if(!StringUtils.isEmpty(permissionsRequest.getIds())) {
             boolean success = iBtUserMenuService.unAuthorize(permissionsRequest);
             if (success) {
+                ShiroUtils.clearCachedAuthorizationInfo();
                 return Return.success();
             } else {
                 return Return.fail("取消授权失败");

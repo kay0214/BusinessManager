@@ -25,6 +25,11 @@ public interface ShiroPermissionsConstant {
     String PERM_MENU = "menu:";
 
     /**
+     * 权限 - 数据字典相关
+     */
+    String PERM_DIC = "dic:";
+
+    /**
      * 权限 - 查询
      */
     String PERM_LIST = "list";
@@ -58,6 +63,11 @@ public interface ShiroPermissionsConstant {
      * 权限 - 重置
      */
     String PERM_UNAUTH = "unauth";
+
+    /**
+     * 权限 - 导出
+     */
+    String PERM_EXPORT = "export";
 
     /**
      * 权限 - 查询用户
@@ -113,4 +123,29 @@ public interface ShiroPermissionsConstant {
      * 权限 - 取消授权
      */
     String PERM_MENU_UNAUTH = PERM_BASE + PERM_MENU + PERM_UNAUTH;
+
+    /**
+     * 权限 - 查询字典
+     */
+    String PERM_DIC_LIST = PERM_BASE + PERM_DIC + PERM_LIST;
+
+    /**
+     * 权限 - 修改字典
+     */
+    String PERM_DIC_EDIT = PERM_BASE + PERM_DIC + PERM_EDIT;
+
+    /**
+     * 权限 - 新增字典
+     */
+    String PERM_DIC_ADD = PERM_BASE + PERM_DIC + PERM_ADD;
+
+    /**
+     * 权限 - 删除字典
+     */
+    String PERM_DIC_DEL = PERM_BASE + PERM_DIC + PERM_DEL;
+
+    /**
+     * 权限 - 导出字典
+     */
+    String PERM_DIC_EXPORT = PERM_BASE + PERM_DIC + PERM_EXPORT;
 }
