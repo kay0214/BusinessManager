@@ -34,4 +34,17 @@ public class BtDictionaryServiceImpl extends ServiceImpl<BtDictionaryMapper, BtD
         queryWrapper.lambda().select().orderByAsc(BtDictionary::getOrderNum);
         return list(queryWrapper);
     }
+
+    /**
+     * @description 获取所有子节点
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public List<BtDictionary> getAllChildren(Integer parentId) {
+        QueryWrapper<BtDictionary> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().select().orderByAsc(BtDictionary::getOrderNum).and(obj->obj.eq(BtDictionary::getParentId,parentId));
+        return list(queryWrapper);
+    }
 }

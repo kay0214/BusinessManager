@@ -70,6 +70,32 @@ public class DictionaryController extends BaseController {
     }
 
     /**
+     * @description 更新字典
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    //@RequiresPermissions(ShiroPermissionsConstant.PERM_MENU_EDIT)
+    @PostMapping(value = "/updateNode")
+    @ResponseBody
+    public Return updateNode(@RequestBody BtDictionary dictionary){
+        BtDictionary thisNode = iBtDictionaryService.getById(dictionary.getId());
+        if(!dictionary.getSelfId().equals(thisNode.getSelfId())){
+            List<BtDictionary> children = iBtDictionaryService.getAllChildren(thisNode.getSelfId());
+            children.forEach(btDictionary->{
+                btDictionary.setParentId(dictionary.getSelfId());
+            });
+            iBtDictionaryService.updateBatchById(children);
+        }
+        boolean success = iBtDictionaryService.updateById(dictionary);
+        if(success){
+            return Return.success();
+        }else{
+            return Return.fail("更新失败");
+        }
+    }
+
+    /**
      * @description 插入菜单
      * @auth sunpeikai
      * @param

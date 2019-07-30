@@ -27,16 +27,6 @@ public class BtDictionary implements Serializable {
     private Integer id;
 
     /**
-     * 字典区分,用来区分某一类字典
-     */
-    private String type;
-
-    /**
-     * 字典值
-     */
-    private Integer value;
-
-    /**
      * 字典名称
      */
     private String name;
@@ -50,6 +40,11 @@ public class BtDictionary implements Serializable {
      * 父节点id
      */
     private Integer parentId;
+
+    /**
+     * 自身节点id
+     */
+    private Integer selfId;
 
     /**
      * 冻结（0：未冻结，1：冻结）

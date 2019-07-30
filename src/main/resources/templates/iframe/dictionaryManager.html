@@ -18,7 +18,7 @@
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-sm" onclick="addDic()" lay-event="addDic">添加基础字典</button>
                 <!--<button class="layui-btn layui-btn-sm" onclick="addChild()" lay-event="addChild">添加下级字典</button>-->
-                <button class="layui-btn layui-btn-sm" onclick="delDic()" lay-event="delDic">删除</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="delDic()" lay-event="delDic">删除</button>
                 <!--<button class="layui-btn layui-btn-sm" onclick="editDic()" lay-event="editDic">编辑</button>-->
                 <a target="_blank" class="layui-btn layui-btn-sm layui-btn-primary float-right" href="/system/dictionary/exportExcel" lay-event="exportDic"><i class="layui-icon layui-icon-export"></i>导出</a>
             </div>
@@ -42,13 +42,13 @@
                 ,elem: '#'+tableId
                 ,url:'/system/dictionary/getAllDics'
                 ,cellMinWidth: 100
-                ,idField:'id'//必須字段
-                ,treeId:'id'//树形id字段名称
+                ,idField:'selfId'//必須字段
+                ,treeId:'selfId'//树形id字段名称
                 ,treeUpId:'parentId'//树形父id字段名称
                 ,treeShowName:'name'//以树形式显示的字段
                 ,heightRemove:[".dHead",100]//不计算的高度,表格设定的是固定高度，此项不生效
                 ,isFilter:false
-                ,height: '50%'
+                ,height: '80%'
                 ,iconOpen:false//是否显示图标【默认显示】
                 ,isOpenDefault:false//节点默认是展开还是折叠【默认展开】
                 ,loading:true
@@ -56,6 +56,7 @@
                 ,isPage:false
                 ,toolbar: '#tools'
                 ,skin: 'line'
+                ,editModel:'dblclick'
                 ,response:{
                     statusCode:'S001'
                 }
@@ -70,8 +71,10 @@
                     [
                         {type: 'checkbox'}
                         ,{field:'name', minWidth:120, title: '字典名'}
-                        ,{field:'value', width:80, title: '字典值'}
-                        ,{field:'type', width:120, title: '区分'}
+                        /*,{field:'value', width:80, title: '字典值'}
+                        ,{field:'type', width:120, title: '区分',edit: 'text'}*/
+                        ,{field:'parentId', width:100, title: '上级代码',edit: 'text'}
+                        ,{field:'selfId', width:100, title: '代码',edit: 'text'}
                         ,{field:'orderNum', width:60, title: '排序'}
                         ,{field:'freeze', title: '状态',width:100,templet:function (data) {
                             if(data.freeze===1){
@@ -86,7 +89,7 @@
                             if(data.used===1){
                                 return "<span class='layui-badge layui-bg-blue'>已用</span>";
                             }else if(data.used===0){
-                                return "<span class='layui-badge layui-bg-green'>未用</span>";
+                                return "<span class='layui-badge layui-bg-orange'>未用</span>";
                             }else{
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
@@ -121,6 +124,42 @@
                     console.info("点击了导出功能");
                 }
             });
+            treeGrid.on('edit(dictionary)', function(obj){
+                var dic = obj.data;
+                layer.open({
+                    type: 1
+                    ,content: '<div style="text-align: center;margin-top: 30px;">确定要应用修改？</div>'
+                    ,title:'编辑'
+                    ,shadeClose: true
+                    ,skin: 'layui-layer-rim'
+                    ,area:['300px','200px']
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        $.ajax({
+                            type: 'POST',
+                            url: "/system/dictionary/updateNode",
+                            contentType: "application/json;charset=utf-8",
+                            data: JSON.stringify({
+                                id:dic.id,
+                                parentId:dic.parentId,
+                                selfId:dic.selfId
+                            }),
+                            success: function(result){
+                                // 关掉弹出层
+                                layer.closeAll();
+                                if(result.status === 'S001'){
+                                    // 更新成功 - 关掉
+                                    treeGrid.reload(tableId);
+                                    layer.msg(result.statusDesc,{icon: 6});
+                                }else{
+                                    // 更新失败 - 给出错误提示
+                                    layer.msg(result.statusDesc,{icon: 5});
+                                }
+                            }
+                        });
+                    }
+                });
+            });
 
         });
         // 编辑菜单
@@ -128,10 +167,10 @@
             console.info(dic);
             var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">字典名称</label>'
                 + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" value="' + dic.name + '" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
+/*                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
                 + '<div class="layui-input-block"><input type="text" name="value" required  lay-verify="required" placeholder="请输入数值" value="' + dic.value + '" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
-                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" value="' + dic.type + '" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" value="' + dic.type + '" autocomplete="off" class="layui-input"></div></div>'*/
                 + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
                 + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" value="' + dic.orderNum + '" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">状态</label>';
@@ -147,8 +186,8 @@
             }else if(dic.used===1){
                 formText+='<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用"><input type="radio" name="used" value="1" title="已用" checked></div></div>';
             }
-            // 是否内置
-            formText+='<div class="layui-form-item"><label class="layui-form-label">是否内置</label>';
+            // 内置
+            formText+='<div class="layui-form-item"><label class="layui-form-label">内置</label>';
             if(dic.builtIn===0){
                 formText+='<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否" checked><input type="radio" name="builtIn" value="1" title="是"></div></div>';
             }else if(dic.builtIn===1){
@@ -163,7 +202,7 @@
                 ,title:'编辑'
                 ,shadeClose: true
                 ,skin: 'layui-layer-rim'
-                ,area:['450px','670px']
+                ,area:['450px','500px']
                 ,btn: ['确定', '取消']
                 ,success: function(layero, index){
                     form.render('radio');
@@ -249,17 +288,17 @@
                 + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="' + dic.name + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">字典名称</label>'
                 + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
-                + '<div class="layui-input-block"><input type="text" name="value" required  lay-verify="required" placeholder="请输入数值" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
-                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">代码</label>'
+                + '<div class="layui-input-block"><input type="text" name="selfId" required  lay-verify="required" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
+/*                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
+                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'*/
                 + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
                 + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">状态</label>'
                 + '<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用" checked><input type="radio" name="freeze" value="1" title="冻结"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">是否已用</label>'
                 + '<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">是否内置</label>'
+                + '<div class="layui-form-item"><label class="layui-form-label">内置</label>'
                 + '<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否" checked><input type="radio" name="builtIn" value="1" title="是"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
                 + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" autocomplete="off" class="layui-input"></div></div>'
@@ -270,15 +309,14 @@
                 ,title:'添加下级菜单'
                 ,shadeClose: true
                 ,skin: 'layui-layer-rim'
-                ,area:['450px','670px']
+                ,area:['450px','570px']
                 ,btn: ['确定', '取消']
                 ,success: function(layero, index){
                     form.render('radio');
                 }
                 ,yes: function(index, layero){
                     var name = $("input[name='name']").val();
-                    var value = $("input[name='value']").val();
-                    var type = $("input[name='type']").val();
+                    var selfId = $("input[name='selfId']").val();
                     var orderNum = $("input[name='orderNum']").val();
                     var freeze = $("input[name='freeze']:checked").val();
                     var used = $("input[name='used']:checked").val();
@@ -290,10 +328,9 @@
                         contentType: "application/json;charset=utf-8",
                         data: JSON.stringify({
                             name:name,
-                            value:value,
-                            type:type,
+                            selfId:selfId,
                             orderNum:orderNum,
-                            parentId:dic.id,
+                            parentId:dic.selfId,
                             freeze:freeze,
                             used:used,
                             builtIn:builtIn,
@@ -322,17 +359,17 @@
                 + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="主目录" autocomplete="off" class="layui-input layui-disabled"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">字典名称</label>'
                 + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
-                + '<div class="layui-input-block"><input type="text" name="value" required  lay-verify="required" placeholder="请输入数值" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
-                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">代码</label>'
+                + '<div class="layui-input-block"><input type="text" name="selfId" required  lay-verify="required" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
+/*                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
+                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'*/
                 + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
                 + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">状态</label>'
                 + '<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用" checked><input type="radio" name="freeze" value="1" title="冻结"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">是否已用</label>'
                 + '<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">是否内置</label>'
+                + '<div class="layui-form-item"><label class="layui-form-label">内置</label>'
                 + '<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否" checked><input type="radio" name="builtIn" value="1" title="是"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
                 + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" autocomplete="off" class="layui-input"></div></div>'
@@ -343,15 +380,14 @@
                 ,title:'编辑'
                 ,shadeClose: true
                 ,skin: 'layui-layer-rim'
-                ,area:['450px','670px']
+                ,area:['450px','570px']
                 ,btn: ['确定', '取消']
                 ,success: function(layero, index){
                     form.render('radio');
                 }
                 ,yes: function(index, layero){
                     var name = $("input[name='name']").val();
-                    var value = $("input[name='value']").val();
-                    var type = $("input[name='type']").val();
+                    var selfId = $("input[name='selfId']").val();
                     var orderNum = $("input[name='orderNum']").val();
                     var freeze = $("input[name='freeze']:checked").val();
                     var used = $("input[name='used']:checked").val();
@@ -363,8 +399,7 @@
                         contentType: "application/json;charset=utf-8",
                         data: JSON.stringify({
                             name:name,
-                            value:value,
-                            type:type,
+                            selfId:selfId,
                             orderNum:orderNum,
                             parentId:0,
                             freeze:freeze,

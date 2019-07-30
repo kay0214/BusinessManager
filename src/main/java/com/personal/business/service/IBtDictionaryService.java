@@ -22,4 +22,12 @@ public interface IBtDictionaryService extends IService<BtDictionary> {
      * @return
      */
     List<BtDictionary> getAllDictionary();
+
+    /**
+     * @description 获取所有子节点
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<BtDictionary> getAllChildren(Integer parentId);
 }

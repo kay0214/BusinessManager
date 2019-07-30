@@ -25,18 +25,6 @@ public class DictionaryExportDto implements Serializable {
     private Integer id;
 
     /**
-     * 字典区分,用来区分某一类字典
-     */
-    @Excel(name = "字典区分" , width = 20)
-    private String type;
-
-    /**
-     * 字典值
-     */
-    @Excel(name = "字典值" , width = 20)
-    private Integer value;
-
-    /**
      * 字典名称
      */
     @Excel(name = "字典名称" , width = 20)
@@ -45,14 +33,20 @@ public class DictionaryExportDto implements Serializable {
     /**
      * 排序字段
      */
-    @Excel(name = "排序字段" , width = 20)
+    @Excel(name = "排序" , width = 20)
     private Integer orderNum;
 
     /**
      * 父节点id
      */
-    @Excel(name = "父节点id" , width = 20)
+    @Excel(name = "上级代码" , width = 20)
     private Integer parentId;
+
+    /**
+     * 代码
+     */
+    @Excel(name = "代码" , width = 20)
+    private Integer selfId;
 
     /**
      * 冻结（0：未冻结，1：冻结）
