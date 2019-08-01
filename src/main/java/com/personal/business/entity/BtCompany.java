@@ -14,12 +14,12 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author spk
- * @since 2019-07-29
+ * @since 2019-07-31
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class BtDictionary implements Serializable {
+public class BtCompany implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,54 +27,39 @@ public class BtDictionary implements Serializable {
     private Integer id;
 
     /**
-     * 字典区分
+     * 公司助记代码
      */
-    private String type;
+    private String companyCode;
 
     /**
-     * 字典名称
+     * 类型-从数据字典录入
      */
-    private String name;
+    private Integer type;
 
     /**
-     * 排序字段
+     * 公司信用代码/个人身份证号码
      */
-    private Integer orderNum;
+    private String creditCode;
 
     /**
-     * 父节点id
+     * 公司全称/个人姓名
      */
-    private Integer parentId;
+    private String fullName;
 
     /**
-     * 自身节点id
+     * 公司简称
      */
-    private Integer selfId;
+    private String shortName;
 
     /**
-     * 冻结（0：未冻结，1：冻结）
+     * 启用
      */
-    private Integer freeze;
+    private Integer status;
 
     /**
-     * 是否已用（0：未用，1：已用）
+     * 已被使用(0：否，1：是)
      */
     private Integer used;
-
-    /**
-     * 是否内置（0：否，1：是）
-     */
-    private Integer builtIn;
-
-    /**
-     * 暂时保留吧
-     */
-    private Integer nodeTypeId;
-
-    /**
-     * 描述
-     */
-    private String remark;
 
     /**
      * 删除标志（0代表存在 1代表删除）

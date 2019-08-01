@@ -30,4 +30,12 @@ public interface IBtDictionaryService extends IService<BtDictionary> {
      * @return
      */
     List<BtDictionary> getAllChildren(Integer parentId);
+
+    /**
+     * @description 加载所有字典
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    void loadDictionary();
 }

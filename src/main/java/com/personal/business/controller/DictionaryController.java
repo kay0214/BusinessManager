@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSON;
 import com.personal.business.Enum.ResultEnum;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
-import com.personal.business.constant.CommonConstant;
 import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.dto.DictionaryExportDto;
 import com.personal.business.entity.BtDictionary;
@@ -66,6 +65,8 @@ public class DictionaryController extends BaseController {
         log.info(JSON.toJSONString(dictionary));
         boolean success = iBtDictionaryService.updateById(dictionary);
         if(success){
+            // 重载字典
+            iBtDictionaryService.loadDictionary();
             return Return.success();
         }else{
             return Return.fail("更新失败");
@@ -94,6 +95,8 @@ public class DictionaryController extends BaseController {
         }
         boolean success = iBtDictionaryService.updateById(dictionary);
         if(success){
+            // 重载字典
+            iBtDictionaryService.loadDictionary();
             return Return.success();
         }else{
             return Return.fail("更新失败");
@@ -101,7 +104,7 @@ public class DictionaryController extends BaseController {
     }
 
     /**
-     * @description 插入菜单
+     * @description 插入字典
      * @auth sunpeikai
      * @param
      * @return
@@ -116,6 +119,8 @@ public class DictionaryController extends BaseController {
         dictionary.setUpdateTime(LocalDateTime.now());
         boolean success = iBtDictionaryService.save(dictionary);
         if(success){
+            // 重载字典
+            iBtDictionaryService.loadDictionary();
             return Return.success();
         }else{
             return Return.fail("添加失败");
@@ -138,6 +143,8 @@ public class DictionaryController extends BaseController {
             log.info("delete dictionary [{}]",idsArray);
             boolean success = iBtDictionaryService.removeByIds(idsArray);
             if(success){
+                // 重载字典
+                iBtDictionaryService.loadDictionary();
                 return Return.success();
             }else{
                 return Return.fail("删除失败");
