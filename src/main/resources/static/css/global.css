@@ -19,6 +19,9 @@
 .center{
     text-align: center;
 }
+.left{
+    text-align: left;
+}
 .header-fixed{
     position: fixed;
     top: 0px;

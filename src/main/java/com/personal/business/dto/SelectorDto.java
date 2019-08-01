@@ -3,7 +3,9 @@
  */
 package com.personal.business.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author sunpeikai
@@ -11,6 +13,8 @@ import lombok.Data;
  * @description
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class SelectorDto {
     // 数据字典下拉框 - key 对应 id
     private Integer key;

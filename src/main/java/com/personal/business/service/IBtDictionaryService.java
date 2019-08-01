@@ -38,4 +38,12 @@ public interface IBtDictionaryService extends IService<BtDictionary> {
      * @return
      */
     void loadDictionary();
+
+    /**
+     * @description 根据id查询名称
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    String getNameById(Integer id);
 }

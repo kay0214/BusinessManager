@@ -8,6 +8,11 @@ package com.personal.business.constant;
 public interface CommonConstant {
 
     /**
+     * 数据字典 - 全部
+     */
+    String DICTIONARY_ALL = "all";
+
+    /**
      * thymeleaf配置 - 权限模板工具
      */
     String THYMELEAF_TEMPLATE_UTILS = "permission";

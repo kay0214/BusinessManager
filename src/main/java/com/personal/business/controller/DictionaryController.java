@@ -162,9 +162,7 @@ public class DictionaryController extends BaseController {
     @RequiresPermissions(ShiroPermissionsConstant.PERM_DIC_EXPORT)
     @GetMapping("/exportExcel")
     public void exportExcel(HttpServletResponse response) {
-        log.info("export excel");
         List<BtDictionary> result = iBtDictionaryService.getAllDictionary();
-
         if (CollectionUtils.isNotEmpty(result)){
             List<DictionaryExportDto> exportDtos = CommonUtils.convertBeanList(result,DictionaryExportDto.class);
             // 导出数据
