@@ -35,44 +35,41 @@
 
                     <div class="layui-col-md2">
                         <div class="layui-input-inline">
-                            <select id="type">
+                            <select id="companyType">
                                 <option value="">类型</option>
-                                <option value="0">管理员</option>
-                                <option value="1">普通用户</option>
-                                <option value="2">VIP用户</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="layui-col-md2">
                         <div class="layui-input-inline">
-                            <select id="status">
+                            <select id="companyStatus">
                                 <option value="">状态</option>
-                                <option value="0">禁用</option>
-                                <option value="1">启用</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="layui-col-md2">
-                        <button class="layui-btn" id="search" data-type="reload">搜索</button>
+                        <button class="layui-btn layui-btn-normal layui-btn-radius" id="search" data-type="reload"><i class="layui-icon layui-icon-search"></i>&nbsp;搜索</button>
                     </div>
                 </div>
 
             </div>
         </div>
-        <div class="layui-row" style="margin-top: 10px">
-            <table class="layui-hide center" id="company" lay-filter="company"></table>
+        <div class="layui-row center" style="margin-top: 10px">
+            <table class="layui-hide" id="company" lay-filter="company"></table>
         </div>
         <div class="layui-btn-container" hidden id="tools">
-            <button class="layui-btn layui-btn-sm" onclick="addCompany()" id="addCompany">添加</button>
-            <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="editCompany()" id="editCompany">编辑</button>
-            <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="delCompany()" id="delCompany">删除</button>
+            <div class="left">
+                <button class="layui-btn layui-btn-sm" onclick="addCompany()" id="addCompany">添加</button>
+                <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="editCompany()" id="editCompany">编辑</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="delCompany()" id="delCompany">删除</button>
+            </div>
         </div>
     </div>
     <script src="/layui/layui.js"></script>
     <script th:inline="javascript">
-        var tableId='company',layer=null,$,form,table;
+        var tableId='company',layer=null,$,form,table,types,states;
         layui.use(['jquery','layer','table','form'], function(){
             form = layui.form;
             $=layui.$;
@@ -80,6 +77,26 @@
             layer=layui.layer;
             var toolBar = ['filter','exports'];
 
+            // 获取下拉框
+            types = [[${@selector.getSelector('relationship')}]];
+            states = [[${@selector.getSelector('status')}]];
+            console.info(states);
+            // 填充html下拉框
+            // 关系类型
+            var typesHtml = '';
+            for(var i=0;i<types.length;i++){
+                typesHtml += '<option value="' + types[i].key + '">' + types[i].value + '</option>';
+            }
+            $("#companyType").append(typesHtml);
+            // 状态类型
+            var statesHtml = '';
+            for(var j=0;j<states.length;j++){
+                statesHtml += '<option value="' + states[j].key + '">' + states[j].value + '</option>';
+            }
+            $("#companyStatus").append(statesHtml);
+            // 重新渲染
+            form.render();
+            // 填充下拉框结束
             table.render({
                 id:tableId
                 ,elem: '#'+tableId
@@ -107,15 +124,22 @@
                     [
                         {type: 'checkbox'}
                         ,{field:'companyCode', minWidth:120, title: '助记码',edit: 'text'}
-                        ,{field:'typeDesc', width:100, title: '类型',templet:function (data) {
-                            return "<span class='layui-badge-rim'>" + data.typeDesc + "</span>";
+                        ,{field:'type', width:100, title: '类型',templet:function (data) {
+                            for(var i=0;i<types.length;i++){
+                                if(data.type===types[i].key){
+                                    return "<span class='layui-badge-rim'>" + types[i].value + "</span>";
+                                }
+                            }
                         }}
                         ,{field:'creditCode', width:200, title: '证件号',edit: 'text'}
                         ,{field:'fullName', width:150, title: '全称'}
                         ,{field:'shortName', width:100, title: '简称'}
-
-                        ,{field:'statusDesc', title: '状态',width:100,templet:function (data) {
-                            return "<span class='layui-badge layui-badge-blue'>" + data.statusDesc + "</span>";
+                        ,{field:'status', title: '状态',width:100,templet:function (data) {
+                            for(var i=0;i<states.length;i++){
+                                if(data.status===states[i].key){
+                                    return "<span class='layui-badge layui-badge-blue'>" + states[i].value + "</span>";
+                                }
+                            }
                         }}
                         ,{field:'used', width:90, title: '已使用',templet:function (data) {
                             if(data.used===1){
@@ -136,8 +160,8 @@
                     var fullName = $('#fullName');
                     var creditCode = $('#creditCode');
                     var companyCode = $('#companyCode');
-                    var type = $('#type');
-                    var status = $('#status');
+                    var type = $('#companyType');
+                    var status = $('#companyStatus');
                     //执行重载
                     table.reload(tableId, {
                         page: {
@@ -154,7 +178,6 @@
                 }
             };
             $('#search').on('click', function(){
-                console.info("click search");
                 var type = $(this).data('type');
                 active[type] ? active[type].call(this) : '';
             });
@@ -167,8 +190,6 @@
                 return;
             }
             var company = checkCompanies[0];
-            var types = [[${@selector.getSelector('relationship')}]];
-            var status = [[${@selector.getSelector('status')}]];
             // 关系类型
             var typesHtml = '<div class="layui-form-item"><label class="layui-form-label">关系类型</label><div class="layui-input-block"><select name="type" lay-verify="required"><option value="">请选择关系类型</option>';
             for(var i=0;i<types.length;i++){
@@ -181,11 +202,11 @@
             typesHtml += '</select></div></div>';
             // 状态类型
             var statusHtml = '<div class="layui-form-item"><label class="layui-form-label">状态</label><div class="layui-input-block">';
-            for(var j=0;j<status.length;j++){
-                if(company.status===status[j].key){
-                    statusHtml += '<input type="radio" name="status" value="' + status[j].key + '" title="' + status[j].value + '" checked>';
+            for(var j=0;j<states.length;j++){
+                if(company.status===states[j].key){
+                    statusHtml += '<input type="radio" name="status" value="' + states[j].key + '" title="' + states[j].value + '" checked>';
                 }else{
-                    statusHtml += '<input type="radio" name="status" value="' + status[j].key + '" title="' + status[j].value + '">';
+                    statusHtml += '<input type="radio" name="status" value="' + states[j].key + '" title="' + states[j].value + '">';
                 }
             }
             statusHtml += '</div></div>';
@@ -299,8 +320,6 @@
         }
         // 添加
         function addCompany(){
-            var types = [[${@selector.getSelector('relationship')}]];
-            var status = [[${@selector.getSelector('status')}]];
             // 关系类型
             var typesHtml = '<div class="layui-form-item"><label class="layui-form-label">关系类型</label><div class="layui-input-block"><select name="type" lay-verify="required"><option value="">请选择关系类型</option>';
             for(var i=0;i<types.length;i++){
@@ -309,11 +328,11 @@
             typesHtml += '</select></div></div>';
             // 状态类型
             var statusHtml = '<div class="layui-form-item"><label class="layui-form-label">状态</label><div class="layui-input-block">';
-            for(var j=0;j<status.length;j++){
+            for(var j=0;j<states.length;j++){
                 if(j===0){
-                    statusHtml += '<input type="radio" name="status" value="' + status[j].key + '" title="' + status[j].value + '" checked>';
+                    statusHtml += '<input type="radio" name="status" value="' + states[j].key + '" title="' + states[j].value + '" checked>';
                 }else{
-                    statusHtml += '<input type="radio" name="status" value="' + status[j].key + '" title="' + status[j].value + '">';
+                    statusHtml += '<input type="radio" name="status" value="' + states[j].key + '" title="' + states[j].value + '">';
                 }
             }
             statusHtml += '</div></div>';

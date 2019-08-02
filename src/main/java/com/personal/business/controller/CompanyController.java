@@ -51,13 +51,7 @@ public class CompanyController extends BaseController {
     @ResponseBody
     public Return getAllCompany(CompanyRequest companyRequest){
         IPage<BtCompany> page = iBtCompanyService.getAllCompany(companyRequest);
-        IPage<CompanyDto> result = page.convert(btCompany -> {
-            CompanyDto resultDto = CommonUtils.convertBean(btCompany,CompanyDto.class);
-            resultDto.setTypeDesc(dictionaryService.getNameById(resultDto.getType()));
-            resultDto.setStatusDesc(dictionaryService.getNameById(resultDto.getStatus()));
-            return resultDto;
-        });
-        return Return.data(result);
+        return Return.data(page);
     }
 
     /**

@@ -30,6 +30,11 @@ public interface ShiroPermissionsConstant {
     String PERM_DIC = "dic:";
 
     /**
+     * 权限 - 单位及个人相关
+     */
+    String PERM_COMPANY = "company:";
+
+    /**
      * 权限 - 查询
      */
     String PERM_LIST = "list";
@@ -148,4 +153,24 @@ public interface ShiroPermissionsConstant {
      * 权限 - 导出字典
      */
     String PERM_DIC_EXPORT = PERM_BASE + PERM_DIC + PERM_EXPORT;
+
+    /**
+     * 权限 - 查询单位或个人
+     * */
+    String PERM_COMPANY_LIST = PERM_BASE + PERM_COMPANY + PERM_LIST;
+
+    /**
+     * 权限 - 更新单位或个人
+     * */
+    String PERM_COMPANY_EDIT = PERM_BASE + PERM_COMPANY + PERM_EDIT;
+
+    /**
+     * 权限 - 新增单位或个人
+     * */
+    String PERM_COMPANY_ADD = PERM_BASE + PERM_COMPANY + PERM_ADD;
+
+    /**
+     * 权限 - 删除单位或个人
+     * */
+    String PERM_COMPANY_DEL = PERM_BASE + PERM_COMPANY + PERM_DEL;
 }
