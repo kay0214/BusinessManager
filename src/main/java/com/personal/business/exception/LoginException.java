@@ -1,6 +1,6 @@
 package com.personal.business.exception;
 
-import com.personal.business.Enum.ResultEnum;
+import com.personal.business.enums.ResultEnum;
 import lombok.Data;
 
 /**

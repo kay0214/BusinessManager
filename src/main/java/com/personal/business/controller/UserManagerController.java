@@ -5,7 +5,7 @@ package com.personal.business.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.personal.business.Enum.ResultEnum;
+import com.personal.business.enums.ResultEnum;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.config.SystemConfig;
@@ -16,7 +16,6 @@ import com.personal.business.entity.BtUser;
 import com.personal.business.request.UserRequest;
 import com.personal.business.service.IBtUserService;
 import com.personal.business.utils.CommonUtils;
-import com.personal.business.utils.DataMaskUtils;
 import com.personal.business.utils.Md5Utils;
 import com.personal.business.utils.RandomUtils;
 import lombok.extern.slf4j.Slf4j;

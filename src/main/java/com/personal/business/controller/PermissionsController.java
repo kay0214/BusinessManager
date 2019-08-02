@@ -3,7 +3,7 @@
  */
 package com.personal.business.controller;
 
-import com.personal.business.Enum.ResultEnum;
+import com.personal.business.enums.ResultEnum;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.constant.ShiroPermissionsConstant;

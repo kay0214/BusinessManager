@@ -3,7 +3,7 @@
  */
 package com.personal.business.base;
 
-import com.personal.business.Enum.ResultEnum;
+import com.personal.business.enums.ResultEnum;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

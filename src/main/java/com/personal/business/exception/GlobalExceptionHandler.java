@@ -3,8 +3,8 @@
  */
 package com.personal.business.exception;
 
-import com.personal.business.Enum.ResultEnum;
 import com.personal.business.base.Return;
+import com.personal.business.enums.ResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;

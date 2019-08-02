@@ -1,7 +1,7 @@
 /*
  * @Copyright: 2005-2018 www.hyjf.com. All rights reserved.
  */
-package com.personal.business.Enum;
+package com.personal.business.enums;
 
 import java.io.Serializable;
 
@@ -24,7 +24,7 @@ public enum  ResultEnum implements Serializable {
     ERROR_NOT_LOGIN("E015","您尚未登录"),
     ERROR_NOT_AUTH("E016","您尚无权限"),
     ERROR_PARAM_NOT_ENOUGH("E017","参数缺失"),
-
+    ERROR_DICTIONARY_CANNOT_DEL("E018","内置字典不允许删除"),
 
     END("","枚举结束");
 
