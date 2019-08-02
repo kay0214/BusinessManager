@@ -11,6 +11,56 @@
 <div class="layui-body">
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">
+        <div class="demoTable">
+            <div class="padding-top-2p layui-form">
+                <div class="layui-row layui-col-space15">
+
+                    <div class="layui-col-md2">
+                        <div class="layui-inline">
+                            <input class="layui-input" placeholder="名称" id="fullName" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="layui-col-md2">
+                        <div class="layui-inline">
+                            <input class="layui-input" placeholder="证件号" id="creditCode" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="layui-col-md2">
+                        <div class="layui-inline">
+                            <input class="layui-input" placeholder="助记码" id="companyCode" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="layui-col-md2">
+                        <div class="layui-input-inline">
+                            <select id="type">
+                                <option value="">类型</option>
+                                <option value="0">管理员</option>
+                                <option value="1">普通用户</option>
+                                <option value="2">VIP用户</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-md2">
+                        <div class="layui-input-inline">
+                            <select id="status">
+                                <option value="">状态</option>
+                                <option value="0">禁用</option>
+                                <option value="1">启用</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-md2">
+                        <button class="layui-btn" id="search" data-type="reload">搜索</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
         <div class="layui-row" style="margin-top: 10px">
             <table class="layui-hide center" id="company" lay-filter="company"></table>
         </div>
@@ -61,7 +111,7 @@
                             return "<span class='layui-badge-rim'>" + data.typeDesc + "</span>";
                         }}
                         ,{field:'creditCode', width:200, title: '证件号',edit: 'text'}
-                        ,{field:'fullName', width:150, title: '全名'}
+                        ,{field:'fullName', width:150, title: '全称'}
                         ,{field:'shortName', width:100, title: '简称'}
 
                         ,{field:'statusDesc', title: '状态',width:100,templet:function (data) {
@@ -76,43 +126,90 @@
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
                         }}
+                        ,{field:'remark', width:150, title: '描述'}
                     ]
                 ]
+            });
+            // 搜索
+            var active = {
+                reload: function(){
+                    var fullName = $('#fullName');
+                    var creditCode = $('#creditCode');
+                    var companyCode = $('#companyCode');
+                    var type = $('#type');
+                    var status = $('#status');
+                    //执行重载
+                    table.reload(tableId, {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        ,where: {
+                            fullName: fullName.val(),
+                            creditCode:creditCode.val(),
+                            companyCode:companyCode.val(),
+                            type:type.val(),
+                            status:status.val()
+                        }
+                    });
+                }
+            };
+            $('#search').on('click', function(){
+                console.info("click search");
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
             });
         });
         // 编辑信息
         function editCompany(){
-            console.info(dic);
-            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">字典名称</label>'
-                + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" value="' + dic.name + '" autocomplete="off" class="layui-input"></div></div>'
-/*                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
-                + '<div class="layui-input-block"><input type="text" name="value" required  lay-verify="required" placeholder="请输入数值" value="' + dic.value + '" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
-                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" value="' + dic.type + '" autocomplete="off" class="layui-input"></div></div>'*/
-                + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
-                + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" value="' + dic.orderNum + '" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">状态</label>';
-            if(dic.freeze===0){
-                formText+='<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用" checked><input type="radio" name="freeze" value="1" title="冻结"></div></div>';
-            }else if(dic.freeze===1){
-                formText+='<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用"><input type="radio" name="freeze" value="1" title="冻结" checked></div></div>';
+            var checkCompanies = table.checkStatus(tableId).data;
+            if(checkCompanies.length!==1){
+                layer.msg("请选择一个公司或个人",{icon:5});
+                return;
             }
-            // 是否已用
-            formText+='<div class="layui-form-item"><label class="layui-form-label">是否已用</label>';
-            if(dic.used===0){
-                formText+='<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>';
-            }else if(dic.used===1){
-                formText+='<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用"><input type="radio" name="used" value="1" title="已用" checked></div></div>';
+            var company = checkCompanies[0];
+            var types = [[${@selector.getSelector('relationship')}]];
+            var status = [[${@selector.getSelector('status')}]];
+            // 关系类型
+            var typesHtml = '<div class="layui-form-item"><label class="layui-form-label">关系类型</label><div class="layui-input-block"><select name="type" lay-verify="required"><option value="">请选择关系类型</option>';
+            for(var i=0;i<types.length;i++){
+                if(company.type===types[i].key){
+                    typesHtml += '<option value="' + types[i].key + '" selected>' + types[i].value + '</option>';
+                }else{
+                    typesHtml += '<option value="' + types[i].key + '">' + types[i].value + '</option>';
+                }
             }
-            // 内置
-            formText+='<div class="layui-form-item"><label class="layui-form-label">内置</label>';
-            if(dic.builtIn===0){
-                formText+='<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否" checked><input type="radio" name="builtIn" value="1" title="是"></div></div>';
-            }else if(dic.builtIn===1){
-                formText+='<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否"><input type="radio" name="builtIn" value="1" title="是" checked></div></div>';
+            typesHtml += '</select></div></div>';
+            // 状态类型
+            var statusHtml = '<div class="layui-form-item"><label class="layui-form-label">状态</label><div class="layui-input-block">';
+            for(var j=0;j<status.length;j++){
+                if(company.status===status[j].key){
+                    statusHtml += '<input type="radio" name="status" value="' + status[j].key + '" title="' + status[j].value + '" checked>';
+                }else{
+                    statusHtml += '<input type="radio" name="status" value="' + status[j].key + '" title="' + status[j].value + '">';
+                }
+            }
+            statusHtml += '</div></div>';
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">公司全称/个人全名</label>'
+                + '<div class="layui-input-block"><input type="text" placeholder="请输入公司全称/个人全名" name="fullName" value="' + company.fullName + '" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">简称</label>'
+                + '<div class="layui-input-block"><input type="text" name="shortName" value="' + company.shortName + '" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">助记码</label>'
+                + '<div class="layui-input-block"><input type="text" name="companyCode" value="' + company.companyCode + '" placeholder="请输入助记码" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">信用代码/身份证号</label>'
+                + '<div class="layui-input-block"><input type="text" name="creditCode" value="' + company.creditCode + '" required  lay-verify="required" placeholder="请输入信用代码/身份证号" autocomplete="off" class="layui-input"></div></div>'
+                // 关系类型
+                + typesHtml
+                // 启用类型
+                + statusHtml;
+            if(company.used===0){
+                formText += '<div class="layui-form-item"><label class="layui-form-label">是否已用</label>'
+                    + '<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>';
+            }else{
+                formText += '<div class="layui-form-item"><label class="layui-form-label">是否已用</label>'
+                    + '<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用"><input type="radio" name="used" value="1" title="已用" checked></div></div>';
             }
             formText += '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
-                + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" value="' + dic.remark + '" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="remark" value="' + company.remark + '" placeholder="请输入备注" autocomplete="off" class="layui-input"></div></div>'
                 + '</form>';
             layer.open({
                 type: 1
@@ -120,33 +217,33 @@
                 ,title:'编辑'
                 ,shadeClose: true
                 ,skin: 'layui-layer-rim'
-                ,area:['450px','500px']
+                ,area:['450px','650px']
                 ,btn: ['确定', '取消']
                 ,success: function(layero, index){
-                    form.render('radio');
+                    form.render();
                 }
                 ,yes: function(index, layero){
-                    var name = $("input[name='name']").val();
-                    var value = $("input[name='value']").val();
-                    var type = $("input[name='type']").val();
-                    var orderNum = $("input[name='orderNum']").val();
-                    var freeze = $("input[name='freeze']:checked").val();
+                    var fullName = $("input[name='fullName']").val();
+                    var shortName = $("input[name='shortName']").val();
+                    var companyCode = $("input[name='companyCode']").val();
+                    var creditCode = $("input[name='creditCode']").val();
+                    var type = $("select[name='type']").val();
+                    var status = $("input[name='status']:checked").val();
                     var used = $("input[name='used']:checked").val();
-                    var builtIn = $("input[name='builtIn']:checked").val();
                     var remark = $("input[name='remark']").val();
                     $.ajax({
                         type: 'POST',
-                        url: "/system/dictionary/update",
+                        url: "/company/update",
                         contentType: "application/json;charset=utf-8",
                         data: JSON.stringify({
-                            id:dic.id,
-                            name:name,
-                            value:value,
+                            id:company.id,
+                            fullName:fullName,
+                            shortName:shortName,
+                            companyCode:companyCode,
+                            creditCode:creditCode,
                             type:type,
-                            orderNum:orderNum,
-                            freeze:freeze,
                             used:used,
-                            builtIn:builtIn,
+                            status:status,
                             remark:remark
                         }),
                         success: function(result){
@@ -154,7 +251,7 @@
                             layer.closeAll();
                             if(result.status === 'S001'){
                                 // 更新成功 - 关掉
-                                treeGrid.reload(tableId);
+                                table.reload(tableId);
                                 layer.msg(result.statusDesc,{icon: 6});
                             }else{
                                 // 更新失败 - 给出错误提示
@@ -167,30 +264,30 @@
         }
         // 删除菜单
         function delCompany(){
-            var dics = treeGrid.checkStatus(tableId).data;
-            if(dics===null || dics===undefined || dics.length<1){
-                layer.msg("未选择任何字典",{icon:5});
+            var checkCompanies = table.checkStatus(tableId).data;
+            if(checkCompanies===null || checkCompanies===undefined || checkCompanies.length<1){
+                layer.msg("未选择任何公司或个人",{icon:5});
                 return;
             }
             var ids = new Array();
-            for(var i=0;i<dics.length;i++){
-                var dic = dics[i];
-                ids.push(dic.id);
+            for(var i=0;i<checkCompanies.length;i++){
+                var company = checkCompanies[i];
+                ids.push(company.id);
             }
             layer.open({
                 type: 1
-                ,content: '<div style="text-align: center;margin-top: 30px;">如果存在下级节点则一并删除，确定？</div>'
+                ,content: '<div style="text-align: center;margin-top: 30px;">确定删除该公司或个人？</div>'
                 ,title:'删除'
                 ,shadeClose: true
                 ,skin: 'layui-layer-rim'
                 ,area:['300px','200px']
                 ,btn: ['确定', '取消']
                 ,yes: function(index, layero){
-                    $.get("/system/dictionary/delete/" + ids.toString(), function(result){
+                    $.get("/company/delete/" + ids.toString(), function(result){
                         layer.closeAll();
                         if(result.status === 'S001'){
                             // 更新成功 - 关掉
-                            treeGrid.reload(tableId);
+                            table.reload(tableId);
                             layer.msg(result.statusDesc,{icon: 6});
                         }else{
                             // 更新失败 - 给出错误提示
@@ -200,24 +297,40 @@
                 }
             });
         }
-        // 添加目录菜单
+        // 添加
         function addCompany(){
-            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级字典</label>'
-                + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="主目录" autocomplete="off" class="layui-input layui-disabled"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">字典名称</label>'
-                + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">代码</label>'
-                + '<div class="layui-input-block"><input type="text" name="selfId" required  lay-verify="required" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
-/*                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
-                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'*/
-                + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
-                + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" autocomplete="off" class="layui-input"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">状态</label>'
-                + '<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用" checked><input type="radio" name="freeze" value="1" title="冻结"></div></div>'
+            var types = [[${@selector.getSelector('relationship')}]];
+            var status = [[${@selector.getSelector('status')}]];
+            // 关系类型
+            var typesHtml = '<div class="layui-form-item"><label class="layui-form-label">关系类型</label><div class="layui-input-block"><select name="type" lay-verify="required"><option value="">请选择关系类型</option>';
+            for(var i=0;i<types.length;i++){
+                typesHtml += '<option value="' + types[i].key + '">' + types[i].value + '</option>';
+            }
+            typesHtml += '</select></div></div>';
+            // 状态类型
+            var statusHtml = '<div class="layui-form-item"><label class="layui-form-label">状态</label><div class="layui-input-block">';
+            for(var j=0;j<status.length;j++){
+                if(j===0){
+                    statusHtml += '<input type="radio" name="status" value="' + status[j].key + '" title="' + status[j].value + '" checked>';
+                }else{
+                    statusHtml += '<input type="radio" name="status" value="' + status[j].key + '" title="' + status[j].value + '">';
+                }
+            }
+            statusHtml += '</div></div>';
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">公司全称/个人全名</label>'
+                + '<div class="layui-input-block"><input type="text" placeholder="请输入公司全称/个人全名" name="fullName" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">简称</label>'
+                + '<div class="layui-input-block"><input type="text" name="shortName" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">助记码</label>'
+                + '<div class="layui-input-block"><input type="text" name="companyCode" placeholder="请输入助记码" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">信用代码/身份证号</label>'
+                + '<div class="layui-input-block"><input type="text" name="creditCode" required  lay-verify="required" placeholder="请输入信用代码/身份证号" autocomplete="off" class="layui-input"></div></div>'
+                // 关系类型
+                + typesHtml
+                // 启用类型
+                + statusHtml
                 + '<div class="layui-form-item"><label class="layui-form-label">是否已用</label>'
                 + '<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">内置</label>'
-                + '<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否" checked><input type="radio" name="builtIn" value="1" title="是"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
                 + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" autocomplete="off" class="layui-input"></div></div>'
                 + '</form>';
@@ -227,31 +340,32 @@
                 ,title:'编辑'
                 ,shadeClose: true
                 ,skin: 'layui-layer-rim'
-                ,area:['450px','570px']
+                ,area:['450px','650px']
                 ,btn: ['确定', '取消']
                 ,success: function(layero, index){
-                    form.render('radio');
+                    form.render();
                 }
                 ,yes: function(index, layero){
-                    var name = $("input[name='name']").val();
-                    var selfId = $("input[name='selfId']").val();
-                    var orderNum = $("input[name='orderNum']").val();
-                    var freeze = $("input[name='freeze']:checked").val();
+                    var fullName = $("input[name='fullName']").val();
+                    var shortName = $("input[name='shortName']").val();
+                    var companyCode = $("input[name='companyCode']").val();
+                    var creditCode = $("input[name='creditCode']").val();
+                    var type = $("select[name='type']").val();
+                    var status = $("input[name='status']:checked").val();
                     var used = $("input[name='used']:checked").val();
-                    var builtIn = $("input[name='builtIn']:checked").val();
                     var remark = $("input[name='remark']").val();
                     $.ajax({
                         type: 'POST',
-                        url: "/system/dictionary/insert",
+                        url: "/company/insert",
                         contentType: "application/json;charset=utf-8",
                         data: JSON.stringify({
-                            name:name,
-                            selfId:selfId,
-                            orderNum:orderNum,
-                            parentId:0,
-                            freeze:freeze,
+                            fullName:fullName,
+                            shortName:shortName,
+                            companyCode:companyCode,
+                            creditCode:creditCode,
+                            type:type,
                             used:used,
-                            builtIn:builtIn,
+                            status:status,
                             remark:remark
                         }),
                         success: function(result){
@@ -259,7 +373,7 @@
                             layer.closeAll();
                             if(result.status === 'S001'){
                                 // 更新成功 - 关掉
-                                treeGrid.reload(tableId);
+                                table.reload(tableId);
                                 layer.msg(result.statusDesc,{icon: 6});
                             }else{
                                 // 更新失败 - 给出错误提示

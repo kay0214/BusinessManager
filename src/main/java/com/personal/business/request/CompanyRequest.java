@@ -14,13 +14,13 @@ import lombok.Data;
 @Data
 public class CompanyRequest extends BasePage {
 
-    private String companyCode;
-
-    private Integer type;
+    private String fullName;
 
     private String creditCode;
 
-    private String fullName;
+    private String companyCode;
+
+    private Integer type;
 
     private Integer status;
 }

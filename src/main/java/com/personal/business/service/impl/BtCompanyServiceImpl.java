@@ -10,6 +10,7 @@ import com.personal.business.request.CompanyRequest;
 import com.personal.business.service.IBtCompanyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -33,7 +34,12 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
     @Override
     public IPage<BtCompany> getAllCompany(CompanyRequest companyRequest) {
         QueryWrapper<BtCompany> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().select().orderByDesc(BtCompany::getCreateTime);
+        queryWrapper.lambda().select().orderByDesc(BtCompany::getCreateTime)
+                .and(!StringUtils.isEmpty(companyRequest.getFullName()),obj->obj.like(BtCompany::getFullName,companyRequest.getFullName()))
+                .and(!StringUtils.isEmpty(companyRequest.getCreditCode()),obj->obj.like(BtCompany::getCreditCode,companyRequest.getCreditCode()))
+                .and(!StringUtils.isEmpty(companyRequest.getCompanyCode()),obj->obj.like(BtCompany::getCompanyCode,companyRequest.getCompanyCode()))
+                .and(companyRequest.getType()!=null,obj->obj.eq(BtCompany::getType,companyRequest.getType()))
+                .and(companyRequest.getStatus()!=null,obj->obj.eq(BtCompany::getStatus,companyRequest.getStatus()));
         return page(new Page<>(companyRequest.getPage(),companyRequest.getLimit()),queryWrapper);
     }
 }

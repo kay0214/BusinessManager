@@ -65,7 +65,7 @@
                 ,isFilter:false
                 ,height: '80%'
                 ,iconOpen:false//是否显示图标【默认显示】
-                ,isOpenDefault:false//节点默认是展开还是折叠【默认展开】
+                ,isOpenDefault:true//节点默认是展开还是折叠【默认展开】
                 ,loading:true
                 ,method:'get'
                 ,isPage:false
@@ -85,13 +85,13 @@
                 ,cols: [
                     [
                         {type: 'checkbox'}
-                        ,{field:'name', minWidth:120, title: '字典名'}
-                        /*,{field:'value', width:80, title: '字典值'}
-                        ,{field:'type', width:120, title: '区分',edit: 'text'}*/
-                        ,{field:'parentId', width:100, title: '上级代码',edit: 'text'}
+                        ,{field:'name', minWidth:150, title: '字典名'}
+                        ,{field:'value', width:45, title: '值'}
+                        ,{field:'type', width:100, title: '区分'}
+                        ,{field:'parentId', width:80, title: '上级',edit: 'text'}
                         ,{field:'selfId', width:100, title: '代码',edit: 'text'}
                         ,{field:'orderNum', width:60, title: '排序'}
-                        ,{field:'freeze', title: '状态',width:100,templet:function (data) {
+                        ,{field:'freeze', title: '状态',width:80,templet:function (data) {
                             if(data.freeze===1){
                                 return "<span class='layui-badge layui-bg-red'>冻结</span>";
                             }else if(data.freeze===0){
@@ -100,7 +100,7 @@
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
                         }}
-                        ,{field:'used', width:90, title: '已使用',templet:function (data) {
+                        ,{field:'used', width:80, title: '已使用',templet:function (data) {
                             if(data.used===1){
                                 return "<span class='layui-badge layui-bg-blue'>已用</span>";
                             }else if(data.used===0){
@@ -109,7 +109,7 @@
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
                         }}
-                        ,{field:'builtIn', width:90, title: '内置',templet:function (data) {
+                        ,{field:'builtIn', width:80, title: '内置',templet:function (data) {
                             if(data.builtIn===1){
                                 return "<span class='layui-badge layui-bg-blue'>是</span>";
                             }else if(data.builtIn===0){
@@ -118,7 +118,7 @@
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
                         }}
-                        ,{field:'remark', minWidth:120, title: '描述'}
+                        ,{field:'remark', width:80, title: '描述'}
                         ,{fixed:'right', width:180, title: '操作',templet:function (data) {
                             return "<button class='layui-btn layui-btn-sm layui-btn-normal layui-btn-" + [[${#permission.hasPermission('business:dic:edit')}]] + "' " + [[${#permission.hasPermission('business:dic:edit')}]] + " lay-event='editDic'>编辑</button>"
                                 +"<button class='layui-btn layui-btn-sm layui-btn-" + [[${#permission.hasPermission('business:dic:add')}]] + "' " + [[${#permission.hasPermission('business:dic:add')}]] + " lay-event='addChild'>添加下级菜单</button>";
@@ -177,10 +177,10 @@
             console.info(dic);
             var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">字典名称</label>'
                 + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" value="' + dic.name + '" autocomplete="off" class="layui-input"></div></div>'
-/*                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
                 + '<div class="layui-input-block"><input type="text" name="value" required  lay-verify="required" placeholder="请输入数值" value="' + dic.value + '" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
-                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" value="' + dic.type + '" autocomplete="off" class="layui-input"></div></div>'*/
+                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" value="' + dic.type + '" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
                 + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" value="' + dic.orderNum + '" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">状态</label>';
@@ -205,7 +205,7 @@
                 ,title:'编辑'
                 ,shadeClose: true
                 ,skin: 'layui-layer-rim'
-                ,area:['450px','470px']
+                ,area:['450px','550px']
                 ,btn: ['确定', '取消']
                 ,success: function(layero, index){
                     form.render('radio');
@@ -291,8 +291,10 @@
                 + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">代码</label>'
                 + '<div class="layui-input-block"><input type="text" name="selfId" required  lay-verify="required" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
-/*                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
-                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'*/
+                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
+                + '<div class="layui-input-block"><input type="text" placeholder="请输入数值" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
+                + '<div class="layui-input-block"><input type="text" name="type" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
                 + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">状态</label>'
@@ -308,7 +310,7 @@
                 ,title:'添加下级菜单'
                 ,shadeClose: true
                 ,skin: 'layui-layer-rim'
-                ,area:['450px','550px']
+                ,area:['450px','620px']
                 ,btn: ['确定', '取消']
                 ,success: function(layero, index){
                     form.render('radio');
@@ -316,6 +318,8 @@
                 ,yes: function(index, layero){
                     var name = $("input[name='name']").val();
                     var selfId = $("input[name='selfId']").val();
+                    var value = $("input[name='value']").val();
+                    var type = $("input[name='type']").val();
                     var orderNum = $("input[name='orderNum']").val();
                     var freeze = $("input[name='freeze']:checked").val();
                     var used = $("input[name='used']:checked").val();
@@ -327,6 +331,8 @@
                         data: JSON.stringify({
                             name:name,
                             selfId:selfId,
+                            value: value,
+                            type:type,
                             orderNum:orderNum,
                             parentId:dic.selfId,
                             freeze:freeze,
@@ -358,8 +364,10 @@
                 + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">代码</label>'
                 + '<div class="layui-input-block"><input type="text" name="selfId" required  lay-verify="required" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
-/*                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
-                + '<div class="layui-input-block"><input type="text" name="type" required  lay-verify="required" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'*/
+                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
+                + '<div class="layui-input-block"><input type="text" name="value" placeholder="请输入值" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
+                + '<div class="layui-input-block"><input type="text" name="type" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
                 + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">状态</label>'
@@ -375,7 +383,7 @@
                 ,title:'编辑'
                 ,shadeClose: true
                 ,skin: 'layui-layer-rim'
-                ,area:['450px','550px']
+                ,area:['450px','620px']
                 ,btn: ['确定', '取消']
                 ,success: function(layero, index){
                     form.render('radio');
