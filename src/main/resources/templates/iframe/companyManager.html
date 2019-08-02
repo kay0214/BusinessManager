@@ -123,25 +123,25 @@
                 ,cols: [
                     [
                         {type: 'checkbox'}
-                        ,{field:'companyCode', minWidth:120, title: '助记码',edit: 'text'}
-                        ,{field:'type', width:100, title: '类型',templet:function (data) {
+                        ,{field:'companyCode', minWidth:120, title: '助记码',align:'left'}
+                        ,{field:'type', width:100, title: '类型',align:'left',templet:function (data) {
                             for(var i=0;i<types.length;i++){
                                 if(data.type===types[i].key){
                                     return "<span class='layui-badge-rim'>" + types[i].value + "</span>";
                                 }
                             }
                         }}
-                        ,{field:'creditCode', width:200, title: '证件号',edit: 'text'}
-                        ,{field:'fullName', width:150, title: '全称'}
-                        ,{field:'shortName', width:100, title: '简称'}
-                        ,{field:'status', title: '状态',width:100,templet:function (data) {
+                        ,{field:'creditCode', width:200, title: '证件号',align:'left'}
+                        ,{field:'fullName', width:150, title: '全称',align:'left'}
+                        ,{field:'shortName', width:100, title: '简称',align:'left'}
+                        ,{field:'status', title: '状态',width:100,align:'left',templet:function (data) {
                             for(var i=0;i<states.length;i++){
                                 if(data.status===states[i].key){
                                     return "<span class='layui-badge layui-badge-blue'>" + states[i].value + "</span>";
                                 }
                             }
                         }}
-                        ,{field:'used', width:90, title: '已使用',templet:function (data) {
+                        ,{field:'used', width:90, title: '已使用',align:'left',templet:function (data) {
                             if(data.used===1){
                                 return "<span class='layui-badge layui-bg-blue'>已用</span>";
                             }else if(data.used===0){
@@ -150,7 +150,7 @@
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
                         }}
-                        ,{field:'remark', width:150, title: '描述'}
+                        ,{field:'remark', width:150,align:'left', title: '描述'}
                     ]
                 ]
             });

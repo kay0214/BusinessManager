@@ -68,6 +68,13 @@
                         var layer = layui.layer;
                         //监听导航点击
                         element.on('nav(sider)', function(elem){
+                            $.get("/system/login/isLogin", function(result){
+                                var isLogin = result.data;
+                                if(isLogin===null || isLogin===undefined || isLogin==='' || isLogin==='null' || isLogin==='undefined'){
+                                    // 如果没有登录，则先去登录
+                                    location.href = "/system/login/init";
+                                }
+                            });
                             var url = elem.data("url");
                             // 点击了菜单，设置上url
                             $("#iframe").attr("src",url);
