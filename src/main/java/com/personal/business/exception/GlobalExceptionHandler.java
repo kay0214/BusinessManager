@@ -50,6 +50,15 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 业务异常
+     */
+    @ExceptionHandler(BusinessException.class)
+    public Return handleBusiness(Exception e) {
+        log.error(e.getMessage(), e);
+        return Return.fail(e.getMessage());
+    }
+
+    /**
      * 参数校验异常
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)

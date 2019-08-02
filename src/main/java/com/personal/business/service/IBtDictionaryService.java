@@ -32,6 +32,14 @@ public interface IBtDictionaryService extends IService<BtDictionary> {
     List<BtDictionary> getAllChildren(Integer parentId);
 
     /**
+     * @description 根据id去查询字典是否内置
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    boolean isBuiltIn(String ids);
+
+    /**
      * @description 加载所有字典
      * @auth sunpeikai
      * @param

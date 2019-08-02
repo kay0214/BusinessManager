@@ -8,6 +8,16 @@ package com.personal.business.constant;
 public interface CommonConstant {
 
     /**
+     * 数据字典 - 内置
+     */
+    Integer DICTIONARY_BUILD_IN = 1;
+
+    /**
+     * 数据字典 - 不内置
+     */
+    Integer DICTIONARY_NOT_BUILD_IN = 0;
+
+    /**
      * 数据字典 - 全部
      */
     String DICTIONARY_ALL = "all";

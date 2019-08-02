@@ -52,6 +52,20 @@ public class BtDictionaryServiceImpl extends ServiceImpl<BtDictionaryMapper, BtD
     }
 
     /**
+     * @description 根据id去查询字典是否内置
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public boolean isBuiltIn(String ids) {
+        String[] id = ids.split(",");
+        QueryWrapper<BtDictionary> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().select().and(obj->obj.in(BtDictionary::getId,id)).and(obj->obj.eq(BtDictionary::getBuiltIn,CommonConstant.DICTIONARY_BUILD_IN));
+        return list(queryWrapper).size()>0;
+    }
+
+    /**
      * @description 加载所有字典
      * @auth sunpeikai
      * @param

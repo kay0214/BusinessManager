@@ -4,6 +4,7 @@
 package com.personal.business.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.personal.business.constant.CommonConstant;
 import com.personal.business.enums.ResultEnum;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
@@ -11,6 +12,7 @@ import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.dto.DictionaryExportDto;
 import com.personal.business.entity.BtDictionary;
 import com.personal.business.service.IBtDictionaryService;
+import com.personal.business.utils.CheckUtils;
 import com.personal.business.utils.CommonUtils;
 import com.personal.business.utils.EasyPoiUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +64,16 @@ public class DictionaryController extends BaseController {
     @PostMapping(value = "/update")
     @ResponseBody
     public Return update(@RequestBody BtDictionary dictionary){
-        log.info(JSON.toJSONString(dictionary));
+        BtDictionary checkDictionary = iBtDictionaryService.getById(dictionary.getId());
+        // 内置字典不允许修改个别值
+        if(checkDictionary.getBuiltIn().equals(CommonConstant.DICTIONARY_BUILD_IN)){
+            // 校验字典区分
+            CheckUtils.check(checkDictionary.getType().equals(dictionary.getType()),ResultEnum.ERROR_DICTIONARY_CANNOT_EDIT);
+            // 校验字典值
+            CheckUtils.check(checkDictionary.getValue().equals(dictionary.getValue()),ResultEnum.ERROR_DICTIONARY_CANNOT_EDIT);
+            // 校验内置
+            CheckUtils.check(checkDictionary.getBuiltIn().equals(dictionary.getBuiltIn()),ResultEnum.ERROR_DICTIONARY_CANNOT_EDIT);
+        }
         boolean success = iBtDictionaryService.updateById(dictionary);
         if(success){
             // 重载字典
@@ -84,6 +95,15 @@ public class DictionaryController extends BaseController {
     @ResponseBody
     public Return updateNode(@RequestBody BtDictionary dictionary){
         BtDictionary thisNode = iBtDictionaryService.getById(dictionary.getId());
+        // 内置字典不允许修改个别值
+        if(thisNode.getBuiltIn().equals(CommonConstant.DICTIONARY_BUILD_IN)){
+            // 校验字典区分
+            CheckUtils.check(thisNode.getType().equals(dictionary.getType()),ResultEnum.ERROR_DICTIONARY_CANNOT_EDIT);
+            // 校验字典值
+            CheckUtils.check(thisNode.getValue().equals(dictionary.getValue()),ResultEnum.ERROR_DICTIONARY_CANNOT_EDIT);
+            // 校验内置
+            CheckUtils.check(thisNode.getBuiltIn().equals(dictionary.getBuiltIn()),ResultEnum.ERROR_DICTIONARY_CANNOT_EDIT);
+        }
         if(!dictionary.getSelfId().equals(thisNode.getSelfId())){
             List<BtDictionary> children = iBtDictionaryService.getAllChildren(thisNode.getSelfId());
             if(CollectionUtils.isNotEmpty(children)){
@@ -114,6 +134,7 @@ public class DictionaryController extends BaseController {
     @ResponseBody
     public Return insert(@RequestBody BtDictionary dictionary){
         log.info("insert dictionary [{}]",JSON.toJSONString(dictionary));
+        dictionary.setBuiltIn(CommonConstant.DICTIONARY_NOT_BUILD_IN);
         dictionary.setDelFlag(0);
         dictionary.setCreateTime(LocalDateTime.now());
         dictionary.setUpdateTime(LocalDateTime.now());
@@ -138,6 +159,7 @@ public class DictionaryController extends BaseController {
     @ResponseBody
     public Return delete(@PathVariable String ids){
         if(!StringUtils.isEmpty(ids)){
+            CheckUtils.check(!iBtDictionaryService.isBuiltIn(ids),ResultEnum.ERROR_DICTIONARY_CANNOT_DEL);
             List<String> idsArray = new ArrayList<>();
             Collections.addAll(idsArray, ids.split(","));
             log.info("delete dictionary [{}]",idsArray);
@@ -169,4 +191,5 @@ public class DictionaryController extends BaseController {
             EasyPoiUtil.exportExcel(exportDtos,"数据字典","第一页", DictionaryExportDto.class,"数据字典.xls",response) ;
         }
     }
+
 }

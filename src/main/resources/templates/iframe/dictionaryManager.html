@@ -130,13 +130,8 @@
             treeGrid.on('tool(dictionary)',function (obj) {
                 if(obj.event === 'editDic'){//编辑
                     editDic(obj.data);
-                }else if(obj.event==="delDic"){//删除
-                    console.info("点击了删除功能");
-                    // delMenu(obj.data.menuId);
                 }else if(obj.event==='addChild'){
                     addChild(obj.data);
-                }else if(obj.event==='exportDic'){
-                    console.info("点击了导出功能");
                 }
             });
             treeGrid.on('edit(dictionary)', function(obj){
@@ -201,13 +196,6 @@
             }else if(dic.used===1){
                 formText+='<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用"><input type="radio" name="used" value="1" title="已用" checked></div></div>';
             }
-            // 内置
-            formText+='<div class="layui-form-item"><label class="layui-form-label">内置</label>';
-            if(dic.builtIn===0){
-                formText+='<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否" checked><input type="radio" name="builtIn" value="1" title="是"></div></div>';
-            }else if(dic.builtIn===1){
-                formText+='<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否"><input type="radio" name="builtIn" value="1" title="是" checked></div></div>';
-            }
             formText += '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
                 + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" value="' + dic.remark + '" autocomplete="off" class="layui-input"></div></div>'
                 + '</form>';
@@ -217,7 +205,7 @@
                 ,title:'编辑'
                 ,shadeClose: true
                 ,skin: 'layui-layer-rim'
-                ,area:['450px','500px']
+                ,area:['450px','470px']
                 ,btn: ['确定', '取消']
                 ,success: function(layero, index){
                     form.render('radio');
@@ -229,7 +217,6 @@
                     var orderNum = $("input[name='orderNum']").val();
                     var freeze = $("input[name='freeze']:checked").val();
                     var used = $("input[name='used']:checked").val();
-                    var builtIn = $("input[name='builtIn']:checked").val();
                     var remark = $("input[name='remark']").val();
                     $.ajax({
                         type: 'POST',
@@ -243,7 +230,6 @@
                             orderNum:orderNum,
                             freeze:freeze,
                             used:used,
-                            builtIn:builtIn,
                             remark:remark
                         }),
                         success: function(result){
@@ -313,8 +299,6 @@
                 + '<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用" checked><input type="radio" name="freeze" value="1" title="冻结"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">是否已用</label>'
                 + '<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">内置</label>'
-                + '<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否" checked><input type="radio" name="builtIn" value="1" title="是"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
                 + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" autocomplete="off" class="layui-input"></div></div>'
                 + '</form>';
@@ -324,7 +308,7 @@
                 ,title:'添加下级菜单'
                 ,shadeClose: true
                 ,skin: 'layui-layer-rim'
-                ,area:['450px','570px']
+                ,area:['450px','550px']
                 ,btn: ['确定', '取消']
                 ,success: function(layero, index){
                     form.render('radio');
@@ -335,7 +319,6 @@
                     var orderNum = $("input[name='orderNum']").val();
                     var freeze = $("input[name='freeze']:checked").val();
                     var used = $("input[name='used']:checked").val();
-                    var builtIn = $("input[name='builtIn']:checked").val();
                     var remark = $("input[name='remark']").val();
                     $.ajax({
                         type: 'POST',
@@ -348,7 +331,6 @@
                             parentId:dic.selfId,
                             freeze:freeze,
                             used:used,
-                            builtIn:builtIn,
                             remark:remark
                         }),
                         success: function(result){
@@ -384,8 +366,6 @@
                 + '<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用" checked><input type="radio" name="freeze" value="1" title="冻结"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">是否已用</label>'
                 + '<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>'
-                + '<div class="layui-form-item"><label class="layui-form-label">内置</label>'
-                + '<div class="layui-input-block"><input type="radio" name="builtIn" value="0" title="否" checked><input type="radio" name="builtIn" value="1" title="是"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
                 + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" autocomplete="off" class="layui-input"></div></div>'
                 + '</form>';
@@ -395,7 +375,7 @@
                 ,title:'编辑'
                 ,shadeClose: true
                 ,skin: 'layui-layer-rim'
-                ,area:['450px','570px']
+                ,area:['450px','550px']
                 ,btn: ['确定', '取消']
                 ,success: function(layero, index){
                     form.render('radio');
@@ -406,7 +386,6 @@
                     var orderNum = $("input[name='orderNum']").val();
                     var freeze = $("input[name='freeze']:checked").val();
                     var used = $("input[name='used']:checked").val();
-                    var builtIn = $("input[name='builtIn']:checked").val();
                     var remark = $("input[name='remark']").val();
                     $.ajax({
                         type: 'POST',
@@ -419,7 +398,6 @@
                             parentId:0,
                             freeze:freeze,
                             used:used,
-                            builtIn:builtIn,
                             remark:remark
                         }),
                         success: function(result){
@@ -437,10 +415,6 @@
                     });
                 }
             });
-        }
-        // 导出
-        function exportDic() {
-            $.post("/system/dictionary/exportExcel");
         }
     </script>
 </div>

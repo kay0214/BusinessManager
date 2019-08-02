@@ -25,6 +25,7 @@ public enum  ResultEnum implements Serializable {
     ERROR_NOT_AUTH("E016","您尚无权限"),
     ERROR_PARAM_NOT_ENOUGH("E017","参数缺失"),
     ERROR_DICTIONARY_CANNOT_DEL("E018","内置字典不允许删除"),
+    ERROR_DICTIONARY_CANNOT_EDIT("E019","含有内置字典不允许修改的值"),
 
     END("","枚举结束");
 
