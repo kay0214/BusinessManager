@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>岗位管理</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/global.css">
+</head>
+<body>
+<div class="layui-body">
+    <!-- 内容主体区域 -->
+    <div style="padding: 15px;">
+        <div class="layui-row" style="margin-top: 10px">
+            <table class="layui-hide center" id="position" lay-filter="position"></table>
+        </div>
+        <div class="layui-btn-container" hidden id="tools">
+            <button class="layui-btn layui-btn-sm" onclick="addPosition()" id="addPosition">添加基础岗位</button>
+            <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="delPosition()" id="delPosition">删除</button>
+            <a target="_blank" class="layui-btn layui-btn-sm layui-btn-primary float-right" href="/system/dictionary/exportExcel" id="exportDictionary"><i class="layui-icon layui-icon-export"></i>导出</a>
+        </div>
+    </div>
+    <script src="/layui/layui.js"></script>
+    <script th:inline="javascript">
+        var editObj=null,ptable=null,treeGrid=null,tableId='position',layer=null,$,form,table,states;
+        layui.config({
+            base: '/layui/'
+        }).extend({
+            treeGrid:'treeGrid'
+        }).use(['jquery','treeGrid','layer','table','form'], function(){
+            // 获取下拉框
+            states = [[${@selector.getSelector('status')}]];
+            form = layui.form;
+            $=layui.$;
+            table = layui.table;
+            treeGrid = layui.treeGrid;//很重要
+            layer=layui.layer;
+            ptable=treeGrid.render({
+                id:tableId
+                ,elem: '#'+tableId
+                ,url:'/position/getAllPositions'
+                ,cellMinWidth: 100
+                ,idField:'id'//必須字段
+                ,treeId:'id'//树形id字段名称
+                ,treeUpId:'parentId'//树形父id字段名称
+                ,treeShowName:'name'//以树形式显示的字段
+                ,heightRemove:[".dHead",100]//不计算的高度,表格设定的是固定高度，此项不生效
+                ,isFilter:false
+                ,height: '80%'
+                ,iconOpen:false//是否显示图标【默认显示】
+                ,isOpenDefault:true//节点默认是展开还是折叠【默认展开】
+                ,loading:true
+                ,method:'get'
+                ,isPage:false
+                ,toolbar: '#tools'
+                ,skin: 'line'
+                ,editModel:'dblclick'
+                ,response:{
+                    statusCode:'S001'
+                }
+                ,parseData: function(res){
+                    return {
+                        "code": res.status,
+                        "msg": res.statusDesc,
+                        "data": res.data
+                    };
+                }
+                ,cols: [
+                    [
+                        {type: 'checkbox'}
+                        ,{field:'name', minWidth:150, title: '名称'}
+                        ,{field:'parentId', width:100, title: '上级',edit: 'text'}
+                        ,{field:'id', width:100, title: '代码'}
+                        ,{field:'orderNum', width:60, title: '排序'}
+                        ,{field:'status', title: '状态',width:80,templet:function (data) {
+                            for(var i=0;i<states.length;i++){
+                                if(data.status===states[i].key){
+                                    return "<span class='layui-badge-rim'>" + states[i].value + "</span>";
+                                }
+                            }
+                        }}
+                        ,{field:'used', width:80, title: '已使用',templet:function (data) {
+                            if(data.used===1){
+                                return "<span class='layui-badge layui-bg-blue'>已用</span>";
+                            }else if(data.used===0){
+                                return "<span class='layui-badge layui-bg-orange'>未用</span>";
+                            }else{
+                                return "<span class='layui-badge-rim'>预留状态</span>";
+                            }
+                        }}
+                        ,{field:'remark', width:180, title: '描述'}
+                        ,{fixed:'right', width:180, title: '操作',templet:function (data) {
+                            return "<button class='layui-btn layui-btn-sm layui-btn-normal' lay-event='editPosition'>编辑</button>"
+                                +"<button class='layui-btn layui-btn-sm' lay-event='addChild'>添加下级岗位</button>";
+                        }}
+                    ]
+                ]
+            });
+
+            treeGrid.on('tool(position)',function (obj) {
+                if(obj.event === 'editPosition'){//编辑
+                    editPosition(obj.data);
+                }else if(obj.event==='addChild'){
+                    addChild(obj.data);
+                }
+            });
+            treeGrid.on('edit(position)', function(obj){
+                var dic = obj.data;
+                layer.open({
+                    type: 1
+                    ,content: '<div style="text-align: center;margin-top: 30px;">确定要应用修改？</div>'
+                    ,title:'编辑'
+                    ,shadeClose: true
+                    ,skin: 'layui-layer-rim'
+                    ,area:['300px','200px']
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        $.ajax({
+                            type: 'POST',
+                            url: "/position/update",
+                            contentType: "application/json;charset=utf-8",
+                            data: JSON.stringify({
+                                id:dic.id,
+                                parentId:dic.parentId
+                            }),
+                            success: function(result){
+                                // 关掉弹出层
+                                layer.closeAll();
+                                if(result.status === 'S001'){
+                                    // 更新成功 - 关掉
+                                    treeGrid.reload(tableId);
+                                    layer.msg(result.statusDesc,{icon: 6});
+                                }else{
+                                    // 更新失败 - 给出错误提示
+                                    layer.msg(result.statusDesc,{icon: 5});
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+        });
+        // 编辑菜单
+        function editPosition(position){
+            // 状态类型
+            var statusHtml = '<div class="layui-form-item"><label class="layui-form-label">状态</label><div class="layui-input-block">';
+            for(var j=0;j<states.length;j++){
+                if(position.status===states[j].key){
+                    statusHtml += '<input type="radio" name="status" value="' + states[j].key + '" title="' + states[j].value + '" checked>';
+                }else{
+                    statusHtml += '<input type="radio" name="status" value="' + states[j].key + '" title="' + states[j].value + '">';
+                }
+            }
+            statusHtml += '</div></div>';
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">名称</label>'
+                + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" value="' + position.name + '" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">上级</label>'
+                + '<div class="layui-input-block"><input type="text" name="parentId" required  lay-verify="required" placeholder="请输入上级" value="' + position.parentId + '" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
+                + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" value="' + position.orderNum + '" autocomplete="off" class="layui-input"></div></div>'
+                + statusHtml;
+            // 是否已用
+            formText+='<div class="layui-form-item"><label class="layui-form-label">是否已用</label>';
+            if(position.used===0){
+                formText+='<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>';
+            }else if(position.used===1){
+                formText+='<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用"><input type="radio" name="used" value="1" title="已用" checked></div></div>';
+            }
+            formText += '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
+                + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" value="' + position.remark + '" autocomplete="off" class="layui-input"></div></div>'
+                + '</form>';
+            layer.open({
+                type: 1
+                ,content: formText
+                ,title:'编辑'
+                ,shadeClose: true
+                ,skin: 'layui-layer-rim'
+                ,area:['450px','550px']
+                ,btn: ['确定', '取消']
+                ,success: function(layero, index){
+                    form.render('radio');
+                }
+                ,yes: function(index, layero){
+                    var name = $("input[name='name']").val();
+                    var parentId = $("input[name='parentId']").val();
+                    var orderNum = $("input[name='orderNum']").val();
+                    var status = $("input[name='status']:checked").val();
+                    var used = $("input[name='used']:checked").val();
+                    var remark = $("input[name='remark']").val();
+                    $.ajax({
+                        type: 'POST',
+                        url: "/position/update",
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify({
+                            id:position.id,
+                            name:name,
+                            parentId:parentId,
+                            orderNum:orderNum,
+                            status:status,
+                            used:used,
+                            remark:remark
+                        }),
+                        success: function(result){
+                            // 关掉弹出层
+                            layer.closeAll();
+                            if(result.status === 'S001'){
+                                // 更新成功 - 关掉
+                                treeGrid.reload(tableId);
+                                layer.msg(result.statusDesc,{icon: 6});
+                            }else{
+                                // 更新失败 - 给出错误提示
+                                layer.msg(result.statusDesc,{icon: 5});
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        // 删除菜单
+        function delPosition(){
+            var positions = treeGrid.checkStatus(tableId).data;
+            if(positions===null || positions===undefined || positions.length<1){
+                layer.msg("未选择任何字典",{icon:5});
+                return;
+            }
+            var ids = new Array();
+            for(var i=0;i<positions.length;i++){
+                var position = positions[i];
+                ids.push(position.id);
+            }
+            layer.open({
+                type: 1
+                ,content: '<div style="text-align: center;margin-top: 30px;">如果存在下级节点则一并删除，确定？</div>'
+                ,title:'删除'
+                ,shadeClose: true
+                ,skin: 'layui-layer-rim'
+                ,area:['300px','200px']
+                ,btn: ['确定', '取消']
+                ,yes: function(index, layero){
+                    $.get("/system/dictionary/delete/" + ids.toString(), function(result){
+                        layer.closeAll();
+                        if(result.status === 'S001'){
+                            // 更新成功 - 关掉
+                            treeGrid.reload(tableId);
+                            layer.msg(result.statusDesc,{icon: 6});
+                        }else{
+                            // 更新失败 - 给出错误提示
+                            layer.msg(result.statusDesc,{icon: 5});
+                        }
+                    });
+                }
+            });
+        }
+        // 添加下级菜单
+        function addChild(position){
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级字典</label>'
+                + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="' + position.name + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典名称</label>'
+                + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">代码</label>'
+                + '<div class="layui-input-block"><input type="text" name="selfId" required  lay-verify="required" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
+                + '<div class="layui-input-block"><input type="text" placeholder="请输入数值" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
+                + '<div class="layui-input-block"><input type="text" name="type" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
+                + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">状态</label>'
+                + '<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用" checked><input type="radio" name="freeze" value="1" title="冻结"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">是否已用</label>'
+                + '<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
+                + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" autocomplete="off" class="layui-input"></div></div>'
+                + '</form>';
+            layer.open({
+                type: 1
+                ,content: formText
+                ,title:'添加下级菜单'
+                ,shadeClose: true
+                ,skin: 'layui-layer-rim'
+                ,area:['450px','620px']
+                ,btn: ['确定', '取消']
+                ,success: function(layero, index){
+                    form.render('radio');
+                }
+                ,yes: function(index, layero){
+                    var name = $("input[name='name']").val();
+                    var selfId = $("input[name='selfId']").val();
+                    var value = $("input[name='value']").val();
+                    var type = $("input[name='type']").val();
+                    var orderNum = $("input[name='orderNum']").val();
+                    var freeze = $("input[name='freeze']:checked").val();
+                    var used = $("input[name='used']:checked").val();
+                    var remark = $("input[name='remark']").val();
+                    $.ajax({
+                        type: 'POST',
+                        url: "/system/dictionary/insert",
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify({
+                            name:name,
+                            selfId:selfId,
+                            value: value,
+                            type:type,
+                            orderNum:orderNum,
+                            parentId:position.selfId,
+                            freeze:freeze,
+                            used:used,
+                            remark:remark
+                        }),
+                        success: function(result){
+                            // 关掉弹出层
+                            layer.closeAll();
+                            if(result.status === 'S001'){
+                                // 更新成功 - 关掉
+                                treeGrid.reload(tableId);
+                                layer.msg(result.statusDesc,{icon: 6});
+                            }else{
+                                // 更新失败 - 给出错误提示
+                                layer.msg(result.statusDesc,{icon: 5});
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        // 添加目录菜单
+        function addPosition(){
+            console.info("click add");
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级字典</label>'
+                + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="主目录" autocomplete="off" class="layui-input layui-disabled"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典名称</label>'
+                + '<div class="layui-input-block"><input type="text" name="name" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">代码</label>'
+                + '<div class="layui-input-block"><input type="text" name="selfId" required  lay-verify="required" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
+                + '<div class="layui-input-block"><input type="text" name="value" placeholder="请输入值" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
+                + '<div class="layui-input-block"><input type="text" name="type" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
+                + '<div class="layui-input-block"><input type="text" name="orderNum" required  lay-verify="required" placeholder="请输入排序" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">状态</label>'
+                + '<div class="layui-input-block"><input type="radio" name="freeze" value="0" title="可用" checked><input type="radio" name="freeze" value="1" title="冻结"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">是否已用</label>'
+                + '<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
+                + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" autocomplete="off" class="layui-input"></div></div>'
+                + '</form>';
+            layer.open({
+                type: 1
+                ,content: formText
+                ,title:'编辑'
+                ,shadeClose: true
+                ,skin: 'layui-layer-rim'
+                ,area:['450px','620px']
+                ,btn: ['确定', '取消']
+                ,success: function(layero, index){
+                    form.render('radio');
+                }
+                ,yes: function(index, layero){
+                    var name = $("input[name='name']").val();
+                    var selfId = $("input[name='selfId']").val();
+                    var orderNum = $("input[name='orderNum']").val();
+                    var freeze = $("input[name='freeze']:checked").val();
+                    var used = $("input[name='used']:checked").val();
+                    var remark = $("input[name='remark']").val();
+                    $.ajax({
+                        type: 'POST',
+                        url: "/system/dictionary/insert",
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify({
+                            name:name,
+                            selfId:selfId,
+                            orderNum:orderNum,
+                            parentId:0,
+                            freeze:freeze,
+                            used:used,
+                            remark:remark
+                        }),
+                        success: function(result){
+                            // 关掉弹出层
+                            layer.closeAll();
+                            if(result.status === 'S001'){
+                                // 更新成功 - 关掉
+                                treeGrid.reload(tableId);
+                                layer.msg(result.statusDesc,{icon: 6});
+                            }else{
+                                // 更新失败 - 给出错误提示
+                                layer.msg(result.statusDesc,{icon: 5});
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+</div>
+</body>
+</html>
