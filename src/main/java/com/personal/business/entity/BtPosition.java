@@ -41,6 +41,11 @@ public class BtPosition implements Serializable {
      */
     private Integer orderNum;
 
+    /**
+     * 区分部门还是岗位，从数据字典中取得
+     */
+    private Integer type;
+
     private Integer status;
 
     /**

@@ -139,7 +139,7 @@ public class MysqlGenerator {
         //strategy.setInclude("sssys_.*");
         
 
-		strategy.setInclude("bt_position");
+		strategy.setInclude("bt_position_company");
 
         //strategy.setSuperEntityColumns("id"); 注释掉可以在表结构生成主键
         strategy.setControllerMappingHyphenStyle(true);

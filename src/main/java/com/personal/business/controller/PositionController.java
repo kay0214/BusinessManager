@@ -7,13 +7,20 @@ import com.alibaba.fastjson.JSON;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.entity.BtPosition;
+import com.personal.business.enums.ResultEnum;
+import com.personal.business.request.StaffRequest;
+import com.personal.business.service.IBtPositionCompanyService;
 import com.personal.business.service.IBtPositionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author sunpeikai
@@ -27,6 +34,8 @@ public class PositionController extends BaseController {
 
     @Autowired
     private IBtPositionService iBtPositionService;
+    @Autowired
+    private IBtPositionCompanyService iBtPositionCompanyService;
 
     @GetMapping("/init")
     public String init(){
@@ -56,5 +65,65 @@ public class PositionController extends BaseController {
         }else{
             return Return.fail("添加失败");
         }
+    }
+
+    /**
+     * @description 插入字典
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @PostMapping(value = "/insert")
+    @ResponseBody
+    public Return insert(@RequestBody BtPosition position){
+        log.info("insert position [{}]", JSON.toJSONString(position));
+        position.setDelFlag(0);
+        position.setCreateTime(LocalDateTime.now());
+        position.setUpdateTime(LocalDateTime.now());
+        boolean success = iBtPositionService.save(position);
+        if(success){
+            return Return.success();
+        }else{
+            return Return.fail("添加失败");
+        }
+    }
+
+    /**
+     * @description 批量删除
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @GetMapping(value = "/delete/{ids}")
+    @ResponseBody
+    public Return delete(@PathVariable String ids){
+        if(!StringUtils.isEmpty(ids)){
+            List<String> idsArray = new ArrayList<>();
+            Collections.addAll(idsArray, ids.split(","));
+            log.info("delete companies [{}]",idsArray);
+            boolean success = iBtPositionService.removeByIds(idsArray);
+            if(success){
+                return Return.success();
+            }else{
+                return Return.fail("删除失败");
+            }
+        }
+        return Return.fail(ResultEnum.ERROR_PARAM_NOT_ENOUGH);
+    }
+
+    /**
+     * @description 根据positionId获取员工信息
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @GetMapping(value = "/staffInfo")
+    @ResponseBody
+    public Return staffInfo(StaffRequest request){
+        log.info("search staff positionId[{}],page[{}],limit[{}]",request.getPositionId(),request.getPage(),request.getLimit());
+        if(!StringUtils.isEmpty(request.getPositionId())){
+            return Return.data(iBtPositionCompanyService.getStaffByPositionId(request));
+        }
+        return Return.fail(ResultEnum.ERROR_PARAM_NOT_ENOUGH);
     }
 }

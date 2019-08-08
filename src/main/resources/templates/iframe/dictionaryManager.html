@@ -56,7 +56,6 @@
                 id:tableId
                 ,elem: '#'+tableId
                 ,url:'/system/dictionary/getAllDics'
-                ,cellMinWidth: 100
                 ,idField:'selfId'//必須字段
                 ,treeId:'selfId'//树形id字段名称
                 ,treeUpId:'parentId'//树形父id字段名称
@@ -65,7 +64,7 @@
                 ,isFilter:false
                 ,height: '80%'
                 ,iconOpen:false//是否显示图标【默认显示】
-                ,isOpenDefault:true//节点默认是展开还是折叠【默认展开】
+                ,isOpenDefault:false//节点默认是展开还是折叠【默认展开】
                 ,loading:true
                 ,method:'get'
                 ,isPage:false

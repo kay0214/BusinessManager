@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.personal.business.mapper.BtPositionCompanyMapper">
+
+    <select id="getStaffByPositionId" parameterType="Integer" resultType="com.personal.business.dto.StaffDto">
+        SELECT
+            pc.id as id,
+            p.name AS positionName,
+            c.full_name AS companyName,
+            pc.create_time AS createTime
+        FROM
+            bt_position_company pc
+        LEFT JOIN bt_position p ON p.id = pc.position_id
+        LEFT JOIN bt_company c ON c.id = pc.company_id
+            WHERE pc.position_id = #{positionId}
+    </select>
+</mapper>
