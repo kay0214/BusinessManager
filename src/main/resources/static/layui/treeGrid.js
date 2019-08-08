@@ -758,7 +758,7 @@ layui.config({}).extend({}).define(['laytpl', 'laypage', 'layer', 'form'], funct
                 var result = new Array();
                 var that = table.getClass(tableId);
                 var checkedDatas = table.checkStatus(tableId).data;
-                var sons = table.findSons(tableId,checkedDatas);
+                var sons = table.findSons(tableId,table.getDataList(tableId));
                 for(var i=0;i<checkedDatas.length;i++){
                     var checked = checkedDatas[i];
                     for(var j=0;j<sons.length;j++){
