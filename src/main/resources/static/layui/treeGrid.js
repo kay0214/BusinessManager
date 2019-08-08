@@ -724,6 +724,33 @@ layui.config({}).extend({}).define(['laytpl', 'laypage', 'layer', 'form'], funct
 				});
 				return sonList;
 			},
+            /**
+             * 获取所有子节点,自己加的
+             * */
+            findSons: function(tableId, data) {
+                var that = table.getClass(tableId);
+                if (!that || !data) return [];
+                var delDatas = [];
+                var sonList = []; //需要删除的数据
+                var delIds = {}; //需要删除的数据map
+                if (table.kit.isArray(data)) { //是数组，删除多个
+                    delDatas = data;
+                } else {
+                    delDatas[0] = data;
+                }
+                delDatas.forEach(function(temo) {
+                    if (temo.children.length > 0) {
+                        var temSonList = that.treeFindSonData(temo);
+                        temSonList.forEach(function(temii) {
+                            if (!delIds[temii[table.config.indexName]]) {
+                                sonList.push(temii);
+                                delIds[temii[table.config.indexName]] = temii[table.config.indexName];
+                            }
+                        });
+                    }
+                });
+                return sonList;
+            },
 			treeFindUpDatas: function(tableId, o) {
 				var that = table.getClass(tableId);
 				if (!that || !o) return [];
