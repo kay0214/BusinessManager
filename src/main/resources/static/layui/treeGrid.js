@@ -751,6 +751,26 @@ layui.config({}).extend({}).define(['laytpl', 'laypage', 'layer', 'form'], funct
                 });
                 return sonList;
             },
+            /**
+             * 获取所有已选中的子节点,自己加的
+             * */
+            findCheckedSons: function(tableId) {
+                var result = new Array();
+                var that = table.getClass(tableId);
+                var checkedDatas = table.checkStatus(tableId).data;
+                var sons = table.findSons(tableId,checkedDatas);
+                for(var i=0;i<checkedDatas.length;i++){
+                    var checked = checkedDatas[i];
+                    for(var j=0;j<sons.length;j++){
+                        var son = sons[j];
+                        if(checked[that.config.idField] === son[that.config.idField]){
+                            result.push(son);
+                            break;
+                        }
+                    }
+                }
+                return result;
+            },
 			treeFindUpDatas: function(tableId, o) {
 				var that = table.getClass(tableId);
 				if (!that || !o) return [];
