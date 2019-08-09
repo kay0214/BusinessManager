@@ -25,4 +25,20 @@ public interface IBtPositionCompanyService extends IService<BtPositionCompany> {
      * @return
      */
     IPage<StaffDto> getStaffByPositionId(StaffRequest request);
+
+    /**
+     * @description 根据岗位id获取全部员工信息
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<StaffDto> getStaffsByPositionId(Integer positionId);
+
+    /**
+     * @description 获取所有未在这个岗位的岗位人员
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<StaffDto> getStaffsNotInPosition(Integer positionId);
 }

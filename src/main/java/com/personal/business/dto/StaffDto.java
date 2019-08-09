@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @Data
 public class StaffDto {
     private Integer id;
+    private Integer companyId;
+    private Integer positionId;
     private String positionName;
     private String companyName;
     private LocalDateTime createTime;

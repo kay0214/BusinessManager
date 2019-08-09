@@ -6,11 +6,14 @@ package com.personal.business.controller;
 import com.alibaba.fastjson.JSON;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
+import com.personal.business.dto.PositionDto;
+import com.personal.business.dto.StaffDto;
 import com.personal.business.entity.BtPosition;
 import com.personal.business.enums.ResultEnum;
 import com.personal.business.request.StaffRequest;
 import com.personal.business.service.IBtPositionCompanyService;
 import com.personal.business.service.IBtPositionService;
+import com.personal.business.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,7 +48,19 @@ public class PositionController extends BaseController {
     @GetMapping("/getAllPositions")
     @ResponseBody
     public Return getAllPositions(){
-        return Return.data(iBtPositionService.getAllPositions());
+        List<BtPosition> positions = iBtPositionService.getAllPositions();
+        List<StaffDto> staffDtos = iBtPositionCompanyService.getStaffsByPositionId(null);
+        List<PositionDto> results = CommonUtils.convertBeanList(positions,PositionDto.class);
+        results.forEach(positionDto -> {
+            List<String> staffs = new ArrayList<>();
+            staffDtos.forEach(staffDto -> {
+                if(positionDto.getId().equals(staffDto.getPositionId())){
+                    staffs.add(staffDto.getCompanyName());
+                }
+            });
+            positionDto.handleStaffs(staffs);
+        });
+        return Return.data(results);
     }
 
     /**

@@ -5,6 +5,8 @@
     <select id="getStaffByPositionId" parameterType="Integer" resultType="com.personal.business.dto.StaffDto">
         SELECT
             pc.id as id,
+            pc.company_id as companyId,
+            pc.position_id as positionId,
             p.name AS positionName,
             c.full_name AS companyName,
             pc.create_time AS createTime
@@ -13,5 +15,46 @@
         LEFT JOIN bt_position p ON p.id = pc.position_id
         LEFT JOIN bt_company c ON c.id = pc.company_id
             WHERE pc.position_id = #{positionId}
+    </select>
+    <select id="getStaffsByPositionId" parameterType="Integer" resultType="com.personal.business.dto.StaffDto">
+        SELECT
+            pc.id as id,
+            pc.company_id as companyId,
+            pc.position_id as positionId,
+            p.name AS positionName,
+            c.full_name AS companyName,
+            pc.create_time AS createTime
+        FROM
+            bt_position_company pc
+        LEFT JOIN bt_position p ON p.id = pc.position_id
+        LEFT JOIN bt_company c ON c.id = pc.company_id
+            WHERE 1=1
+        <if test="positionId!=null">
+            and pc.position_id = #{positionId}
+        </if>
+    </select>
+    <select id="getStaffsNotInPosition" parameterType="Integer" resultType="com.personal.business.dto.StaffDto">
+        SELECT
+            pc.id AS id,
+            pc.company_id AS companyId,
+            pc.position_id AS positionId,
+            p. NAME AS positionName,
+            c.full_name AS companyName,
+            pc.create_time AS createTime
+        FROM
+            bt_position_company pc
+        LEFT JOIN bt_position p ON p.id = pc.position_id
+        LEFT JOIN bt_company c ON c.id = pc.company_id
+        WHERE
+            c.type = #{type}
+        AND c.id NOT IN (
+            SELECT
+                pc1.company_id
+            FROM
+                bt_position_company pc1
+            WHERE
+                pc1.position_id = #{positionId}
+        )
+        GROUP BY pc.company_id
     </select>
 </mapper>

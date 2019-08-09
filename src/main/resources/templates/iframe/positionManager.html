@@ -6,6 +6,7 @@
     <title>岗位管理</title>
     <link rel="stylesheet" href="/layui/css/layui.css">
     <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/layui/css/formSelects-v4.css" />
 </head>
 <body>
 <div class="layui-body">
@@ -18,7 +19,6 @@
             <button class="layui-btn layui-btn-sm" onclick="addPosition()" id="addPosition">添加基础岗位</button>
             <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="staff()">查看人员详情</button>
             <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="delPosition()" id="delPosition">删除</button>
-            <a target="_blank" class="layui-btn layui-btn-sm layui-btn-primary float-right" href="/system/dictionary/exportExcel" id="exportDictionary"><i class="layui-icon layui-icon-export"></i>导出</a>
         </div>
         <div class="layui-btn-container" hidden id="staffTool">
             <button class="layui-btn layui-btn-sm float-left" onclick="addStaff()" id="addStaff">添加人员</button>
@@ -28,18 +28,19 @@
     <script src="/layui/layui.js"></script>
     <script src="/js/global.js"></script>
     <script th:inline="javascript">
-        var editObj=null,ptable=null,treeGrid=null,tableId='position',layer=null,page,$,form,table,states,positionType;
+        var editObj=null,ptable=null,treeGrid=null,tableId='position',layer=null,$,form,table,states,positionType,staffsInit,formSelects;
         layui.config({
             base: '/layui/'
         }).extend({
-            treeGrid:'treeGrid'
-        }).use(['jquery','treeGrid','layer','table','form','laypage'], function(){
+            treeGrid:'treeGrid',
+            formSelects: 'formSelects-v4'
+        }).use(['jquery','treeGrid','layer','table','form','formSelects'], function(){
             // 获取下拉框
             states = [[${@selector.getSelector('status')}]];
             positionType = [[${@selector.getSelector('position')}]];
             form = layui.form;
-            page = layui.laypage;
             $=layui.$;
+            formSelects = layui.formSelects;
             table = layui.table;
             treeGrid = layui.treeGrid;//很重要
             layer=layui.layer;
@@ -76,9 +77,7 @@
                     [
                         {type: 'checkbox'}
                         ,{field:'name', minWidth:150, title: '名称'}
-                        ,{minWidth:150, title: '人员',edit: 'text',templet:function (data) {
-                            return '张三、李四、李六、李七、篱笆、利旧';
-                        }}
+                        ,{field:'staffs',minWidth:150, title: '人员'}
                         ,{field:'parentId', width:60, title: '上级',edit: 'text'}
                         ,{field:'id', width:60, title: '代码'}
                         ,{field:'orderNum', width:60, title: '排序'}
@@ -496,7 +495,68 @@
 
         // 添加人员
         function addStaff() {
-            console.info("向选中的岗位添加人员");
+            var positions = treeGrid.findCheckedSons(tableId);
+            if(positions===null || positions===undefined || positions.length!==1){
+                return;
+            }
+            var formText = '<form class="layui-form" style="margin: 30px 30px 0 30px"><div class="layui-form-item"><select name="staff" xm-select="staff"><option value="">选择员工</option></select></div></form>';
+
+            var staffSelect = layer.open({
+                type: 1
+                ,content: formText
+                ,title:'添加'
+                ,shadeClose: true
+                ,skin: 'layui-layer-rim'
+                ,area:['500px','400px']
+                ,btn: ['确定', '取消']
+                ,success: function(layero, index){
+                    form.render();
+                    // 请求所有未在岗的员工信息
+                    formSelects.config('staff', {
+                        keyName: 'companyName',//自定义返回数据中name的key, 默认 name
+                        keyVal: 'companyId',//自定义返回数据中value的key, 默认 value
+                        response: {
+                            statusCode: 'S001',
+                            statusName: 'status',
+                            msgName: 'statusDesc',
+                            dataName: 'data'
+                        }
+                    }).data('staff', 'server', {
+                        url: '/staff/getStaffsNotInPosition/' + positions[0].id
+                    });
+                }
+                ,yes: function(index, layero){
+                    var ids = new Array();
+                    var staffs = formSelects.value("staff");
+                    for(var i=0;i<staffs.length;i++){
+                        ids.push(staffs[i].companyId);
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: "/staff/insert",
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify({
+                            companyIds: ids.toString(),
+                            positionId: positions[0].id
+                        }),
+                        success: function(result){
+                            // 关掉弹出层
+                            layer.close(staffSelect);
+                            if(result.status === 'S001'){
+                                // 更新成功 - 关掉
+                                treeGrid.reload(tableId);
+                                table.reload("staff");
+                                layer.msg(result.statusDesc,{icon: 6});
+                            }else{
+                                // 更新失败 - 给出错误提示
+                                layer.msg(result.statusDesc,{icon: 5});
+                            }
+                        }
+                    });
+
+                }
+            });
+
         }
         // 删除人员
         function delStaff() {

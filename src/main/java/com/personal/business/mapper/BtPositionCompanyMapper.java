@@ -6,6 +6,8 @@ import com.personal.business.entity.BtPositionCompany;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  *  Mapper 接口
@@ -23,4 +25,20 @@ public interface BtPositionCompanyMapper extends BaseMapper<BtPositionCompany> {
      * @return
      */
     IPage<StaffDto> getStaffByPositionId(@Param("iPage") IPage<Object> iPage, @Param("positionId") Integer positionId);
+
+    /**
+     * @description 根据岗位id获取全部员工信息
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<StaffDto> getStaffsByPositionId(@Param("positionId") Integer positionId);
+
+    /**
+     * @description 根据岗位id获取全部员工信息
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<StaffDto> getStaffsNotInPosition(@Param("positionId") Integer positionId,@Param("type") Integer type);
 }

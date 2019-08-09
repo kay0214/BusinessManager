@@ -8,6 +8,16 @@ package com.personal.business.constant;
 public interface CommonConstant {
 
     /**
+     * 数据字典 - 人员
+     */
+    String DICTIONARY_RELATIONSHIP_STAFF = "7";
+
+    /**
+     * 数据字典 - 往来公司/个人
+     */
+    String DICTIONARY_RELATIONSHIP = "relationship";
+
+    /**
      * 数据字典 - 内置
      */
     Integer DICTIONARY_BUILD_IN = 1;
