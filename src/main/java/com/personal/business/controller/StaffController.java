@@ -6,11 +6,13 @@ package com.personal.business.controller;
 import com.alibaba.fastjson.JSON;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
+import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.entity.BtPositionCompany;
 import com.personal.business.enums.ResultEnum;
 import com.personal.business.request.PositionCompanyRequest;
 import com.personal.business.service.IBtPositionCompanyService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -39,6 +41,7 @@ public class StaffController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_POSITION_INFO_ADD)
     @PostMapping("/insert")
     @ResponseBody
     public Return insert(@RequestBody PositionCompanyRequest request){
@@ -62,6 +65,7 @@ public class StaffController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_POSITION_INFO_DEL)
     @GetMapping("/delete/{ids}")
     @ResponseBody
     public Return delete(@PathVariable String ids){
@@ -86,6 +90,7 @@ public class StaffController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_POSITION_INFO_LIST)
     @GetMapping("/getStaffsNotInPosition/{id}")
     @ResponseBody
     public Return getStaffsNotInPosition(@PathVariable Integer id){

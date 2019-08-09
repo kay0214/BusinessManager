@@ -25,15 +25,13 @@ public class ShiroPermissionsUtils {
      * @return
      */
     public static String hasPermission(String permission){
-        log.info("验证是否有权限[{}]",permission);
         Set<String> permissions = (Set<String>) ShiroUtils.getSession().getAttribute(CommonConstant.SESSION_KEY_PERMISSIONS);
         if(CollectionUtils.isEmpty(permissions)){
             ShiroUtils.getSubject().isPermitted(permission);
             permissions = (Set<String>) ShiroUtils.getSession().getAttribute(CommonConstant.SESSION_KEY_PERMISSIONS);
-            return permissions.contains(permission)?"":"disabled";
-        }else{
-            return permissions.contains(permission)?"":"disabled";
         }
+        log.info("验证是否有权限[{}] -- [{}]",permission,permissions.contains(permission));
+        return permissions.contains(permission)?"":"disabled";
     }
 
 }

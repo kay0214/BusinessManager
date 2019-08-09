@@ -69,18 +69,42 @@
     </div>
     <script src="/layui/layui.js"></script>
     <script th:inline="javascript">
-        var tableId='company',layer=null,$,form,table,types,states;
+        var tableId='company',layer=null,$,form,table,types,states,toolBar = ['filter','exports'];
+        function init(){
+            // 获取下拉框
+            types = [[${@selector.getSelector('relationship')}]];
+            states = [[${@selector.getSelector('status')}]];
+            // 查询权限
+            var addCompanyPerm = [[${#permission.hasPermission('business:company:add')}]];
+            if(addCompanyPerm!==null && addCompanyPerm!==undefined && addCompanyPerm!==''){
+                var addCompany = $("#addCompany");
+                addCompany.addClass("layui-btn-disabled");
+                addCompany.attr("disabled",true);
+            }
+            var editCompanyPerm = [[${#permission.hasPermission('business:company:edit')}]];
+            if(editCompanyPerm!==null && editCompanyPerm!==undefined && editCompanyPerm!==''){
+                var editCompany = $("#editCompany");
+                editCompany.addClass("layui-btn-disabled");
+                editCompany.attr("disabled",true);
+            }
+            var delCompanyPerm = [[${#permission.hasPermission('business:company:del')}]];
+            if(delCompanyPerm!==null && delCompanyPerm!==undefined && delCompanyPerm!==''){
+                var delCompany = $("#delCompany");
+                delCompany.addClass("layui-btn-disabled");
+                delCompany.attr("disabled",true);
+            }
+            var exportPerm = [[${#permission.hasPermission('business:company:export')}]];
+            if(exportPerm!==null && exportPerm!==undefined && exportPerm!==''){
+                toolBar = ['filter'];
+            }
+        }
         layui.use(['jquery','layer','table','form'], function(){
             form = layui.form;
             $=layui.$;
             table = layui.table;
             layer=layui.layer;
-            var toolBar = ['filter','exports'];
-
-            // 获取下拉框
-            types = [[${@selector.getSelector('relationship')}]];
-            states = [[${@selector.getSelector('status')}]];
-            console.info(states);
+            // 初始化
+            init();
             // 填充html下拉框
             // 关系类型
             var typesHtml = '';
@@ -124,6 +148,7 @@
                     [
                         {type: 'checkbox'}
                         ,{field:'companyCode', minWidth:120, title: '助记码',align:'left'}
+                        ,{field:'accountCode', minWidth:120, title: '财务代码',align:'left'}
                         ,{field:'type', width:100, title: '类型',align:'left',templet:function (data) {
                             for(var i=0;i<types.length;i++){
                                 if(data.type===types[i].key){
@@ -216,6 +241,8 @@
                 + '<div class="layui-input-block"><input type="text" name="shortName" value="' + company.shortName + '" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">助记码</label>'
                 + '<div class="layui-input-block"><input type="text" name="companyCode" value="' + company.companyCode + '" placeholder="请输入助记码" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">财务代码</label>'
+                + '<div class="layui-input-block"><input type="text" name="accountCode" value="' + company.accountCode + '" placeholder="请输入财务系统代码" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">信用代码/身份证号</label>'
                 + '<div class="layui-input-block"><input type="text" name="creditCode" value="' + company.creditCode + '" required  lay-verify="required" placeholder="请输入信用代码/身份证号" autocomplete="off" class="layui-input"></div></div>'
                 // 关系类型
@@ -247,6 +274,7 @@
                     var fullName = $("input[name='fullName']").val();
                     var shortName = $("input[name='shortName']").val();
                     var companyCode = $("input[name='companyCode']").val();
+                    var accountCode = $("input[name='accountCode']").val();
                     var creditCode = $("input[name='creditCode']").val();
                     var type = $("select[name='type']").val();
                     var status = $("input[name='status']:checked").val();
@@ -261,6 +289,7 @@
                             fullName:fullName,
                             shortName:shortName,
                             companyCode:companyCode,
+                            accountCode:accountCode,
                             creditCode:creditCode,
                             type:type,
                             used:used,
@@ -342,6 +371,8 @@
                 + '<div class="layui-input-block"><input type="text" name="shortName" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">助记码</label>'
                 + '<div class="layui-input-block"><input type="text" name="companyCode" placeholder="请输入助记码" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">财务代码</label>'
+                + '<div class="layui-input-block"><input type="text" name="accountCode" required  lay-verify="required" placeholder="请输入财务系统代码" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">信用代码/身份证号</label>'
                 + '<div class="layui-input-block"><input type="text" name="creditCode" required  lay-verify="required" placeholder="请输入信用代码/身份证号" autocomplete="off" class="layui-input"></div></div>'
                 // 关系类型
@@ -368,6 +399,7 @@
                     var fullName = $("input[name='fullName']").val();
                     var shortName = $("input[name='shortName']").val();
                     var companyCode = $("input[name='companyCode']").val();
+                    var accountCode = $("input[name='accountCode']").val();
                     var creditCode = $("input[name='creditCode']").val();
                     var type = $("select[name='type']").val();
                     var status = $("input[name='status']:checked").val();

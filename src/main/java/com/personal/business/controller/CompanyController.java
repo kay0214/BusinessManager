@@ -7,14 +7,13 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
-import com.personal.business.dto.CompanyDto;
+import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.entity.BtCompany;
 import com.personal.business.enums.ResultEnum;
 import com.personal.business.request.CompanyRequest;
 import com.personal.business.service.IBtCompanyService;
-import com.personal.business.service.IBtDictionaryService;
-import com.personal.business.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -24,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * @author sunpeikai
@@ -39,14 +37,12 @@ public class CompanyController extends BaseController {
     @Autowired
     private IBtCompanyService iBtCompanyService;
 
-    @Autowired
-    private IBtDictionaryService dictionaryService;
-
     @GetMapping(value = "/init")
     public String init(){
         return "iframe/companyManager";
     }
 
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_COMPANY_LIST)
     @GetMapping(value = "/getAllCompany")
     @ResponseBody
     public Return getAllCompany(CompanyRequest companyRequest){
@@ -60,6 +56,7 @@ public class CompanyController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_COMPANY_ADD)
     @PostMapping(value = "/insert")
     @ResponseBody
     public Return insert(@RequestBody BtCompany company){
@@ -81,6 +78,7 @@ public class CompanyController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_COMPANY_EDIT)
     @PostMapping(value = "/update")
     @ResponseBody
     public Return update(@RequestBody BtCompany company){
@@ -100,6 +98,7 @@ public class CompanyController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_COMPANY_DEL)
     @GetMapping(value = "/delete/{ids}")
     @ResponseBody
     public Return delete(@PathVariable String ids){

@@ -17,7 +17,7 @@
         </div>
         <div class="layui-btn-container" hidden id="tools">
             <button class="layui-btn layui-btn-sm" onclick="addPosition()" id="addPosition">添加基础岗位</button>
-            <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="staff()">查看人员详情</button>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="staff()" id="viewStaff">查看人员详情</button>
             <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="delPosition()" id="delPosition">删除</button>
         </div>
         <div class="layui-btn-container" hidden id="staffTool">
@@ -28,22 +28,57 @@
     <script src="/layui/layui.js"></script>
     <script src="/js/global.js"></script>
     <script th:inline="javascript">
-        var editObj=null,ptable=null,treeGrid=null,tableId='position',layer=null,$,form,table,states,positionType,staffsInit,formSelects;
+        var editObj=null,ptable=null,treeGrid=null,tableId='position',layer=null,$,form,table,states,positionType,formSelects;
+        function init() {
+            // 获取下拉框
+            states = [[${@selector.getSelector('status')}]];
+            positionType = [[${@selector.getSelector('position')}]];
+            // 查询权限
+            var addPositionPerm = [[${#permission.hasPermission('business:position:add')}]];
+            if(addPositionPerm!==null && addPositionPerm!==undefined && addPositionPerm!==''){
+                var addPosition = $("#addPosition");
+                addPosition.addClass("layui-btn-disabled");
+                addPosition.attr("disabled",true);
+            }
+            var viewStaffPerm = [[${#permission.hasPermission('business:position:info:list')}]];
+            if(viewStaffPerm!==null && viewStaffPerm!==undefined && viewStaffPerm!==''){
+                var viewStaff = $("#viewStaff");
+                viewStaff.addClass("layui-btn-disabled");
+                viewStaff.attr("disabled",true);
+            }
+            var delPositionPerm = [[${#permission.hasPermission('business:position:del')}]];
+            if(delPositionPerm!==null && delPositionPerm!==undefined && delPositionPerm!==''){
+                var delPosition = $("#delPosition");
+                delPosition.addClass("layui-btn-disabled");
+                delPosition.attr("disabled",true);
+            }
+            var addStaffPerm = [[${#permission.hasPermission('business:position:info:add')}]];
+            if(addStaffPerm!==null && addStaffPerm!==undefined && addStaffPerm!==''){
+                var addStaff = $("#addStaff");
+                addStaff.addClass("layui-btn-disabled");
+                addStaff.attr("disabled",true);
+            }
+            var delStaffPerm = [[${#permission.hasPermission('business:position:info:del')}]];
+            if(delStaffPerm!==null && delStaffPerm!==undefined && delStaffPerm!==''){
+                var delStaff = $("#delStaff");
+                delStaff.addClass("layui-btn-disabled");
+                delStaff.attr("disabled",true);
+            }
+        }
         layui.config({
             base: '/layui/'
         }).extend({
             treeGrid:'treeGrid',
             formSelects: 'formSelects-v4'
         }).use(['jquery','treeGrid','layer','table','form','formSelects'], function(){
-            // 获取下拉框
-            states = [[${@selector.getSelector('status')}]];
-            positionType = [[${@selector.getSelector('position')}]];
             form = layui.form;
             $=layui.$;
             formSelects = layui.formSelects;
             table = layui.table;
             treeGrid = layui.treeGrid;//很重要
             layer=layui.layer;
+            // 固定数据以及权限初始化
+            init();
             ptable=treeGrid.render({
                 id:tableId
                 ,elem: '#'+tableId
@@ -106,8 +141,8 @@
                         }}
                         ,{field:'remark', width:150, title: '描述'}
                         ,{fixed:'right', width:180, title: '操作',templet:function (data) {
-                            return "<button class='layui-btn layui-btn-sm layui-btn-normal' lay-event='editPosition'>编辑</button>"
-                                +"<button class='layui-btn layui-btn-sm' lay-event='addChild'>添加下级岗位</button>";
+                            return "<button class='layui-btn layui-btn-sm layui-btn-normal layui-btn-" + [[${#permission.hasPermission('business:position:edit')}]] + "' " + [[${#permission.hasPermission('business:position:edit')}]] + " lay-event='editPosition'>编辑</button>"
+                                +"<button class='layui-btn layui-btn-sm layui-btn-" + [[${#permission.hasPermission('business:position:add')}]] + "' " + [[${#permission.hasPermission('business:position:add')}]] + " lay-event='addChild'>添加下级岗位</button>";
                         }}
                     ]
                 ]

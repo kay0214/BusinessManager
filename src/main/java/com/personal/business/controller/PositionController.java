@@ -6,6 +6,7 @@ package com.personal.business.controller;
 import com.alibaba.fastjson.JSON;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
+import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.dto.PositionDto;
 import com.personal.business.dto.StaffDto;
 import com.personal.business.entity.BtPosition;
@@ -15,6 +16,7 @@ import com.personal.business.service.IBtPositionCompanyService;
 import com.personal.business.service.IBtPositionService;
 import com.personal.business.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -45,9 +47,11 @@ public class PositionController extends BaseController {
         return "iframe/positionManager";
     }
 
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_POSITION_LIST)
     @GetMapping("/getAllPositions")
     @ResponseBody
     public Return getAllPositions(){
+        log.info("search all positions");
         List<BtPosition> positions = iBtPositionService.getAllPositions();
         List<StaffDto> staffDtos = iBtPositionCompanyService.getStaffsByPositionId(null);
         List<PositionDto> results = CommonUtils.convertBeanList(positions,PositionDto.class);
@@ -69,6 +73,7 @@ public class PositionController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_POSITION_EDIT)
     @PostMapping(value = "/update")
     @ResponseBody
     public Return update(@RequestBody BtPosition position){
@@ -88,6 +93,7 @@ public class PositionController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_POSITION_ADD)
     @PostMapping(value = "/insert")
     @ResponseBody
     public Return insert(@RequestBody BtPosition position){
@@ -109,6 +115,7 @@ public class PositionController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_POSITION_DEL)
     @GetMapping(value = "/delete/{ids}")
     @ResponseBody
     public Return delete(@PathVariable String ids){
@@ -132,6 +139,7 @@ public class PositionController extends BaseController {
      * @param
      * @return
      */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_POSITION_INFO_LIST)
     @GetMapping(value = "/staffInfo")
     @ResponseBody
     public Return staffInfo(StaffRequest request){

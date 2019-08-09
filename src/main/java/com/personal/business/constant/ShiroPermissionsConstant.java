@@ -35,6 +35,16 @@ public interface ShiroPermissionsConstant {
     String PERM_COMPANY = "company:";
 
     /**
+     * 权限 - 岗位
+     */
+    String PERM_POSITION = "position:";
+
+    /**
+     * 权限 - 详情
+     */
+    String PERM_INFO = "info:";
+
+    /**
      * 权限 - 查询
      */
     String PERM_LIST = "list";
@@ -60,12 +70,12 @@ public interface ShiroPermissionsConstant {
     String PERM_RESET = "reset";
 
     /**
-     * 权限 - 重置
+     * 权限 - 授权
      */
     String PERM_AUTH = "auth";
 
     /**
-     * 权限 - 重置
+     * 权限 - 取消授权
      */
     String PERM_UNAUTH = "unauth";
 
@@ -173,4 +183,40 @@ public interface ShiroPermissionsConstant {
      * 权限 - 删除单位或个人
      * */
     String PERM_COMPANY_DEL = PERM_BASE + PERM_COMPANY + PERM_DEL;
+
+    /**
+     * 权限 - 岗位查询
+     * */
+    String PERM_POSITION_LIST = PERM_BASE + PERM_POSITION + PERM_LIST;
+
+    /**
+     * 权限 - 岗位修改
+     * */
+    String PERM_POSITION_EDIT = PERM_BASE + PERM_POSITION + PERM_EDIT;
+
+    /**
+     * 权限 - 岗位新增
+     * */
+    String PERM_POSITION_ADD = PERM_BASE + PERM_POSITION + PERM_ADD;
+
+    /**
+     * 权限 - 岗位删除
+     * */
+    String PERM_POSITION_DEL = PERM_BASE + PERM_POSITION + PERM_DEL;
+
+
+    /**
+     * 权限 - 岗位人员查询
+     * */
+    String PERM_POSITION_INFO_LIST = PERM_BASE + PERM_POSITION + PERM_INFO + PERM_LIST;
+
+    /**
+     * 权限 - 岗位人员新增
+     * */
+    String PERM_POSITION_INFO_ADD = PERM_BASE + PERM_POSITION + PERM_INFO + PERM_ADD;
+
+    /**
+     * 权限 - 岗位人员删除
+     * */
+    String PERM_POSITION_INFO_DEL = PERM_BASE + PERM_POSITION + PERM_INFO + PERM_DEL;
 }

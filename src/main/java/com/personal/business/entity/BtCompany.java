@@ -32,6 +32,11 @@ public class BtCompany implements Serializable {
     private String companyCode;
 
     /**
+     * 财务系统代码
+     */
+    private String accountCode;
+
+    /**
      * 类型-从数据字典录入
      */
     private Integer type;
