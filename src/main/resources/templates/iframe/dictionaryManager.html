@@ -118,7 +118,7 @@
                             }
                         }}
                         ,{field:'remark', width:80, title: '描述'}
-                        ,{fixed:'right', width:180, title: '操作',templet:function (data) {
+                        ,{width:180, title: '操作',templet:function (data) {
                             return "<button class='layui-btn layui-btn-sm layui-btn-normal layui-btn-" + [[${#permission.hasPermission('business:dic:edit')}]] + "' " + [[${#permission.hasPermission('business:dic:edit')}]] + " lay-event='editDic'>编辑</button>"
                                 +"<button class='layui-btn layui-btn-sm layui-btn-" + [[${#permission.hasPermission('business:dic:add')}]] + "' " + [[${#permission.hasPermission('business:dic:add')}]] + " lay-event='addChild'>添加下级菜单</button>";
                         }}

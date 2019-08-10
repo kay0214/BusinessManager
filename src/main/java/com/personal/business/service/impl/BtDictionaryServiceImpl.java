@@ -34,7 +34,7 @@ public class BtDictionaryServiceImpl extends ServiceImpl<BtDictionaryMapper, BtD
     @Override
     public List<BtDictionary> getAllDictionary() {
         QueryWrapper<BtDictionary> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().select().orderByAsc(BtDictionary::getOrderNum);
+        queryWrapper.lambda().select().orderByAsc(BtDictionary::getSelfId);
         return list(queryWrapper);
     }
 

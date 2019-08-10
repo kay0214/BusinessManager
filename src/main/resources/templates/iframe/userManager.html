@@ -129,7 +129,7 @@
                         ,{field:'createTime', width:160, title: '注册时间',style:'text-align: left;',templet:function (data) {
                             return timeFormat(data.createTime);
                         }}
-                        ,{fixed:'right', width:340, title: '操作',style:'text-align: left;',templet:function (data) {
+                        ,{width:340, title: '操作',style:'text-align: left;',templet:function (data) {
                             return "<button class='layui-btn layui-btn-sm layui-btn-normal layui-btn-" + [[${#permission.hasPermission('business:menu:auth')}]] + "' " + [[${#permission.hasPermission('business:menu:auth')}]] + " lay-event='authorize'>授权</button>"
                                 +"<button class='layui-btn layui-btn-sm layui-btn-primary layui-btn-" + [[${#permission.hasPermission('business:user:edit')}]] + "' " + [[${#permission.hasPermission('business:user:edit')}]] + " lay-event='modify'>修改</button>"
                                 +"<button class='layui-btn layui-btn-sm layui-btn-danger layui-btn-" + [[${#permission.hasPermission('business:user:del')}]] + "' " + [[${#permission.hasPermission('business:user:del')}]] + " lay-event='delete'>删除</button>"
