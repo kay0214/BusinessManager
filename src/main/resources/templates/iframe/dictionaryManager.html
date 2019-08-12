@@ -135,39 +135,50 @@
             });
             treeGrid.on('edit(dictionary)', function(obj){
                 var dic = obj.data;
-                layer.open({
-                    type: 1
-                    ,content: '<div style="text-align: center;margin-top: 30px;">确定要应用修改？</div>'
-                    ,title:'编辑'
-                    ,shadeClose: true
-                    ,skin: 'layui-layer-rim'
-                    ,area:['300px','200px']
-                    ,btn: ['确定', '取消']
-                    ,yes: function(index, layero){
-                        $.ajax({
-                            type: 'POST',
-                            url: "/system/dictionary/updateNode",
-                            contentType: "application/json;charset=utf-8",
-                            data: JSON.stringify({
-                                id:dic.id,
-                                parentId:dic.parentId,
-                                selfId:dic.selfId
-                            }),
-                            success: function(result){
-                                // 关掉弹出层
-                                layer.closeAll();
-                                if(result.status === 'S001'){
-                                    // 更新成功 - 关掉
-                                    treeGrid.reload(tableId);
-                                    layer.msg(result.statusDesc,{icon: 6});
-                                }else{
-                                    // 更新失败 - 给出错误提示
-                                    layer.msg(result.statusDesc,{icon: 5});
-                                }
+                $.get("/system/dictionary/checkExist/" + dic.selfId, function(result){
+                    if(result.status === 'S001'){
+                        // 校验selfId成功
+                        console.info(result.data);
+                        // 修改
+                        layer.open({
+                            type: 1
+                            ,content: '<div style="text-align: center;margin-top: 30px;">确定要应用修改？</div>'
+                            ,title:'编辑'
+                            ,shadeClose: true
+                            ,skin: 'layui-layer-rim'
+                            ,area:['300px','200px']
+                            ,btn: ['确定', '取消']
+                            ,yes: function(index, layero){
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "/system/dictionary/updateNode",
+                                    contentType: "application/json;charset=utf-8",
+                                    data: JSON.stringify({
+                                        id:dic.id,
+                                        parentId:dic.parentId,
+                                        selfId:dic.selfId
+                                    }),
+                                    success: function(result){
+                                        // 关掉弹出层
+                                        layer.closeAll();
+                                        if(result.status === 'S001'){
+                                            // 更新成功 - 关掉
+                                            treeGrid.reload(tableId);
+                                            layer.msg(result.statusDesc,{icon: 6});
+                                        }else{
+                                            // 更新失败 - 给出错误提示
+                                            layer.msg(result.statusDesc,{icon: 5});
+                                        }
+                                    }
+                                });
                             }
                         });
+                    }else{
+                        // 更新失败 - 给出错误提示
+                        layer.msg(result.statusDesc,{icon: 5});
                     }
                 });
+
             });
 
         });

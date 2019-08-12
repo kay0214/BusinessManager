@@ -99,4 +99,18 @@ public class BtDictionaryServiceImpl extends ServiceImpl<BtDictionaryMapper, BtD
         }
         return "未知";
     }
+
+    /**
+     * @description 检查selfId是否存在
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public boolean checkExist(Integer selfId) {
+        QueryWrapper<BtDictionary> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().select().and(obj->obj.eq(BtDictionary::getSelfId,selfId));
+        List<BtDictionary> dictionaries = list(queryWrapper);
+        return dictionaries.size()>0;
+    }
 }

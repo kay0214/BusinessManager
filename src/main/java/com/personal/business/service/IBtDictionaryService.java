@@ -54,4 +54,12 @@ public interface IBtDictionaryService extends IService<BtDictionary> {
      * @return
      */
     String getNameById(Integer id);
+
+    /**
+     * @description 检查selfId是否存在
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    boolean checkExist(Integer selfId);
 }

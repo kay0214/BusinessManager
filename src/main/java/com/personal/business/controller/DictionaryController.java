@@ -124,6 +124,22 @@ public class DictionaryController extends BaseController {
     }
 
     /**
+     * @description 检查selfId是否重复
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @GetMapping(value = "/checkExist/{selfId}")
+    @ResponseBody
+    public Return checkExist(@PathVariable Integer selfId){
+        boolean exist = iBtDictionaryService.checkExist(selfId);
+        if(!exist){
+            return Return.data(exist);
+        }
+        return Return.fail(ResultEnum.ERROR_DATA_REPEAT);
+    }
+
+    /**
      * @description 插入字典
      * @auth sunpeikai
      * @param
