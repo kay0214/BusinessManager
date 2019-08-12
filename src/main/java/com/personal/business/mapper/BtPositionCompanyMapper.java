@@ -1,9 +1,9 @@
 package com.personal.business.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.personal.business.dto.StaffDto;
 import com.personal.business.entity.BtPositionCompany;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

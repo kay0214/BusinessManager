@@ -1,8 +1,8 @@
 package com.personal.business.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.personal.business.constant.CommonConstant;
 import com.personal.business.constant.DictionaryConstant;
 import com.personal.business.dto.SelectorDto;
@@ -11,7 +11,6 @@ import com.personal.business.entity.BtPositionCompany;
 import com.personal.business.mapper.BtPositionCompanyMapper;
 import com.personal.business.request.StaffRequest;
 import com.personal.business.service.IBtPositionCompanyService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

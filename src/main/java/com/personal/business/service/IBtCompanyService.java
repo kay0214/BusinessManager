@@ -1,8 +1,8 @@
 package com.personal.business.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.personal.business.entity.BtCompany;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.personal.business.entity.BtCompany;
 import com.personal.business.request.CompanyRequest;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.personal.business.mapper;
 
-import com.personal.business.entity.BtPosition;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.personal.business.entity.BtPosition;
 
 /**
  * <p>

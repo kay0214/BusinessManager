@@ -3,12 +3,11 @@ package com.personal.business.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.personal.business.constant.CommonConstant;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.personal.business.entity.BtCompany;
 import com.personal.business.mapper.BtCompanyMapper;
 import com.personal.business.request.CompanyRequest;
 import com.personal.business.service.IBtCompanyService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 

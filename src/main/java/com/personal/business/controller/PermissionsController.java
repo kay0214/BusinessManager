@@ -3,10 +3,10 @@
  */
 package com.personal.business.controller;
 
-import com.personal.business.enums.ResultEnum;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.constant.ShiroPermissionsConstant;
+import com.personal.business.enums.ResultEnum;
 import com.personal.business.request.PermissionsRequest;
 import com.personal.business.service.IBtUserMenuService;
 import com.personal.business.utils.ShiroUtils;

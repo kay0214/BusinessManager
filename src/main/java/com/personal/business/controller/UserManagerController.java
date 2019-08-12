@@ -5,7 +5,6 @@ package com.personal.business.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.personal.business.enums.ResultEnum;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
 import com.personal.business.config.SystemConfig;
@@ -13,6 +12,7 @@ import com.personal.business.constant.CommonConstant;
 import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.dto.UserDto;
 import com.personal.business.entity.BtUser;
+import com.personal.business.enums.ResultEnum;
 import com.personal.business.request.UserRequest;
 import com.personal.business.service.IBtUserService;
 import com.personal.business.utils.CommonUtils;

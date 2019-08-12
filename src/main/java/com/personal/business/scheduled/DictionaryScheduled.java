@@ -3,8 +3,6 @@
  */
 package com.personal.business.scheduled;
 
-import com.alibaba.fastjson.JSON;
-import com.personal.business.constant.DictionaryConstant;
 import com.personal.business.service.IBtDictionaryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

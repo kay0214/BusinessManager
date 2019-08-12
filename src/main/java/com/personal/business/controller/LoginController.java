@@ -8,7 +8,6 @@ import com.personal.business.base.Return;
 import com.personal.business.entity.BtUser;
 import com.personal.business.request.LoginRequest;
 import com.personal.business.utils.SessionUtils;
-import com.personal.business.utils.ShiroUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;

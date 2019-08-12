@@ -1,8 +1,8 @@
 package com.personal.business.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.personal.business.dto.MenuTree;
 import com.personal.business.entity.BtMenu;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
