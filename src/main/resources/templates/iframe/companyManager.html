@@ -487,8 +487,104 @@
                             fullName:fullName,
                             shortName:shortName,
                             companyCode:companyCode,
+                            accountCode:accountCode,
                             creditCode:creditCode,
                             parentId:0,
+                            selfId:selfId,
+                            type:type,
+                            used:used,
+                            status:status,
+                            remark:remark
+                        }),
+                        success: function(result){
+                            // 关掉弹出层
+                            layer.closeAll();
+                            if(result.status === 'S001'){
+                                // 更新成功 - 关掉
+                                treeGrid.reload(tableId);
+                                layer.msg(result.statusDesc,{icon: 6});
+                            }else{
+                                // 更新失败 - 给出错误提示
+                                layer.msg(result.statusDesc,{icon: 5});
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function addChild(company) {
+            // 关系类型
+            var typesHtml = '<div class="layui-form-item"><label class="layui-form-label">关系类型</label><div class="layui-input-block"><select name="type" lay-verify="required"><option value="">请选择关系类型</option>';
+            for(var i=0;i<types.length;i++){
+                typesHtml += '<option value="' + types[i].key + '">' + types[i].value + '</option>';
+            }
+            typesHtml += '</select></div></div>';
+            // 状态类型
+            var statusHtml = '<div class="layui-form-item"><label class="layui-form-label">状态</label><div class="layui-input-block">';
+            for(var j=0;j<states.length;j++){
+                if(j===0){
+                    statusHtml += '<input type="radio" name="status" value="' + states[j].key + '" title="' + states[j].value + '" checked>';
+                }else{
+                    statusHtml += '<input type="radio" name="status" value="' + states[j].key + '" title="' + states[j].value + '">';
+                }
+            }
+            statusHtml += '</div></div>';
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级</label>'
+                + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="' + company.fullName + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">公司全称/个人全名</label>'
+                + '<div class="layui-input-block"><input type="text" placeholder="请输入公司全称/个人全名" name="fullName" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">简称</label>'
+                + '<div class="layui-input-block"><input type="text" name="shortName" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">助记码</label>'
+                + '<div class="layui-input-block"><input type="text" name="companyCode" placeholder="请输入助记码" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">财务代码</label>'
+                + '<div class="layui-input-block"><input type="text" name="accountCode" required  lay-verify="required" placeholder="请输入财务系统代码" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">信用代码/身份证号</label>'
+                + '<div class="layui-input-block"><input type="text" name="creditCode" required  lay-verify="required" placeholder="请输入信用代码/身份证号" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">代码</label>'
+                + '<div class="layui-input-block"><input type="text" name="selfId" required  lay-verify="required" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
+                // 关系类型
+                + typesHtml
+                // 启用类型
+                + statusHtml
+                + '<div class="layui-form-item"><label class="layui-form-label">是否已用</label>'
+                + '<div class="layui-input-block"><input type="radio" name="used" value="0" title="未用" checked><input type="radio" name="used" value="1" title="已用"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">备注</label>'
+                + '<div class="layui-input-block"><input type="text" name="remark" placeholder="请输入备注" autocomplete="off" class="layui-input"></div></div>'
+                + '</form>';
+            layer.open({
+                type: 1
+                ,content: formText
+                ,title:'编辑'
+                ,shadeClose: true
+                ,skin: 'layui-layer-rim'
+                ,area:['450px','650px']
+                ,btn: ['确定', '取消']
+                ,success: function(layero, index){
+                    form.render();
+                }
+                ,yes: function(index, layero){
+                    var fullName = $("input[name='fullName']").val();
+                    var shortName = $("input[name='shortName']").val();
+                    var companyCode = $("input[name='companyCode']").val();
+                    var accountCode = $("input[name='accountCode']").val();
+                    var creditCode = $("input[name='creditCode']").val();
+                    var selfId = $("input[name='selfId']").val();
+                    var type = $("select[name='type']").val();
+                    var status = $("input[name='status']:checked").val();
+                    var used = $("input[name='used']:checked").val();
+                    var remark = $("input[name='remark']").val();
+                    $.ajax({
+                        type: 'POST',
+                        url: "/company/insert",
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify({
+                            fullName:fullName,
+                            shortName:shortName,
+                            companyCode:companyCode,
+                            accountCode:accountCode,
+                            creditCode:creditCode,
+                            parentId:company.selfId,
                             selfId:selfId,
                             type:type,
                             used:used,

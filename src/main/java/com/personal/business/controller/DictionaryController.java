@@ -133,7 +133,7 @@ public class DictionaryController extends BaseController {
     @ResponseBody
     public Return checkExist(@PathVariable Integer id,@PathVariable Integer selfId){
         BtDictionary dictionary = iBtDictionaryService.getById(id);
-        if(!dictionary.getSelfId().equals(selfId)){
+        if(dictionary !=null && !dictionary.getSelfId().equals(selfId)){
             boolean exist = iBtDictionaryService.checkExist(selfId);
             if(!exist){
                 return Return.data(exist);
@@ -155,18 +155,22 @@ public class DictionaryController extends BaseController {
     @ResponseBody
     public Return insert(@RequestBody BtDictionary dictionary){
         log.info("insert dictionary [{}]",JSON.toJSONString(dictionary));
-        dictionary.setBuiltIn(CommonConstant.DICTIONARY_NOT_BUILD_IN);
-        dictionary.setDelFlag(0);
-        dictionary.setCreateTime(LocalDateTime.now());
-        dictionary.setUpdateTime(LocalDateTime.now());
-        boolean success = iBtDictionaryService.save(dictionary);
-        if(success){
-            // 重载字典
-            iBtDictionaryService.loadDictionary();
-            return Return.success();
-        }else{
-            return Return.fail("添加失败");
+        boolean exist = iBtDictionaryService.checkExist(dictionary.getSelfId());
+        if(!exist){
+            dictionary.setBuiltIn(CommonConstant.DICTIONARY_NOT_BUILD_IN);
+            dictionary.setDelFlag(0);
+            dictionary.setCreateTime(LocalDateTime.now());
+            dictionary.setUpdateTime(LocalDateTime.now());
+            boolean success = iBtDictionaryService.save(dictionary);
+            if(success){
+                // 重载字典
+                iBtDictionaryService.loadDictionary();
+                return Return.success();
+            }else{
+                return Return.fail("添加失败");
+            }
         }
+        return Return.fail(ResultEnum.ERROR_DATA_REPEAT);
     }
 
     /**

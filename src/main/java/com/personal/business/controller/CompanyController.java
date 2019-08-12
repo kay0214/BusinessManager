@@ -91,7 +91,7 @@ public class CompanyController extends BaseController {
     @ResponseBody
     public Return checkExist(@PathVariable Integer id,@PathVariable Integer selfId){
         BtCompany company = iBtCompanyService.getById(id);
-        if(!company.getSelfId().equals(selfId)){
+        if(company!=null && !company.getSelfId().equals(selfId)){
             boolean exist = iBtCompanyService.checkExist(selfId);
             if(!exist){
                 return Return.data(exist);
@@ -114,15 +114,19 @@ public class CompanyController extends BaseController {
     @ResponseBody
     public Return insert(@RequestBody BtCompany company){
         log.info("insert company [{}]", JSON.toJSONString(company));
-        company.setDelFlag(0);
-        company.setCreateTime(LocalDateTime.now());
-        company.setUpdateTime(LocalDateTime.now());
-        boolean success = iBtCompanyService.save(company);
-        if(success){
-            return Return.success();
-        }else{
-            return Return.fail("添加失败");
+        boolean exist = iBtCompanyService.checkExist(company.getSelfId());
+        if(!exist){
+            company.setDelFlag(0);
+            company.setCreateTime(LocalDateTime.now());
+            company.setUpdateTime(LocalDateTime.now());
+            boolean success = iBtCompanyService.save(company);
+            if(success){
+                return Return.success();
+            }else{
+                return Return.fail("添加失败");
+            }
         }
+        return Return.fail(ResultEnum.ERROR_DATA_REPEAT);
     }
 
     /**
