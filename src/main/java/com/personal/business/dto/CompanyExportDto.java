@@ -50,7 +50,7 @@ public class CompanyExportDto implements Serializable {
     /**
      * 公司全称/个人姓名
      */
-    @Excel(name = "全称" , width = 20,isImportField = "true_st")
+    @Excel(name = "全称" , width = 20)
     private String fullName;
 
     /**

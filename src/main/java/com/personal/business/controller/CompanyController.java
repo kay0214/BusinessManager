@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
@@ -199,9 +200,12 @@ public class CompanyController extends BaseController {
     }
 
     @ResponseBody
-    @GetMapping("/importExcel")
-    public void importExcel() {
-        List<CompanyExportDto> list = EasyPoiUtil.importExcel("C:\\Users\\dell\\Desktop\\往来公司及个人.xls",1,1,CompanyExportDto.class);
+    @PostMapping("/importExcel")
+    public Return importExcel(MultipartFile file) {
+        log.info(file.getOriginalFilename());
+        List<CompanyExportDto> list = EasyPoiUtil.importExcel(file,1,1,CompanyExportDto.class);
+
         log.info(JSON.toJSONString(list));
+        return Return.success();
     }
 }

@@ -64,12 +64,13 @@
                 <button class="layui-btn layui-btn-sm" onclick="addCompany()" id="addCompany">添加</button>
                 <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="delCompany()" id="delCompany">删除</button>
                 <a target="_blank" class="layui-btn layui-btn-sm layui-btn-primary float-right" href="/company/exportExcel" id="exportCompany"><i class="layui-icon layui-icon-export"></i>导出</a>
+                <button class="layui-btn layui-btn-sm layui-btn-primary float-right" onclick="importCompany()" id="importCompany"><i class="layui-icon layui-icon-upload-drag"></i>导入</button>
             </div>
         </div>
     </div>
     <script src="/layui/layui.js"></script>
     <script th:inline="javascript">
-        var tableId='company',layer=null,$,form,treeGrid,types,states;
+        var tableId='company',layer=null,$,form,treeGrid,types,states,upload,uploadFile;
         function init(){
             // 获取下拉框
             types = [[${@selector.getSelector('relationship')}]];
@@ -104,11 +105,12 @@
             base: '/layui/'
         }).extend({
             treeGrid:'treeGrid'
-        }).use(['jquery','layer','treeGrid','form'], function(){
+        }).use(['jquery','layer','treeGrid','form','upload'], function(){
             form = layui.form;
             $=layui.$;
             treeGrid = layui.treeGrid;
             layer=layui.layer;
+            upload = layui.upload;
             // 初始化
             init();
             // 填充html下拉框
@@ -604,6 +606,66 @@
                             }
                         }
                     });
+                }
+            });
+        }
+        function importCompany() {
+            var uploadDom,uploadFile,uploadIndex;
+            console.info("click upload");
+            var formText = '<div style="margin: 30px;text-align: center;"><div class="layui-upload-drag" id="upload"><i class="layui-icon"></i><p>点击上传，或将文件拖拽到此处</p></div><div style="margin-top: 20px;" id="uploadText"></div></div>';
+            layer.open({
+                type: 1
+                ,content: formText
+                ,title:'导入'
+                ,shadeClose: true
+                ,skin: 'layui-layer-rim'
+                ,area:['400px','350px']
+                ,btn: ['确定', '取消']
+                ,success: function(layero, index){
+                    form.render();
+                    //拖拽上传
+                    upload.render({
+                        elem: '#upload'
+                        ,url: '/company/importExcel'
+                        ,accept:'file'
+                        ,acceptMime:'application/vnd.ms-excel,application/msexcel,application/x-excel'
+                        ,exts:'xls|xlsx'
+                        ,auto:false // 不自动上传
+                        ,field:'file'
+                        ,size: 1024*50
+                        ,choose: function(obj) {
+                            //将每次选择的文件追加到文件队列
+                            var files = obj.pushFile();
+                            uploadDom = obj;
+                            //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+                            obj.preview(function (index, file, result) {
+                                uploadFile = file;
+                                uploadIndex = index;
+                                var uploadText = $("#uploadText");
+                                uploadText.html(file.name);
+                            });
+                        }
+                        ,before: function(obj){
+                            layer.load(); //上传loading
+                        }
+                        ,done: function(res, index, upload){
+                            layer.closeAll('loading'); //关闭loading
+                            if(res.status === 'S001'){
+                                layer.msg(res.statusDesc,{icon:6});
+                            }else{
+                                layer.msg(res.statusDesc,{icon:5});
+                            }
+                        }
+                        ,error: function(index, upload){
+                            layer.closeAll('loading'); //关闭loading
+                            layer.msg("上传出错",{icon:6});
+                        }
+                    });
+                }
+                ,yes: function(index, layero){
+                    layer.closeAll();
+                    // 上传
+                    uploadDom.upload(uploadIndex,uploadFile);
                 }
             });
         }

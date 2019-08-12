@@ -1,3 +1,8 @@
+function load_ok() {
+    // html加载完成后执行操作
+    // 用户名一栏获得焦点
+    document.getElementById("username").focus();
+}
 // 监听回车事件
 function keyPress(obj){
     if (obj.keyCode == 13) {
