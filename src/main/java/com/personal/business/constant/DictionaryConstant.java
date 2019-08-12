@@ -74,6 +74,30 @@ public class DictionaryConstant {
         return result;
     }
 
+    public static String getValueByTypeAndKey(String type,Integer key){
+        List<SelectorDto> types = DictionaryConstant.getDictionaries(type);
+        String result = "";
+        for (SelectorDto selectorDto : types) {
+            if (selectorDto.getKey().equals(key)) {
+                result = selectorDto.getValue();
+                break;
+            }
+        }
+        return result;
+    }
+
+    public static Integer getKeyByTypeAndValue(String type,String value){
+        List<SelectorDto> types = DictionaryConstant.getDictionaries(type);
+        Integer result = null;
+        for (SelectorDto selectorDto : types) {
+            if (selectorDto.getValue().equals(value)) {
+                result = selectorDto.getKey();
+                break;
+            }
+        }
+        return result;
+    }
+
     public static void clearDictionary(){
         if(selectors!=null && selectors.size()>0){
             selectors.clear();

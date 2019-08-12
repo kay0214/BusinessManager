@@ -85,6 +85,11 @@ public interface ShiroPermissionsConstant {
     String PERM_EXPORT = "export";
 
     /**
+     * 权限 - 导入
+     */
+    String PERM_IMPORT = "import";
+
+    /**
      * 权限 - 查询用户
      */
     String PERM_USER_LIST = PERM_BASE + PERM_USER + PERM_LIST;
@@ -183,6 +188,16 @@ public interface ShiroPermissionsConstant {
      * 权限 - 删除单位或个人
      * */
     String PERM_COMPANY_DEL = PERM_BASE + PERM_COMPANY + PERM_DEL;
+
+    /**
+     * 权限 - 导出单位或个人
+     * */
+    String PERM_COMPANY_EXPORT = PERM_BASE + PERM_COMPANY + PERM_EXPORT;
+
+    /**
+     * 权限 - 导入单位或个人
+     * */
+    String PERM_COMPANY_IMPORT = PERM_BASE + PERM_COMPANY + PERM_IMPORT;
 
     /**
      * 权限 - 岗位查询

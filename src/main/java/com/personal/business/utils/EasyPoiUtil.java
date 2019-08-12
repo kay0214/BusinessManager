@@ -107,10 +107,10 @@ public class EasyPoiUtil {
      * @param response
      * @return
      */
-    private static Workbook defaultBigExport(List<?> list, Class<?> pojoClass, String fileName, HttpServletResponse response, ExportParams exportParams) {
+/*    private static Workbook defaultBigExport(List<?> list, Class<?> pojoClass, String fileName, HttpServletResponse response, ExportParams exportParams) {
         Workbook workbook = ExcelExportUtil.exportBigExcel(exportParams, pojoClass, list);
         return workbook;
-    }
+    }*/
 
     /**
      * 功能描述：复杂导出Excel，包括文件名以及表名,不创建表头
@@ -125,10 +125,10 @@ public class EasyPoiUtil {
      * @param response
      * @return
      */
-    public static Workbook exportBigExcel(List<?> list, String title, String sheetName, Class<?> pojoClass, String fileName, HttpServletResponse response) {
+/*    public static Workbook exportBigExcel(List<?> list, String title, String sheetName, Class<?> pojoClass, String fileName, HttpServletResponse response) {
         Workbook workbook = defaultBigExport(list, pojoClass, fileName, response, new ExportParams(title, sheetName));
         return workbook;
-    }
+    }*/
 
     /**
      * 功能描述：Excel导出

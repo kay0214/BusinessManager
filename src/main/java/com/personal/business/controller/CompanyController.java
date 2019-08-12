@@ -7,11 +7,16 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
+import com.personal.business.constant.CommonConstant;
+import com.personal.business.constant.DictionaryConstant;
 import com.personal.business.constant.ShiroPermissionsConstant;
+import com.personal.business.dto.CompanyExportDto;
 import com.personal.business.entity.BtCompany;
 import com.personal.business.enums.ResultEnum;
 import com.personal.business.request.CompanyRequest;
 import com.personal.business.service.IBtCompanyService;
+import com.personal.business.utils.CommonUtils;
+import com.personal.business.utils.EasyPoiUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -20,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -169,5 +175,33 @@ public class CompanyController extends BaseController {
             }
         }
         return Return.fail(ResultEnum.ERROR_PARAM_NOT_ENOUGH);
+    }
+
+    /**
+     * @description 导出
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_COMPANY_EXPORT)
+    @GetMapping("/exportExcel")
+    public void exportExcel(HttpServletResponse response) {
+        List<BtCompany> result = iBtCompanyService.getAllCompanies();
+        if (CollectionUtils.isNotEmpty(result)){
+            List<CompanyExportDto> exportDtos = CommonUtils.convertBeanList(result,CompanyExportDto.class);
+            exportDtos.forEach(companyExportDto -> {
+                companyExportDto.setTypeStr(DictionaryConstant.getValueByTypeAndKey(CommonConstant.DICTIONARY_RELATIONSHIP,companyExportDto.getType()));
+                companyExportDto.setStatusStr(DictionaryConstant.getValueByTypeAndKey(CommonConstant.DICTIONARY_STATUS,companyExportDto.getStatus()));
+            });
+            // 导出数据
+            EasyPoiUtil.exportExcel(exportDtos,"往来公司/个人","第一页", CompanyExportDto.class,"往来公司及个人.xls",response) ;
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/importExcel")
+    public void importExcel() {
+        List<CompanyExportDto> list = EasyPoiUtil.importExcel("C:\\Users\\dell\\Desktop\\往来公司及个人.xls",1,1,CompanyExportDto.class);
+        log.info(JSON.toJSONString(list));
     }
 }

@@ -43,6 +43,19 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
     }
 
     /**
+     * @description 获取所有数据
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public List<BtCompany> getAllCompanies() {
+        QueryWrapper<BtCompany> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().select().orderByAsc(BtCompany::getSelfId);
+        return list(queryWrapper);
+    }
+
+    /**
      * @description 检查selfId是否重复
      * @auth sunpeikai
      * @param
