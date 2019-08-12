@@ -24,4 +24,20 @@ public interface IBtCompanyService extends IService<BtCompany> {
      * @return
      */
     IPage<BtCompany> getAllCompany(CompanyRequest companyRequest);
+
+    /**
+     * @description 检查selfId是否重复
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    boolean checkExist(Integer selfId);
+
+    /**
+     * @description 根据selfId获取所有子节点
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<BtCompany> getAllChildren(Integer parentId);
 }

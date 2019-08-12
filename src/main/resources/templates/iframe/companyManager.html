@@ -62,14 +62,14 @@
         <div class="layui-btn-container" hidden id="tools">
             <div class="left">
                 <button class="layui-btn layui-btn-sm" onclick="addCompany()" id="addCompany">添加</button>
-                <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="editCompany()" id="editCompany">编辑</button>
                 <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="delCompany()" id="delCompany">删除</button>
+                <a target="_blank" class="layui-btn layui-btn-sm layui-btn-primary float-right" href="/company/exportExcel" id="exportCompany"><i class="layui-icon layui-icon-export"></i>导出</a>
             </div>
         </div>
     </div>
     <script src="/layui/layui.js"></script>
     <script th:inline="javascript">
-        var tableId='company',layer=null,$,form,table,types,states,toolBar = ['filter','exports'];
+        var tableId='company',layer=null,$,form,treeGrid,types,states;
         function init(){
             // 获取下拉框
             types = [[${@selector.getSelector('relationship')}]];
@@ -95,13 +95,19 @@
             }
             var exportPerm = [[${#permission.hasPermission('business:company:export')}]];
             if(exportPerm!==null && exportPerm!==undefined && exportPerm!==''){
-                toolBar = ['filter'];
+                var exportCompany = $("#exportCompany");
+                exportCompany.addClass("layui-btn-disabled");
+                exportCompany.attr("href","javascript:;");
             }
         }
-        layui.use(['jquery','layer','table','form'], function(){
+        layui.config({
+            base: '/layui/'
+        }).extend({
+            treeGrid:'treeGrid'
+        }).use(['jquery','layer','treeGrid','form'], function(){
             form = layui.form;
             $=layui.$;
-            table = layui.table;
+            treeGrid = layui.treeGrid;
             layer=layui.layer;
             // 初始化
             init();
@@ -121,18 +127,28 @@
             // 重新渲染
             form.render();
             // 填充下拉框结束
-            table.render({
+            treeGrid.render({
                 id:tableId
                 ,elem: '#'+tableId
                 ,url:'/company/getAllCompany'
+                ,idField:'selfId'//必須字段
+                ,treeId:'selfId'//树形id字段名称
+                ,treeUpId:'parentId'//树形父id字段名称
+                ,treeShowName:'fullName'//以树形式显示的字段
+                ,heightRemove:[".dHead",100]//不计算的高度,表格设定的是固定高度，此项不生效
+                ,isFilter:false
+                ,height: '80%'
+                ,iconOpen:false//是否显示图标【默认显示】
+                ,isOpenDefault:false//节点默认是展开还是折叠【默认展开】
+                ,loading:true
+                ,method:'get'
+                ,isPage:true
+                ,toolbar: '#tools'
+                ,skin: 'line'
+                ,editModel:'dblclick'
                 ,page: true
                 ,limit: 10
                 ,limits: [10,20,30,40,50]
-                ,loading:true
-                ,method:'get'
-                ,toolbar: '#tools'
-                ,defaultToolbar: toolBar
-                ,skin: 'line'
                 ,response:{
                     statusCode:'S001'
                 }
@@ -147,8 +163,10 @@
                 ,cols: [
                     [
                         {type: 'checkbox'}
-                        ,{field:'companyCode', minWidth:120, title: '助记码',align:'left'}
-                        ,{field:'accountCode', minWidth:120, title: '财务代码',align:'left'}
+                        ,{field:'fullName', width:120, title: '全称',align:'left'}
+                        ,{field:'shortName', width:80, title: '简称',align:'left'}
+                        ,{field:'companyCode', minWidth:80, title: '助记码',align:'left'}
+                        ,{field:'accountCode', minWidth:90, title: '财务代码',align:'left'}
                         ,{field:'type', width:100, title: '类型',align:'left',templet:function (data) {
                             for(var i=0;i<types.length;i++){
                                 if(data.type===types[i].key){
@@ -156,17 +174,17 @@
                                 }
                             }
                         }}
-                        ,{field:'creditCode', width:200, title: '证件号',align:'left'}
-                        ,{field:'fullName', width:150, title: '全称',align:'left'}
-                        ,{field:'shortName', width:100, title: '简称',align:'left'}
-                        ,{field:'status', title: '状态',width:100,align:'left',templet:function (data) {
+                        ,{field:'creditCode', width:170, title: '证件号',align:'left'}
+                        ,{field:'parentId', width:60, title: '上级',align:'left',edit: 'text'}
+                        ,{field:'selfId', width:60, title: '代码',align:'left',edit: 'text'}
+                        ,{field:'status', title: '状态',width:60,align:'left',templet:function (data) {
                             for(var i=0;i<states.length;i++){
                                 if(data.status===states[i].key){
                                     return "<span class='layui-badge layui-badge-blue'>" + states[i].value + "</span>";
                                 }
                             }
                         }}
-                        ,{field:'used', width:90, title: '已使用',align:'left',templet:function (data) {
+                        ,{field:'used', width:80, title: '已使用',align:'left',templet:function (data) {
                             if(data.used===1){
                                 return "<span class='layui-badge layui-bg-blue'>已用</span>";
                             }else if(data.used===0){
@@ -175,9 +193,66 @@
                                 return "<span class='layui-badge-rim'>预留状态</span>";
                             }
                         }}
-                        ,{field:'remark', width:150,align:'left', title: '描述'}
+                        ,{field:'remark', width:100,align:'left', title: '描述'}
+                        ,{width:140, title: '操作',templet:function (data) {
+                            return "<button class='layui-btn layui-btn-sm layui-btn-normal layui-btn-" + [[${#permission.hasPermission('business:company:edit')}]] + "' " + [[${#permission.hasPermission('business:company:edit')}]] + " lay-event='editCompany'>编辑</button>"
+                                +"<button class='layui-btn layui-btn-sm layui-btn-" + [[${#permission.hasPermission('business:company:add')}]] + "' " + [[${#permission.hasPermission('business:company:add')}]] + " lay-event='addChild'>添加下级</button>";
+                        }}
                     ]
                 ]
+            });
+            treeGrid.on('tool(company)',function (obj) {
+                if(obj.event === 'editCompany'){//编辑
+                    editCompany(obj.data);
+                }else if(obj.event==='addChild'){
+                    addChild(obj.data);
+                }
+            });
+            treeGrid.on('edit(company)', function(obj){
+                var company = obj.data;
+                $.get("/company/checkExist/" + company.id + "/" + company.selfId, function(result){
+                    if(result.status === 'S001'){
+                        // 校验selfId是否重复
+                        // 修改
+                        layer.open({
+                            type: 1
+                            ,content: '<div style="text-align: center;margin-top: 30px;">确定要应用修改？</div>'
+                            ,title:'编辑'
+                            ,shadeClose: true
+                            ,skin: 'layui-layer-rim'
+                            ,area:['300px','200px']
+                            ,btn: ['确定', '取消']
+                            ,yes: function(index, layero){
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "/company/updateNode",
+                                    contentType: "application/json;charset=utf-8",
+                                    data: JSON.stringify({
+                                        id:company.id,
+                                        parentId:company.parentId,
+                                        selfId:company.selfId
+                                    }),
+                                    success: function(result){
+                                        // 关掉弹出层
+                                        layer.closeAll();
+                                        if(result.status === 'S001'){
+                                            // 更新成功 - 关掉
+                                            treeGrid.reload(tableId);
+                                            layer.msg(result.statusDesc,{icon: 6});
+                                        }else{
+                                            // 更新失败 - 给出错误提示
+                                            layer.msg(result.statusDesc,{icon: 5});
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }else{
+                        // 更新失败 - 给出错误提示
+                        layer.msg(result.statusDesc,{icon: 5});
+                    }
+                });
+
             });
             // 搜索
             var active = {
@@ -188,7 +263,7 @@
                     var type = $('#companyType');
                     var status = $('#companyStatus');
                     //执行重载
-                    table.reload(tableId, {
+                    treeGrid.reload(tableId, {
                         page: {
                             curr: 1 //重新从第 1 页开始
                         }
@@ -208,13 +283,7 @@
             });
         });
         // 编辑信息
-        function editCompany(){
-            var checkCompanies = table.checkStatus(tableId).data;
-            if(checkCompanies.length!==1){
-                layer.msg("请选择一个公司或个人",{icon:5});
-                return;
-            }
-            var company = checkCompanies[0];
+        function editCompany(company){
             // 关系类型
             var typesHtml = '<div class="layui-form-item"><label class="layui-form-label">关系类型</label><div class="layui-input-block"><select name="type" lay-verify="required"><option value="">请选择关系类型</option>';
             for(var i=0;i<types.length;i++){
@@ -301,7 +370,7 @@
                             layer.closeAll();
                             if(result.status === 'S001'){
                                 // 更新成功 - 关掉
-                                table.reload(tableId);
+                                treeGrid.reload(tableId);
                                 layer.msg(result.statusDesc,{icon: 6});
                             }else{
                                 // 更新失败 - 给出错误提示
@@ -314,7 +383,7 @@
         }
         // 删除菜单
         function delCompany(){
-            var checkCompanies = table.checkStatus(tableId).data;
+            var checkCompanies = treeGrid.checkStatus(tableId).data;
             if(checkCompanies===null || checkCompanies===undefined || checkCompanies.length<1){
                 layer.msg("未选择任何公司或个人",{icon:5});
                 return;
@@ -337,7 +406,7 @@
                         layer.closeAll();
                         if(result.status === 'S001'){
                             // 更新成功 - 关掉
-                            table.reload(tableId);
+                            treeGrid.reload(tableId);
                             layer.msg(result.statusDesc,{icon: 6});
                         }else{
                             // 更新失败 - 给出错误提示
@@ -365,7 +434,9 @@
                 }
             }
             statusHtml += '</div></div>';
-            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">公司全称/个人全名</label>'
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级</label>'
+                + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="主目录" autocomplete="off" class="layui-input layui-disabled"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">公司全称/个人全名</label>'
                 + '<div class="layui-input-block"><input type="text" placeholder="请输入公司全称/个人全名" name="fullName" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">简称</label>'
                 + '<div class="layui-input-block"><input type="text" name="shortName" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
@@ -375,6 +446,8 @@
                 + '<div class="layui-input-block"><input type="text" name="accountCode" required  lay-verify="required" placeholder="请输入财务系统代码" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">信用代码/身份证号</label>'
                 + '<div class="layui-input-block"><input type="text" name="creditCode" required  lay-verify="required" placeholder="请输入信用代码/身份证号" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">代码</label>'
+                + '<div class="layui-input-block"><input type="text" name="selfId" required  lay-verify="required" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
                 // 关系类型
                 + typesHtml
                 // 启用类型
@@ -401,6 +474,7 @@
                     var companyCode = $("input[name='companyCode']").val();
                     var accountCode = $("input[name='accountCode']").val();
                     var creditCode = $("input[name='creditCode']").val();
+                    var selfId = $("input[name='selfId']").val();
                     var type = $("select[name='type']").val();
                     var status = $("input[name='status']:checked").val();
                     var used = $("input[name='used']:checked").val();
@@ -414,6 +488,8 @@
                             shortName:shortName,
                             companyCode:companyCode,
                             creditCode:creditCode,
+                            parentId:0,
+                            selfId:selfId,
                             type:type,
                             used:used,
                             status:status,
@@ -424,7 +500,7 @@
                             layer.closeAll();
                             if(result.status === 'S001'){
                                 // 更新成功 - 关掉
-                                table.reload(tableId);
+                                treeGrid.reload(tableId);
                                 layer.msg(result.statusDesc,{icon: 6});
                             }else{
                                 // 更新失败 - 给出错误提示

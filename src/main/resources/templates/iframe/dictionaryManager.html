@@ -135,7 +135,7 @@
             });
             treeGrid.on('edit(dictionary)', function(obj){
                 var dic = obj.data;
-                $.get("/system/dictionary/checkExist/" + dic.selfId, function(result){
+                $.get("/system/dictionary/checkExist/" + dic.id + "/" + dic.selfId, function(result){
                     if(result.status === 'S001'){
                         // 校验selfId是否重复
                         // 修改

@@ -7,12 +7,15 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.personal.business.base.BaseController;
 import com.personal.business.base.Return;
+import com.personal.business.constant.CommonConstant;
 import com.personal.business.constant.ShiroPermissionsConstant;
 import com.personal.business.entity.BtCompany;
 import com.personal.business.enums.ResultEnum;
 import com.personal.business.request.CompanyRequest;
 import com.personal.business.service.IBtCompanyService;
+import com.personal.business.utils.CheckUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -48,6 +51,56 @@ public class CompanyController extends BaseController {
     public Return getAllCompany(CompanyRequest companyRequest){
         IPage<BtCompany> page = iBtCompanyService.getAllCompany(companyRequest);
         return Return.data(page);
+    }
+
+    /**
+     * @description 更新字典
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @RequiresPermissions(ShiroPermissionsConstant.PERM_DIC_EDIT)
+    @PostMapping(value = "/updateNode")
+    @ResponseBody
+    public Return updateNode(@RequestBody BtCompany company){
+        BtCompany thisNode = iBtCompanyService.getById(company.getId());
+        if(!company.getSelfId().equals(thisNode.getSelfId())){
+            List<BtCompany> children = iBtCompanyService.getAllChildren(thisNode.getSelfId());
+            if(CollectionUtils.isNotEmpty(children)){
+                children.forEach(btDictionary->{
+                    btDictionary.setParentId(company.getSelfId());
+                });
+                iBtCompanyService.updateBatchById(children);
+            }
+        }
+        boolean success = iBtCompanyService.updateById(company);
+        if(success){
+            return Return.success();
+        }else{
+            return Return.fail("更新失败");
+        }
+    }
+
+    /**
+     * @description 检查selfId是否重复
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @GetMapping(value = "/checkExist/{id}/{selfId}")
+    @ResponseBody
+    public Return checkExist(@PathVariable Integer id,@PathVariable Integer selfId){
+        BtCompany company = iBtCompanyService.getById(id);
+        if(!company.getSelfId().equals(selfId)){
+            boolean exist = iBtCompanyService.checkExist(selfId);
+            if(!exist){
+                return Return.data(exist);
+            }
+            return Return.fail(ResultEnum.ERROR_DATA_REPEAT);
+        }else{
+            return Return.success();
+        }
+
     }
 
     /**

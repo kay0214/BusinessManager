@@ -57,6 +57,16 @@ public class BtCompany implements Serializable {
     private String shortName;
 
     /**
+     * 父节点id
+     */
+    private Integer parentId;
+
+    /**
+     * 自身节点id
+     */
+    private Integer selfId;
+
+    /**
      * 启用
      */
     private Integer status;

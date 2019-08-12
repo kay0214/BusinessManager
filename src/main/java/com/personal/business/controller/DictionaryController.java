@@ -129,14 +129,19 @@ public class DictionaryController extends BaseController {
      * @param
      * @return
      */
-    @GetMapping(value = "/checkExist/{selfId}")
+    @GetMapping(value = "/checkExist/{id}/{selfId}")
     @ResponseBody
-    public Return checkExist(@PathVariable Integer selfId){
-        boolean exist = iBtDictionaryService.checkExist(selfId);
-        if(!exist){
-            return Return.data(exist);
+    public Return checkExist(@PathVariable Integer id,@PathVariable Integer selfId){
+        BtDictionary dictionary = iBtDictionaryService.getById(id);
+        if(!dictionary.getSelfId().equals(selfId)){
+            boolean exist = iBtDictionaryService.checkExist(selfId);
+            if(!exist){
+                return Return.data(exist);
+            }
+            return Return.fail(ResultEnum.ERROR_DATA_REPEAT);
+        }else{
+            return Return.success();
         }
-        return Return.fail(ResultEnum.ERROR_DATA_REPEAT);
     }
 
     /**

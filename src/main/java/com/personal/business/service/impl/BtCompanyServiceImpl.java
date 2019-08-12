@@ -42,4 +42,30 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
                 .and(companyRequest.getStatus()!=null,obj->obj.eq(BtCompany::getStatus,companyRequest.getStatus()));
         return page(new Page<>(companyRequest.getPage(),companyRequest.getLimit()),queryWrapper);
     }
+
+    /**
+     * @description 检查selfId是否重复
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public boolean checkExist(Integer selfId) {
+        QueryWrapper<BtCompany> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().select().and(obj->obj.eq(BtCompany::getSelfId,selfId));
+        return list(queryWrapper).size()>0;
+    }
+
+    /**
+     * @description 根据selfId获取所有子节点
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public List<BtCompany> getAllChildren(Integer parentId) {
+        QueryWrapper<BtCompany> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().select().and(obj->obj.eq(BtCompany::getParentId,parentId));
+        return list(queryWrapper);
+    }
 }
