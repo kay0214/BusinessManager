@@ -103,13 +103,25 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
      */
     @Override
     public boolean saveCompany(BtCompany company) {
-        Integer max = getMaxId();
-        boolean enable;
-        do {
-            max ++ ;
-            enable = checkExist(max);
-        }while (enable);
-        company.setSelfId(max);
+        // 如果selfId是空的，那就取
+        if(company.getSelfId()==null){
+            Integer max = getMaxId();
+            boolean enable;
+            do {
+                max ++ ;
+                enable = checkExist(max);
+            }while (enable);
+            company.setSelfId(max);
+        }
+        if(company.getParentId()!=null && company.getParentId()!=0){
+            // 检查是否已经有parentId相同的节点，如果有就不创建
+            boolean canRun = getAllChildren(company.getParentId()).size()==0;
+            if(canRun){
+                // 设立本部
+                BtCompany son = new BtCompany();
+            }
+
+        }
         company.setDelFlag(0);
         company.setCreateTime(company.getCreateTime()==null? LocalDateTime.now():company.getCreateTime());
         company.setUpdateTime(LocalDateTime.now());
