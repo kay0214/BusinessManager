@@ -65,6 +65,7 @@
                 <button class="layui-btn layui-btn-sm layui-btn-danger" onclick="delCompany()" id="delCompany">删除</button>
                 <a target="_blank" class="layui-btn layui-btn-sm layui-btn-primary float-right" href="/company/exportExcel" id="exportCompany"><i class="layui-icon layui-icon-export"></i>导出</a>
                 <button class="layui-btn layui-btn-sm layui-btn-primary float-right" onclick="importCompany()" id="importCompany"><i class="layui-icon layui-icon-upload-drag"></i>导入</button>
+                <a href="/file/往来公司及个人.xls" class="layui-btn layui-btn-sm layui-btn-primary float-right" download="往来公司及个人.xls"><i class="layui-icon layui-icon-template"></i>下载模板</a>
             </div>
         </div>
     </div>
@@ -628,7 +629,7 @@
                         elem: '#upload'
                         ,url: '/company/importExcel'
                         ,accept:'file'
-                        ,acceptMime:'application/vnd.ms-excel,application/msexcel,application/x-excel'
+                        ,acceptMime:'application/vnd.ms-excel,application/msexcel,application/x-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                         ,exts:'xls|xlsx'
                         ,auto:false // 不自动上传
                         ,field:'file'
