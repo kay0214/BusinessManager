@@ -2,4 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.personal.business.mapper.BtCompanyMapper">
 
+    <select id="getMaxId" resultType="Integer">
+        SELECT max(id) FROM bt_company
+    </select>
 </mapper>

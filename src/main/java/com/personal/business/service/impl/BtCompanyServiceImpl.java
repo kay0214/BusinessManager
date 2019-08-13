@@ -8,9 +8,11 @@ import com.personal.business.entity.BtCompany;
 import com.personal.business.mapper.BtCompanyMapper;
 import com.personal.business.request.CompanyRequest;
 import com.personal.business.service.IBtCompanyService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -21,6 +23,7 @@ import java.util.List;
  * @author spk
  * @since 2019-07-31
  */
+@Slf4j
 @Service
 public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany> implements IBtCompanyService {
 
@@ -79,5 +82,37 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
         QueryWrapper<BtCompany> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().select().and(obj->obj.eq(BtCompany::getParentId,parentId));
         return list(queryWrapper);
+    }
+
+    /**
+     * @description 获取自增主键最大值
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public Integer getMaxId(){
+        return getBaseMapper().getMaxId();
+    }
+
+    /**
+     * @description 插入数据
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public boolean saveCompany(BtCompany company) {
+        Integer max = getMaxId();
+        boolean enable;
+        do {
+            max ++ ;
+            enable = checkExist(max);
+        }while (enable);
+        company.setSelfId(max);
+        company.setDelFlag(0);
+        company.setCreateTime(company.getCreateTime()==null? LocalDateTime.now():company.getCreateTime());
+        company.setUpdateTime(LocalDateTime.now());
+        return save(company);
     }
 }

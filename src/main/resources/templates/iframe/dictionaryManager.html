@@ -301,7 +301,7 @@
                 + '<div class="layui-form-item"><label class="layui-form-label">代码</label>'
                 + '<div class="layui-input-block"><input type="text" name="selfId" required  lay-verify="required" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">字典值</label>'
-                + '<div class="layui-input-block"><input type="text" placeholder="请输入数值" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="value" placeholder="请输入数值" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">字典区分</label>'
                 + '<div class="layui-input-block"><input type="text" name="type" placeholder="请输入区分" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">显示顺序</label>'
@@ -366,7 +366,6 @@
         }
         // 添加目录菜单
         function addDic(){
-            console.info("click add");
             var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级字典</label>'
                 + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="主目录" autocomplete="off" class="layui-input layui-disabled"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">字典名称</label>'
@@ -400,6 +399,8 @@
                 ,yes: function(index, layero){
                     var name = $("input[name='name']").val();
                     var selfId = $("input[name='selfId']").val();
+                    var value = $("input[name='value']").val();
+                    var type = $("input[name='type']").val();
                     var orderNum = $("input[name='orderNum']").val();
                     var freeze = $("input[name='freeze']:checked").val();
                     var used = $("input[name='used']:checked").val();
@@ -411,6 +412,8 @@
                         data: JSON.stringify({
                             name:name,
                             selfId:selfId,
+                            value:value,
+                            type:type,
                             orderNum:orderNum,
                             parentId:0,
                             freeze:freeze,

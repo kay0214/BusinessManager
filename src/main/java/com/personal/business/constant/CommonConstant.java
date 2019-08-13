@@ -7,10 +7,21 @@ package com.personal.business.constant;
  */
 public interface CommonConstant {
 
+
+    /**
+     * 数据字典 - 状态
+     */
+    String DICTIONARY_STATUS_FORBIDDEN = "2";
+
     /**
      * 数据字典 - 状态
      */
     String DICTIONARY_STATUS = "status";
+
+    /**
+     * 数据字典 - 待分类
+     */
+    String DICTIONARY_RELATIONSHIP_UNKNOWN = "8";
 
     /**
      * 数据字典 - 人员

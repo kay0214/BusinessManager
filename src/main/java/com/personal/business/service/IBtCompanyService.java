@@ -48,4 +48,20 @@ public interface IBtCompanyService extends IService<BtCompany> {
      * @return
      */
     List<BtCompany> getAllChildren(Integer parentId);
+
+    /**
+     * @description 获取自增主键最大值
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    Integer getMaxId();
+
+    /**
+     * @description 插入数据
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    boolean saveCompany(BtCompany company);
 }

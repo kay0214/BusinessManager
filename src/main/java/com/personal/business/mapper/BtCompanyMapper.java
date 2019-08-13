@@ -13,4 +13,11 @@ import com.personal.business.entity.BtCompany;
  */
 public interface BtCompanyMapper extends BaseMapper<BtCompany> {
 
+    /**
+     * @description 获取自增主键最大值
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    Integer getMaxId();
 }

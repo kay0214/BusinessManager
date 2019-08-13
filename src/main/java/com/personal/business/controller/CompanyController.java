@@ -15,6 +15,7 @@ import com.personal.business.entity.BtCompany;
 import com.personal.business.enums.ResultEnum;
 import com.personal.business.request.CompanyRequest;
 import com.personal.business.service.IBtCompanyService;
+import com.personal.business.utils.CheckUtils;
 import com.personal.business.utils.CommonUtils;
 import com.personal.business.utils.EasyPoiUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -118,13 +119,12 @@ public class CompanyController extends BaseController {
     @PostMapping(value = "/insert")
     @ResponseBody
     public Return insert(@RequestBody BtCompany company){
-        log.info("insert company [{}]", JSON.toJSONString(company));
+        log.info("insert company {}", JSON.toJSONString(company));
+        // 检查必要参数
+        paramCheck(company);
         boolean exist = iBtCompanyService.checkExist(company.getSelfId());
         if(!exist){
-            company.setDelFlag(0);
-            company.setCreateTime(LocalDateTime.now());
-            company.setUpdateTime(LocalDateTime.now());
-            boolean success = iBtCompanyService.save(company);
+            boolean success = iBtCompanyService.saveCompany(company);
             if(success){
                 return Return.success();
             }else{
@@ -145,6 +145,8 @@ public class CompanyController extends BaseController {
     @ResponseBody
     public Return update(@RequestBody BtCompany company){
         log.info("update company [{}]", JSON.toJSONString(company));
+        // 检查必要参数
+        paramCheck(company);
         company.setUpdateTime(LocalDateTime.now());
         boolean success = iBtCompanyService.updateById(company);
         if(success){
@@ -202,10 +204,38 @@ public class CompanyController extends BaseController {
     @ResponseBody
     @PostMapping("/importExcel")
     public Return importExcel(MultipartFile file) {
-        log.info(file.getOriginalFilename());
-        List<CompanyExportDto> list = EasyPoiUtil.importExcel(file,1,1,CompanyExportDto.class);
+        int totalSize = 0 // 总条数
+                ,successSize = 0 // 成功条数
+                ,errorSize = 0; // 失败条数
+        List<CompanyExportDto> companyExportDtos = EasyPoiUtil.importExcel(file,1,1,CompanyExportDto.class);
+        totalSize = companyExportDtos.size();
+        companyExportDtos.forEach(companyExportDto -> {
+            companyExportDto.setType(DictionaryConstant.getKeyByTypeAndValue(CommonConstant.DICTIONARY_RELATIONSHIP,companyExportDto.getTypeStr()));
+            companyExportDto.setStatus(DictionaryConstant.getKeyByTypeAndValue(CommonConstant.DICTIONARY_STATUS,companyExportDto.getStatusStr()));
+        });
+        for(CompanyExportDto companyExportDto:companyExportDtos){
+            BtCompany company = CommonUtils.convertBean(companyExportDto,BtCompany.class);
+            if(StringUtils.isEmpty(company.getFullName())){
+                errorSize ++ ;
+                continue;
+            }
+            company.setType(company.getType()==null? DictionaryConstant.getKeyByTypeAndValue(CommonConstant.DICTIONARY_RELATIONSHIP,CommonConstant.DICTIONARY_RELATIONSHIP_UNKNOWN):company.getType());
+            company.setParentId(company.getParentId()==null?0:company.getParentId());
+            company.setCreditCode(StringUtils.isEmpty(company.getCreditCode())?"0":company.getCreditCode());
+            company.setStatus(company.getStatus()==null?DictionaryConstant.getKeyByTypeAndValue(CommonConstant.DICTIONARY_STATUS,CommonConstant.DICTIONARY_STATUS_FORBIDDEN):company.getStatus());
+            company.setUsed(company.getUsed()==null?0:company.getUsed());
+            boolean success = iBtCompanyService.saveCompany(company);
+            if(success){
+                successSize ++ ;
+            }else{
+                errorSize ++ ;
+            }
+        }
+        return Return.data("本次导入解析[" + totalSize + "]条数据,已导入[" + successSize + "]条,失败[" + errorSize + "]");
+    }
 
-        log.info(JSON.toJSONString(list));
-        return Return.success();
+    private void paramCheck(BtCompany company){
+        CheckUtils.check(!StringUtils.isEmpty(company.getFullName()),"全称不能为空");
+        CheckUtils.check(!StringUtils.isEmpty(company.getCreditCode()),"证件号不能为空");
     }
 }

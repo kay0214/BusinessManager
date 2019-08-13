@@ -176,6 +176,7 @@
                                     return "<span class='layui-badge-rim'>" + types[i].value + "</span>";
                                 }
                             }
+                            return "<span class='layui-badge-rim'>待分类</span>";
                         }}
                         ,{field:'creditCode', width:170, title: '证件号',align:'left'}
                         ,{field:'parentId', width:60, title: '上级',align:'left',edit: 'text'}
@@ -186,6 +187,7 @@
                                     return "<span class='layui-badge layui-badge-blue'>" + states[i].value + "</span>";
                                 }
                             }
+                            return "<span class='layui-badge layui-badge-blue'>未知状态</span>";
                         }}
                         ,{field:'used', width:80, title: '已使用',align:'left',templet:function (data) {
                             if(data.used===1){
@@ -440,7 +442,7 @@
             var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级</label>'
                 + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="主目录" autocomplete="off" class="layui-input layui-disabled"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">公司全称/个人全名</label>'
-                + '<div class="layui-input-block"><input type="text" placeholder="请输入公司全称/个人全名" name="fullName" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" required lay-verify="required" placeholder="请输入公司全称/个人全名" name="fullName" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">简称</label>'
                 + '<div class="layui-input-block"><input type="text" name="shortName" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">助记码</label>'
@@ -535,7 +537,7 @@
             var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">上级</label>'
                 + '<div class="layui-input-block"><input type="text" placeholder="请输入名称" disabled value="' + company.fullName + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">公司全称/个人全名</label>'
-                + '<div class="layui-input-block"><input type="text" placeholder="请输入公司全称/个人全名" name="fullName" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" required lay-verify="required" placeholder="请输入公司全称/个人全名" name="fullName" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">简称</label>'
                 + '<div class="layui-input-block"><input type="text" name="shortName" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">助记码</label>'
@@ -652,7 +654,11 @@
                         ,done: function(res, index, upload){
                             layer.closeAll('loading'); //关闭loading
                             if(res.status === 'S001'){
-                                layer.msg(res.statusDesc,{icon:6});
+                                if(res.data===null || res.data===undefined || res.data===''){
+                                    layer.msg(res.statusDesc,{icon:6});
+                                }else{
+                                    layer.msg(res.data,{icon:6});
+                                }
                             }else{
                                 layer.msg(res.statusDesc,{icon:5});
                             }
