@@ -34,6 +34,14 @@ public interface IBtCompanyService extends IService<BtCompany> {
     List<BtCompany> getAllCompanies();
 
     /**
+     * @description 根据selfid获取数据
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<BtCompany> getBySelfId(Integer selfId);
+
+    /**
      * @description 检查selfId是否重复
      * @auth sunpeikai
      * @param

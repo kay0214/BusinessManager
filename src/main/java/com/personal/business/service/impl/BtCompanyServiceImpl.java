@@ -12,6 +12,7 @@ import com.personal.business.service.IBtCompanyService;
 import com.personal.business.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -61,6 +62,19 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
     }
 
     /**
+     * @description 根据selfid获取数据
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public List<BtCompany> getBySelfId(Integer selfId) {
+        QueryWrapper<BtCompany> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().select().and(obj->obj.eq(BtCompany::getSelfId,selfId));
+        return list(queryWrapper);
+    }
+
+    /**
      * @description 检查selfId是否重复
      * @auth sunpeikai
      * @param
@@ -68,9 +82,7 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
      */
     @Override
     public boolean checkExist(Integer selfId) {
-        QueryWrapper<BtCompany> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().select().and(obj->obj.eq(BtCompany::getSelfId,selfId));
-        return list(queryWrapper).size()>0;
+        return getBySelfId(selfId).size()>0;
     }
 
     /**
@@ -119,12 +131,17 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
             // 检查是否已经有parentId相同的节点，如果有就不创建
             boolean canRun = getAllChildren(company.getParentId()).size()==0;
             if(canRun){
-                // 设立本部
-                BtCompany son = CommonUtils.convertBean(company,BtCompany.class);
-                son.setSelfId(getMaxId());
-                son.setFullName(CommonConstant.COMPANY_CENTRAL_DEPARTMENT);
-                son.setShortName(CommonConstant.COMPANY_CENTRAL_DEPARTMENT);
-                save(son);
+                List<BtCompany> parents = getBySelfId(company.getParentId());
+                if(!CollectionUtils.isEmpty(parents)){
+                    BtCompany parent = parents.get(0);
+                    // 设立本部
+                    BtCompany son = CommonUtils.convertBean(company,BtCompany.class);
+                    son.setSelfId(getMaxId());
+                    son.setFullName(parent.getFullName() + "-" + CommonConstant.COMPANY_CENTRAL_DEPARTMENT);
+                    son.setShortName(CommonConstant.COMPANY_CENTRAL_DEPARTMENT);
+                    save(son);
+                }
+
             }
 
         }
