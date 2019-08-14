@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80016
 File Encoding         : 65001
 
-Date: 2019-08-09 16:45:53
+Date: 2019-08-14 18:11:52
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -21,30 +21,33 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `bt_company`;
 CREATE TABLE `bt_company` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `company_code` varchar(255) NOT NULL DEFAULT '#' COMMENT '公司助记代码',
-  `account_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '财务系统代码',
-  `type` int(11) NOT NULL DEFAULT '0' COMMENT '类型-从数据字典录入',
-  `credit_code` varchar(255) NOT NULL DEFAULT '#' COMMENT '公司信用代码/个人身份证号码',
+  `company_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '公司助记代码',
+  `account_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '财务系统代码',
+  `type` int(11) DEFAULT '0' COMMENT '类型-从数据字典录入',
+  `credit_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '公司信用代码/个人身份证号码',
   `full_name` varchar(255) NOT NULL COMMENT '公司全称/个人姓名',
-  `short_name` varchar(255) DEFAULT '#' COMMENT '公司简称',
-  `status` int(11) NOT NULL COMMENT '启用',
-  `used` int(11) NOT NULL COMMENT '已被使用(0：否，1：是)',
+  `short_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '公司简称',
+  `parent_id` int(11) DEFAULT '0',
+  `self_id` int(11) DEFAULT '0',
+  `status` int(11) DEFAULT NULL COMMENT '启用',
+  `used` int(11) DEFAULT '0' COMMENT '已被使用(0：否，1：是)',
   `remark` varchar(255) DEFAULT NULL COMMENT '描述',
   `del_flag` int(11) NOT NULL DEFAULT '0' COMMENT '删除标志（0代表存在 1代表删除）',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_company_code` (`company_code`),
-  UNIQUE KEY `idx_credit_code` (`credit_code`),
   KEY `idx_full_name` (`full_name`),
-  KEY `idx_status` (`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+  KEY `idx_status` (`status`),
+  KEY `idx_company_code` (`company_code`) USING BTREE,
+  KEY `idx_credit_code` (`credit_code`) USING BTREE,
+  KEY `idx_self_id` (`self_id`) USING BTREE,
+  KEY `idx_parent_id` (`parent_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of bt_company
 -- ----------------------------
-INSERT INTO `bt_company` VALUES ('4', 'P_001', '', '12', '370222122102141231', '张三', '小三', '3', '0', '员工小三', '0', '2019-08-08 08:41:47', '2019-08-08 08:41:47');
-INSERT INTO `bt_company` VALUES ('5', 'P_002', '', '12', '370811199406011234', '李四', '小四', '3', '0', '员工小四', '0', '2019-08-08 08:42:33', '2019-08-08 08:42:33');
+INSERT INTO `bt_company` VALUES ('1', 'P_001', '', '12', '370222122102141231', '张三', '小三', '0', '4', '3', '0', '员工小三', '0', '2019-08-08 08:41:47', '2019-08-14 18:11:14');
 
 -- ----------------------------
 -- Table structure for bt_dictionary
@@ -68,8 +71,9 @@ CREATE TABLE `bt_dictionary` (
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_type` (`type`),
-  KEY `idx_parent_id` (`parent_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+  KEY `idx_parent_id` (`parent_id`),
+  KEY `idx_self_id` (`self_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of bt_dictionary
@@ -89,6 +93,7 @@ INSERT INTO `bt_dictionary` VALUES ('12', 'relationship', '7', '员工', '7', '1
 INSERT INTO `bt_dictionary` VALUES ('13', '#', '0', '职位类型', '3', '1', '1003', '0', '1', '1', null, '', '0', '2019-08-08 02:42:22', '2019-08-09 16:44:57');
 INSERT INTO `bt_dictionary` VALUES ('14', 'position', '1', '部门', '1', '1003', '100301', '0', '1', '1', null, '', '0', '2019-08-08 02:43:36', '2019-08-09 16:44:57');
 INSERT INTO `bt_dictionary` VALUES ('15', 'position', '2', '岗位', '2', '1003', '100302', '0', '1', '1', null, '', '0', '2019-08-08 02:44:33', '2019-08-09 16:44:57');
+INSERT INTO `bt_dictionary` VALUES ('18', 'relationship', '8', '待分类', '8', '1002', '100208', '0', '0', '1', null, '', '0', '2019-08-13 02:06:45', '2019-08-13 10:07:35');
 
 -- ----------------------------
 -- Table structure for bt_menu
@@ -230,7 +235,7 @@ CREATE TABLE `bt_user` (
 -- ----------------------------
 -- Records of bt_user
 -- ----------------------------
-INSERT INTO `bt_user` VALUES ('1', 'admin', 'c39016fa679e704102bd8ac0e16a4a20', '2rKtmiTD', '管理员', '00', '929525390@qq.com', '15866668888', '1', '/images/avatar.jpg', '25', '0', '127.0.0.1', '2019-08-09 08:38:20', '0', '2019-04-22 18:42:49', '2019-05-20 12:14:38');
+INSERT INTO `bt_user` VALUES ('1', 'admin', 'c39016fa679e704102bd8ac0e16a4a20', '2rKtmiTD', '管理员', '00', '929525390@qq.com', '15866668888', '1', '/images/avatar.jpg', '25', '0', '127.0.0.1', '2019-08-14 10:09:49', '0', '2019-03-27 18:42:49', '2019-04-24 12:14:38');
 INSERT INTO `bt_user` VALUES ('4', 'qweert', '16efca7001015201498952e8b5c37cc6', 'VIeCPpdB', '123qwed', '00', '166@qq.com', '13333333333', '2', '/images/avatar.jpg', '25', '0', '127.0.0.1', '2019-07-26 13:35:27', '0', '2019-07-24 12:29:46', '2019-07-24 20:30:11');
 
 -- ----------------------------
