@@ -26,7 +26,7 @@ shiro:
     captchaType: math
   session:
     # Session超时时间（默认30分钟）
-    expireTime: 30
+    expireTime: 60
 
 
 mybatis:
@@ -84,7 +84,10 @@ spring:
     type: ehcache
     ehcache:
       config: classpath:ehcache.xml
-
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
 # JetCache config
 #jetcache:
 #  statIntervalMinutes: 15

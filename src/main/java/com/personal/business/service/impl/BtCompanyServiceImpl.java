@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.personal.business.constant.CommonConstant;
 import com.personal.business.entity.BtCompany;
 import com.personal.business.mapper.BtCompanyMapper;
 import com.personal.business.request.CompanyRequest;
 import com.personal.business.service.IBtCompanyService;
+import com.personal.business.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -92,7 +94,13 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
      */
     @Override
     public Integer getMaxId(){
-        return getBaseMapper().getMaxId();
+        Integer max = getBaseMapper().getMaxId();
+        boolean enable;
+        do {
+            max ++ ;
+            enable = checkExist(max);
+        }while (enable);
+        return max;
     }
 
     /**
@@ -105,20 +113,18 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
     public boolean saveCompany(BtCompany company) {
         // 如果selfId是空的，那就取
         if(company.getSelfId()==null){
-            Integer max = getMaxId();
-            boolean enable;
-            do {
-                max ++ ;
-                enable = checkExist(max);
-            }while (enable);
-            company.setSelfId(max);
+            company.setSelfId(getMaxId());
         }
         if(company.getParentId()!=null && company.getParentId()!=0){
             // 检查是否已经有parentId相同的节点，如果有就不创建
             boolean canRun = getAllChildren(company.getParentId()).size()==0;
             if(canRun){
                 // 设立本部
-                BtCompany son = new BtCompany();
+                BtCompany son = CommonUtils.convertBean(company,BtCompany.class);
+                son.setSelfId(getMaxId());
+                son.setFullName(CommonConstant.COMPANY_CENTRAL_DEPARTMENT);
+                son.setShortName(CommonConstant.COMPANY_CENTRAL_DEPARTMENT);
+                save(son);
             }
 
         }

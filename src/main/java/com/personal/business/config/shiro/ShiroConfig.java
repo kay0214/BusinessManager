@@ -6,9 +6,11 @@ package com.personal.business.config.shiro;
 import com.personal.business.filter.CaptchaValidateFilter;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +34,7 @@ public class ShiroConfig {
     // Session超时时间，单位为毫秒（默认30分钟）
     @Value("${shiro.session.expireTime}")
     private int expireTime;
+
     /**
      * 安全管理器
      */
@@ -43,8 +46,30 @@ public class ShiroConfig {
         // 注入缓存管理器;
         securityManager.setCacheManager(ehCacheManager());
         // session管理器
-        //securityManager.setSessionManager(sessionManager());
+        securityManager.setSessionManager(sessionManager());
         return securityManager;
+    }
+
+    @Bean
+    public SessionManager sessionManager(){
+        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+        // session缓存
+        sessionManager.setCacheManager(ehCacheManager());
+        // 删除过期的session
+        sessionManager.setDeleteInvalidSessions(true);
+        // 设置全局session超时时间
+        sessionManager.setGlobalSessionTimeout(expireTime * 60 * 1000);
+        // 去掉 JSESSIONID
+        sessionManager.setSessionIdUrlRewritingEnabled(false);
+        // 定义要使用的无效的Session定时调度器
+        // manager.setSessionValidationScheduler(sessionValidationScheduler());
+        // 是否定时检查session
+        sessionManager.setSessionValidationSchedulerEnabled(true);
+        // 自定义SessionDao
+        //sessionManager.setSessionDAO(sessionDAO());
+        // 自定义sessionFactory
+        //sessionManager.setSessionFactory(sessionFactory());
+        return sessionManager;
     }
 
     @Bean

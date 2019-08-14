@@ -7,6 +7,10 @@ package com.personal.business.constant;
  */
 public interface CommonConstant {
 
+    /**
+     * 公司 - 默认本部
+     */
+    String COMPANY_CENTRAL_DEPARTMENT = "本部";
 
     /**
      * 数据字典 - 状态

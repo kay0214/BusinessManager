@@ -4,6 +4,7 @@
 package com.personal.business.controller;
 
 import com.personal.business.base.BaseController;
+import com.personal.business.entity.BtUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,10 @@ public class IndexController extends BaseController {
     @GetMapping(value = "/")
     public String init(){
         log.info("entry the index");
+        BtUser user = getCurrentUser();
+        if(user!=null && user.getUserId()!=0){
+            return "redirect:index";
+        }
         return "redirect:system/login/init";
     }
 
