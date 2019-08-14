@@ -654,6 +654,8 @@
                         ,done: function(res, index, upload){
                             layer.closeAll('loading'); //关闭loading
                             if(res.status === 'S001'){
+                                // 更新成功 - 重载表格
+                                treeGrid.reload(tableId);
                                 if(res.data===null || res.data===undefined || res.data===''){
                                     layer.msg(res.statusDesc,{icon:6});
                                 }else{
