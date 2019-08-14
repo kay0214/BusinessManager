@@ -60,6 +60,18 @@ public class CompanyExportDto implements Serializable {
     private String shortName;
 
     /**
+     * 父节点id
+     */
+    @Excel(name = "上级代码" , width = 20)
+    private Integer parentId;
+
+    /**
+     * 自身节点id
+     */
+    @Excel(name = "代码" , width = 20)
+    private Integer selfId;
+
+    /**
      * 启用
      */
     private Integer status;
