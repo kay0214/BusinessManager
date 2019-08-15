@@ -38,6 +38,16 @@ public interface CommonConstant {
     String DICTIONARY_RELATIONSHIP = "relationship";
 
     /**
+     * 已用
+     */
+    Integer USED = 1;
+
+    /**
+     * 未用
+     */
+    Integer NOT_USE = 0;
+
+    /**
      * 数据字典 - 内置
      */
     Integer DICTIONARY_BUILD_IN = 1;

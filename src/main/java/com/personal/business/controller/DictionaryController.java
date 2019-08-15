@@ -184,7 +184,8 @@ public class DictionaryController extends BaseController {
     @ResponseBody
     public Return delete(@PathVariable String ids){
         if(!StringUtils.isEmpty(ids)){
-            CheckUtils.check(!iBtDictionaryService.isBuiltIn(ids),ResultEnum.ERROR_DICTIONARY_CANNOT_DEL);
+            CheckUtils.check(!iBtDictionaryService.isBuiltIn(ids),ResultEnum.ERROR_DICTIONARY_CANNOT_DEL_CAUSE_BUILD);
+            CheckUtils.check(!iBtDictionaryService.isUsed(ids),ResultEnum.ERROR_DICTIONARY_CANNOT_DEL_CAUSE_USED);
             List<String> idsArray = new ArrayList<>();
             Collections.addAll(idsArray, ids.split(","));
             log.info("delete dictionary [{}]",idsArray);

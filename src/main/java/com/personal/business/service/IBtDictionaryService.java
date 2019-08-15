@@ -40,6 +40,14 @@ public interface IBtDictionaryService extends IService<BtDictionary> {
     boolean isBuiltIn(String ids);
 
     /**
+     * @description 根据id去查询字典是否已使用，已经使用的字典不允许删除
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    boolean isUsed(String ids);
+
+    /**
      * @description 加载所有字典
      * @auth sunpeikai
      * @param

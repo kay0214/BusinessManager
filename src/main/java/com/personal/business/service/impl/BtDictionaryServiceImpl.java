@@ -66,6 +66,20 @@ public class BtDictionaryServiceImpl extends ServiceImpl<BtDictionaryMapper, BtD
     }
 
     /**
+     * @description 根据id去查询字典是否已使用，已经使用的字典不允许删除
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public boolean isUsed(String ids) {
+        String[] id = ids.split(",");
+        QueryWrapper<BtDictionary> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().select().and(obj->obj.in(BtDictionary::getId,id)).and(obj->obj.eq(BtDictionary::getUsed,CommonConstant.USED).or(obj1->obj1.isNotNull(BtDictionary::getType)));
+        return list(queryWrapper).size()>0;
+    }
+
+    /**
      * @description 加载所有字典
      * @auth sunpeikai
      * @param
