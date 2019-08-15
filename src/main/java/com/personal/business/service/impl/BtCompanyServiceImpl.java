@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -116,6 +117,22 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
     }
 
     /**
+     * @description 根据creditCode获取所有
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public List<BtCompany> getCompaniesByCreditCode(String creditCode) {
+        if(!StringUtils.isEmpty(creditCode)){
+            QueryWrapper<BtCompany> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().select().and(obj->obj.eq(BtCompany::getCreditCode,creditCode));
+            return list(queryWrapper);
+        }
+        return new ArrayList<>();
+    }
+
+    /**
      * @description 插入数据
      * @auth sunpeikai
      * @param
@@ -123,6 +140,35 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
      */
     @Override
     public boolean saveCompany(BtCompany company) {
+        // 校验证件号是否重复 - 除非是同一公司
+        List<BtCompany> btCompanies = getCompaniesByCreditCode(company.getCreditCode());
+        if(!CollectionUtils.isEmpty(btCompanies)){
+            if(company.getParentId()!=0){
+                // [] -- [子节点]
+                for (BtCompany exist : btCompanies) {
+                    // 父节点 -- 子节点
+                    if(exist.getParentId()==0){
+                        if(!exist.getSelfId().equals(company.getParentId())){
+                            // 插入的并不是exist的子节点，不允许证件号重复
+                            log.info("插入的并不是exist的子节点，不允许证件号重复");
+                            return false;
+                        }
+                    }else{
+                        // 子节点 -- 子节点
+                        if(!exist.getParentId().equals(company.getParentId())){
+                            // 插入的并不是exist的兄弟节点，不允许证件号重复
+                            log.info("插入的并不是exist的兄弟节点，不允许证件号重复");
+                            return false;
+                        }
+                    }
+                }
+            }else{
+                // [] -- [父节点]
+                log.info("插入的父节点与其他节点证件号重复");
+                return false;
+            }
+
+        }
         // 如果selfId是空的，那就取
         if(company.getSelfId()==null){
             company.setSelfId(getMaxId());

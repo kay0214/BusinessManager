@@ -66,6 +66,14 @@ public interface IBtCompanyService extends IService<BtCompany> {
     Integer getMaxId();
 
     /**
+     * @description 根据creditCode获取所有
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<BtCompany> getCompaniesByCreditCode(String creditCode);
+
+    /**
      * @description 插入数据
      * @auth sunpeikai
      * @param

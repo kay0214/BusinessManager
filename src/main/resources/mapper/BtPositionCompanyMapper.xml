@@ -36,15 +36,15 @@
     <select id="getStaffsNotInPosition" parameterType="Integer" resultType="com.personal.business.dto.StaffDto">
         SELECT
             pc.id AS id,
-            pc.company_id AS companyId,
+            c.id AS companyId,
             pc.position_id AS positionId,
             p. NAME AS positionName,
             c.full_name AS companyName,
             pc.create_time AS createTime
         FROM
-            bt_position_company pc
+            bt_company c
+        LEFT JOIN bt_position_company pc ON c.id = pc.company_id
         LEFT JOIN bt_position p ON p.id = pc.position_id
-        LEFT JOIN bt_company c ON c.id = pc.company_id
         WHERE
             c.type = #{type}
         AND c.id NOT IN (
@@ -55,6 +55,7 @@
             WHERE
                 pc1.position_id = #{positionId}
         )
-        GROUP BY pc.company_id
+        GROUP BY
+            c.id
     </select>
 </mapper>

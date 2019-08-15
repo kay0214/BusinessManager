@@ -561,8 +561,13 @@
                     });
                 }
                 ,yes: function(index, layero){
-                    var ids = new Array();
                     var staffs = formSelects.value("staff");
+                    if(staffs.length===0){
+                        // 关掉弹出层
+                        layer.close(staffSelect);
+                        return;
+                    }
+                    var ids = new Array();
                     for(var i=0;i<staffs.length;i++){
                         ids.push(staffs[i].companyId);
                     }
