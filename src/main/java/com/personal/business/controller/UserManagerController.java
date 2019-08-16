@@ -22,9 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author sunpeikai
@@ -135,18 +139,20 @@ public class UserManagerController extends BaseController {
      * @return
      */
     @RequiresPermissions(ShiroPermissionsConstant.PERM_USER_DEL)
-    @GetMapping(value = "/delete/{userId}")
+    @GetMapping(value = "/delete/{ids}")
     @ResponseBody
-    public Return delete(@PathVariable Integer userId){
-        if(userId!=null){
-            boolean success = iBtUserService.removeById(userId);
+    public Return delete(@PathVariable String ids){
+        if(!StringUtils.isEmpty(ids)){
+            List<String> idsArray = new ArrayList<>();
+            Collections.addAll(idsArray, ids.split(","));
+            boolean success = iBtUserService.removeByIds(idsArray);
             if(success){
                 return Return.success();
+            }else{
+                return Return.fail("删除失败");
             }
-            return Return.fail("删除失败");
-        }else{
-            return Return.fail(ResultEnum.ERROR_PARAM_NOT_ENOUGH);
         }
+        return Return.fail(ResultEnum.ERROR_PARAM_NOT_ENOUGH);
     }
 
     /**

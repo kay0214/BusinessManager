@@ -51,11 +51,55 @@
         <div class="layui-row" style="margin-top: 10px">
             <table class="layui-hide" id="users" lay-filter="users"></table>
         </div>
-
+        <div class="layui-btn-container" hidden id="tools">
+            <button class='layui-btn layui-btn-sm layui-btn-normal float-left' id="authorize" lay-event='authorize'>授权</button>
+            <button class='layui-btn layui-btn-sm layui-btn-primary float-left' id="modifyUser" lay-event='modify'>修改</button>
+            <button class='layui-btn layui-btn-sm layui-btn-danger float-left' id="deleteUser" lay-event='delete'>删除</button>
+            <button class='layui-btn layui-btn-sm float-left' id="resetUser" lay-event='reset'>重置密码</button>
+            <button class='layui-btn layui-btn-sm layui-btn-warm float-left' id="unauthorize" lay-event='unauthorize'>取消授权</button>
+        </div>
     </div>
 
     <script src="/layui/layui.js"></script>
     <script th:inline="javascript">
+        function init() {
+            var addUserPerm = [[${#permission.hasPermission('business:user:add')}]];
+            if(addUserPerm!==null && addUserPerm!==undefined && addUserPerm!==''){
+                var addUser = $("#addUser");
+                addUser.addClass("layui-btn-disabled");
+                addUser.attr("disabled",true);
+            }
+            var authorizePerm = [[${#permission.hasPermission('business:menu:auth')}]];
+            if(authorizePerm!==null && authorizePerm!==undefined && authorizePerm!==''){
+                var authorize = $("#authorize");
+                authorize.addClass("layui-btn-disabled");
+                authorize.attr("disabled",true);
+            }
+            var modifyUserPerm = [[${#permission.hasPermission('business:user:edit')}]];
+            if(modifyUserPerm!==null && modifyUserPerm!==undefined && modifyUserPerm!==''){
+                var modifyUser = $("#modifyUser");
+                modifyUser.addClass("layui-btn-disabled");
+                modifyUser.attr("disabled",true);
+            }
+            var deleteUserPerm = [[${#permission.hasPermission('business:user:del')}]];
+            if(deleteUserPerm!==null && deleteUserPerm!==undefined && deleteUserPerm!==''){
+                var deleteUser = $("#deleteUser");
+                deleteUser.addClass("layui-btn-disabled");
+                deleteUser.attr("disabled",true);
+            }
+            var resetUserPerm = [[${#permission.hasPermission('business:user:edit')}]];
+            if(resetUserPerm!==null && resetUserPerm!==undefined && resetUserPerm!==''){
+                var resetUser = $("#resetUser");
+                resetUser.addClass("layui-btn-disabled");
+                resetUser.attr("disabled",true);
+            }
+            var unauthorizePerm = [[${#permission.hasPermission('business:menu:unauth')}]];
+            if(unauthorizePerm!==null && unauthorizePerm!==undefined && unauthorizePerm!==''){
+                var unauthorize = $("#unauthorize");
+                unauthorize.addClass("layui-btn-disabled");
+                unauthorize.attr("disabled",true);
+            }
+        }
         var tableId='users',layer,$,form,table,eleTree;
         layui.config({
             base: '/layui/'
@@ -67,12 +111,7 @@
             layer=layui.layer;
             form=layui.form;
             table = layui.table;
-            var disabled = [[${#permission.hasPermission('business:user:add')}]];
-            if(disabled!==null && disabled!==undefined && disabled!==''){
-                var addUser = $("#addUser");
-                addUser.addClass("layui-btn-disabled");
-                addUser.attr("disabled",true);
-            }
+            init();
             table.render({
                 elem: '#' + tableId
                 ,id:tableId
@@ -80,6 +119,8 @@
                 ,method:'post'
                 ,contentType: 'application/json'
                 ,page: true
+                ,toolbar: '#tools'
+                ,defaultToolbar: ['filter']
                 ,limits : [10,15,20,25]
                 ,limit : 10
                 ,response:{
@@ -102,7 +143,8 @@
                 }
                 ,cols: [
                     [
-                        {field:'userId', width:70, title: 'ID',style:'text-align: left;'}
+                        {checkbox: true}
+                        ,{field:'userId', width:70, title: 'ID',style:'text-align: left;'}
                         ,{field:'userName', width:130, title: '用户名',style:'text-align: left;'}
                         ,{field:'trueName', width:100, title: '真实姓名',style:'text-align: left;'}
                         ,{field:'mobile', width:120, title: '手机号',style:'text-align: left;'}
@@ -129,33 +171,41 @@
                         ,{field:'createTime', width:160, title: '注册时间',style:'text-align: left;',templet:function (data) {
                             return timeFormat(data.createTime);
                         }}
-                        ,{width:340, title: '操作',style:'text-align: left;',templet:function (data) {
-                            return "<button class='layui-btn layui-btn-sm layui-btn-normal layui-btn-" + [[${#permission.hasPermission('business:menu:auth')}]] + "' " + [[${#permission.hasPermission('business:menu:auth')}]] + " lay-event='authorize'>授权</button>"
-                                +"<button class='layui-btn layui-btn-sm layui-btn-primary layui-btn-" + [[${#permission.hasPermission('business:user:edit')}]] + "' " + [[${#permission.hasPermission('business:user:edit')}]] + " lay-event='modify'>修改</button>"
-                                +"<button class='layui-btn layui-btn-sm layui-btn-danger layui-btn-" + [[${#permission.hasPermission('business:user:del')}]] + "' " + [[${#permission.hasPermission('business:user:del')}]] + " lay-event='delete'>删除</button>"
-                                +"<button class='layui-btn layui-btn-sm layui-btn-" + [[${#permission.hasPermission('business:user:edit')}]] + "' lay-event='reset' " + [[${#permission.hasPermission('business:user:edit')}]] + ">重置密码</button>"
-                                +"<button class='layui-btn layui-btn-sm layui-btn-warm layui-btn-" + [[${#permission.hasPermission('business:menu:unauth')}]] + "' " + [[${#permission.hasPermission('business:menu:unauth')}]] + " lay-event='unauthorize'>取消授权</button>";
-                        }}
                     ]
                 ]
             });
             // 监听点击按钮
-            table.on('tool(users)',function (obj) {
+            table.on('toolbar(users)',function (obj) {
+                var users = table.checkStatus(obj.config.id).data;
+                // 过滤"筛选列","删除"操作，因为筛选列不涉及后台交互，删除操作可以多选
+                if(obj.event!=='LAYTABLE_COLS' && obj.event!=='delete' && users.length!==1){
+                    layer.msg("请选择一个用户",{icon:5});
+                    return;
+                }
                 if(obj.event === 'authorize'){//授权
-                    authorize(obj.data);
+                    authorize(users[0]);
                 }else if(obj.event==="modify"){//修改
-                    modify(obj.data);
+                    modify(users[0]);
                 }else if(obj.event==='reset'){
-                    reset(obj.data.userId);
+                    reset(users[0].userId);
                 }else if(obj.event==='unauthorize'){
-                    unAuthorize(obj.data);
+                    unAuthorize(users[0]);
                 }else if(obj.event==='delete'){
-                    delUser(obj.data.userId);
+                    if(users===null || users===undefined || users.length<1){
+                        layer.msg("未选择任何用户",{icon:5});
+                        return;
+                    }
+                    var ids = new Array();
+                    for(var i=0;i<users.length;i++){
+                        var position = users[i];
+                        ids.push(position.id);
+                    }
+                    delUser(ids);
                 }
 
             });
             // 删除用户操作
-            function delUser(userId) {
+            function delUser(ids) {
                 layer.open({
                     type: 1
                     ,content: '<div style="text-align: center;margin-top: 30px;">确定要删除用户？</div>'
@@ -165,7 +215,7 @@
                     ,area:['300px','180px']
                     ,btn: ['确定', '取消']
                     ,yes: function(index, layero){
-                        $.get("/user/delete/" + userId, function(result){
+                        $.get("/user/delete/" + ids.toString(), function(result){
                             layer.closeAll();
                             if(result.status === 'S001'){
                                 // 更新成功 - 关掉
