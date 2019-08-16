@@ -56,6 +56,12 @@ public class CompanyController extends BaseController {
     @ResponseBody
     public Return getAllCompany(CompanyRequest companyRequest){
         IPage<BtCompany> page = iBtCompanyService.getAllCompany(companyRequest);
+        List<Integer> ids = new ArrayList<>();
+        page.getRecords().forEach(company -> {
+            ids.add(company.getSelfId());
+        });
+        // 查询所有子节点
+        page.getRecords().addAll(iBtCompanyService.getAllChildrenBySelfIds(ids));
         return Return.data(page);
     }
 

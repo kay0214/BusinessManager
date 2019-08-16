@@ -58,6 +58,14 @@ public interface IBtCompanyService extends IService<BtCompany> {
     List<BtCompany> getAllChildren(Integer parentId);
 
     /**
+     * @description 根据selfIds获取所有子节点
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<BtCompany> getAllChildrenBySelfIds(List<Integer> parentIds);
+
+    /**
      * @description 获取自增主键最大值
      * @auth sunpeikai
      * @param

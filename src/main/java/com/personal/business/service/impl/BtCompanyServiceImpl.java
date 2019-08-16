@@ -40,7 +40,8 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
     @Override
     public IPage<BtCompany> getAllCompany(CompanyRequest companyRequest) {
         QueryWrapper<BtCompany> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().select().orderByDesc(BtCompany::getCreateTime)
+        queryWrapper.lambda().select().orderByAsc(BtCompany::getSelfId)
+                .and(obj->obj.eq(BtCompany::getParentId,0))
                 .and(!StringUtils.isEmpty(companyRequest.getFullName()),obj->obj.like(BtCompany::getFullName,companyRequest.getFullName()))
                 .and(!StringUtils.isEmpty(companyRequest.getCreditCode()),obj->obj.like(BtCompany::getCreditCode,companyRequest.getCreditCode()))
                 .and(!StringUtils.isEmpty(companyRequest.getCompanyCode()),obj->obj.like(BtCompany::getCompanyCode,companyRequest.getCompanyCode()))
@@ -96,6 +97,19 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
     public List<BtCompany> getAllChildren(Integer parentId) {
         QueryWrapper<BtCompany> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().select().and(obj->obj.eq(BtCompany::getParentId,parentId));
+        return list(queryWrapper);
+    }
+
+    /**
+     * @description 根据selfIds获取所有子节点
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public List<BtCompany> getAllChildrenBySelfIds(List<Integer> parentIds) {
+        QueryWrapper<BtCompany> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().select().and(obj->obj.in(BtCompany::getParentId,parentIds));
         return list(queryWrapper);
     }
 
