@@ -100,16 +100,18 @@
                 unauthorize.attr("disabled",true);
             }
         }
-        var tableId='users',layer,$,form,table,eleTree;
+        var tableId='users',layer,$,form,table,eleTree,notice;
         layui.config({
             base: '/layui/'
         }).extend({
-            eleTree:'eleTree'
-        }).use(['table','form','eleTree'], function(){
+            eleTree:'eleTree',
+            notice:'notice'
+        }).use(['table','form','eleTree','notice'], function(){
             $ = layui.$;
             eleTree = layui.eleTree;
             layer=layui.layer;
             form=layui.form;
+            notice=layui.notice;
             table = layui.table;
             init();
             table.render({
