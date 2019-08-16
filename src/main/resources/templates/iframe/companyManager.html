@@ -310,15 +310,15 @@
             }
             statusHtml += '</div></div>';
             var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">公司全称/个人全名</label>'
-                + '<div class="layui-input-block"><input type="text" placeholder="请输入公司全称/个人全名" name="fullName" value="' + company.fullName + '" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" placeholder="请输入公司全称/个人全名" name="fullName" value="' + company.fullName + '" required lay-verify="required" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">简称</label>'
-                + '<div class="layui-input-block"><input type="text" name="shortName" value="' + company.shortName + '" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="shortName" value="' + company.shortName + '" required lay-verify="required" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">助记码</label>'
                 + '<div class="layui-input-block"><input type="text" name="companyCode" value="' + company.companyCode + '" placeholder="请输入助记码" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">财务代码</label>'
                 + '<div class="layui-input-block"><input type="text" name="accountCode" value="' + company.accountCode + '" placeholder="请输入财务系统代码" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">信用代码/身份证号</label>'
-                + '<div class="layui-input-block"><input type="text" name="creditCode" value="' + company.creditCode + '" required  lay-verify="required" placeholder="请输入信用代码/身份证号" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="creditCode" value="' + company.creditCode + '" placeholder="请输入信用代码/身份证号" autocomplete="off" class="layui-input"></div></div>'
                 // 关系类型
                 + typesHtml
                 // 启用类型
@@ -444,15 +444,15 @@
                 + '<div class="layui-form-item"><label class="layui-form-label">公司全称/个人全名</label>'
                 + '<div class="layui-input-block"><input type="text" required lay-verify="required" placeholder="请输入公司全称/个人全名" name="fullName" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">简称</label>'
-                + '<div class="layui-input-block"><input type="text" name="shortName" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="shortName" required lay-verify="required" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">助记码</label>'
                 + '<div class="layui-input-block"><input type="text" name="companyCode" placeholder="请输入助记码" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">财务代码</label>'
-                + '<div class="layui-input-block"><input type="text" name="accountCode" required  lay-verify="required" placeholder="请输入财务系统代码" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="accountCode" placeholder="请输入财务系统代码" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">信用代码/身份证号</label>'
-                + '<div class="layui-input-block"><input type="text" name="creditCode" required  lay-verify="required" placeholder="请输入信用代码/身份证号" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="creditCode" placeholder="请输入信用代码/身份证号" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">代码</label>'
-                + '<div class="layui-input-block"><input type="text" name="selfId" required  lay-verify="required" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="selfId" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
                 // 关系类型
                 + typesHtml
                 // 启用类型
@@ -539,15 +539,15 @@
                 + '<div class="layui-form-item"><label class="layui-form-label">公司全称/个人全名</label>'
                 + '<div class="layui-input-block"><input type="text" required lay-verify="required" placeholder="请输入公司全称/个人全名" name="fullName" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">简称</label>'
-                + '<div class="layui-input-block"><input type="text" name="shortName" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" required lay-verify="required" name="shortName" placeholder="请输入简称" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">助记码</label>'
                 + '<div class="layui-input-block"><input type="text" name="companyCode" placeholder="请输入助记码" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">财务代码</label>'
-                + '<div class="layui-input-block"><input type="text" name="accountCode" required  lay-verify="required" placeholder="请输入财务系统代码" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="accountCode" placeholder="请输入财务系统代码" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">信用代码/身份证号</label>'
-                + '<div class="layui-input-block"><input type="text" name="creditCode" required  lay-verify="required" placeholder="请输入信用代码/身份证号" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="creditCode" placeholder="请输入信用代码/身份证号" autocomplete="off" class="layui-input"></div></div>'
                 + '<div class="layui-form-item"><label class="layui-form-label">代码</label>'
-                + '<div class="layui-input-block"><input type="text" name="selfId" required  lay-verify="required" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-input-block"><input type="text" name="selfId" placeholder="请输入代码" autocomplete="off" class="layui-input"></div></div>'
                 // 关系类型
                 + typesHtml
                 // 启用类型

@@ -242,6 +242,9 @@ public class CompanyController extends BaseController {
 
     private void paramCheck(BtCompany company){
         CheckUtils.check(!StringUtils.isEmpty(company.getFullName()),"全称不能为空");
-        CheckUtils.check(!StringUtils.isEmpty(company.getCreditCode()),"证件号不能为空");
+        CheckUtils.check(!StringUtils.isEmpty(company.getShortName()),"简称不能为空");
+        company.setShortName(StringUtils.isEmpty(company.getShortName())?company.getFullName():company.getShortName());
+        company.setType(company.getType()==null? DictionaryConstant.getKeyByTypeAndValue(CommonConstant.DICTIONARY_RELATIONSHIP,CommonConstant.DICTIONARY_RELATIONSHIP_UNKNOWN):company.getType());
+        //CheckUtils.check(!StringUtils.isEmpty(company.getCreditCode()),"证件号不能为空");
     }
 }
