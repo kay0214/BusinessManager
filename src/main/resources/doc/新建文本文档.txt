@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="keywords" content="jquery,ui,easy,easyui,web">
+
+<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.6.11/themes/default/easyui.css"></link>
+<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.6.11/themes/icon.css"></link>
+<script type="text/javascript" src="/static/jquery-easyui-1.6.11/jquery.min.js"></script>
+<script type="text/javascript" src="/static/jquery-easyui-1.6.11/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+
+<style>
+		.icon-filter{
+			background:url('/commjs/filter.png') no-repeat center center;
+		}
+	</style>
+<script>
+
+//-----------------------------------------------------------
+var useraction='null';//表示用户的动作，如'add','edit','null'
+var currentindex='-1';//新增行或者被编辑行的 index
+var rowselectednum='0';//被选中行的个数，0--没有行选中，1--有1行被选中，n--有多行被选中
+var editflg=false;//某行处于编辑状态时，前台页面不能选择其他行，直到该编辑行保存完成。
+//var gender1 = [
+//    {gender:"男 ",name:"男"},
+//    {gender:"女",name:"女"}
+//];
+//以下是datagrid(以js方式生成)
+$(function(){
+   $('#dg').datagrid({
+   title:'用户列表',
+   iconCls:'icon-edit',
+   width:1050 ,
+   height:370 ,
+   pagePosition:'both',//定义的分页栏的位置。可用的值有    'top','bottom','both'。
+   striped:true,  //把行条纹化,即奇偶行使用不同背景色
+   rownumbers:true,//显示列号
+  // fitColumns:true,//自适应列宽，但是如果下面的列里没有定义 width，则可能会失效
+   fit:true,//自动适应边距
+   nowwrap:false,//折行显示，为true时，显示在1行
+   pagination:true,//这个是关键因素，它决定了 能否从url:'/admin/user/listaaa',读取数据的
+   singleSelect:true,
+   selectOnCheck:true,//重要
+   idField:'id',//标识字段。注意此行代码，不可轻易省略
+   style:'width:auto',
+   url:'/admin/user/listaaa', 
+   pageSize:15,
+   pageList:[5,10,15],
+   pageNumber:1,   
+   async:false,
+   filterBtnIconCls:'icon-filter',
+   columns:[[		   
+	   {field:'id',title:'ID',width:20,checkbox:true},
+	   {field:'userName', title:'用户名', width:70, align:'center', editor:{type:'validatebox',options:{required:true}}},
+		{field:'trueName',title:'真实姓名',width:70,align:'left',editor:{type:'validatebox',options:{required:true}}},
+	    {field:'password',  title:'密码', align:'left',width:70,editor:{ type:'validatebox',options:{required:true}}},
+		{field:'gender',  title:'性别', width:70,align:'left',
+				editor:{
+					type:'combobox',
+					options:{
+						valueField:'gender',
+						textField:'name',
+						data: [{gender:"男 ",name:"男"},{gender:"女",name:"女"}],
+						editable:false,//设置下拉框不能输入，只能选择
+						required:true
+					}
+		         }
+		 }, 
+       {field:'used',    title:'有过操作', align:'center',width:70,},
+       {field:'state',   title:'状态', align:'left',width:70,},          
+       {field:'createDate', title:'创建日期',width:90,align:'left',	
+           //以下语句是把json中的日期数据，转换成日期格式
+          formatter:function(value,row,index){	   
+          	    var unixTimestamp = new Date(value);	
+            	return unixTimestamp.toLocaleDateString();	
+        	 }		    
+       },
+       {field:'remarks',title:'备注', width:150,editor:{ type:'text'},align:'left',
+           formatter:function(value , record , index){
+           	return '<span title='+value+'>'+value+'</span>'//假如备注的内容很多显示不全，这个语句的作用是，当鼠标放在备注栏上时，会有自动提示的功能
+           }
+       },
+   	]],	
+	onLoadSuccess: function(){//datagrid加载成功
+	//	alert("onLoadSuccess");
+		updateeasyui();//更新easyui的各按钮等的状态
+    },
+	onSelect: function(){
+		//alert("选中某行 onSelect"+"当前选中的行"+$('#dg').datagrid("getRowIndex",$('#dg').datagrid('getSelected')))
+		rowselectednum=$('#dg').datagrid('getSelections').length;//获得选中行的数量
+		updateeasyui();//更新easyui的各按钮等的状态
+		currentindex=$('#dg').datagrid("getRowIndex",$('#dg').datagrid('getSelected'));
+    },
+    onUnselect: function(){
+    //	alert("取消选中 ");
+		rowselectednum=$('#dg').datagrid('getSelections').length;//获得选中行的数量
+		updateeasyui();//更新easyui的各按钮等的状态 
+    },
+    onDblClickRow: function(){
+ //   	alert("双击选中 ");
+		rowselectednum=$('#dg').datagrid('getSelections').length;//获得选中行的数量
+		updateeasyui();//更新easyui的各按钮等的状态    
+    },
+    onSelectAll: function(){
+    	rowselectednum=$('#dg').datagrid('getSelections').length;//获得选中行的数量
+		updateeasyui();//更新easyui的各按钮等的状态    
+    },
+    onUnselectAll: function(){
+    	rowselectednum=$('#dg').datagrid('getSelections').length;//获得选中行的数量
+		updateeasyui();//更新easyui的各按钮等的状态    
+    },
+    onClickRow: function(rowIndex){
+    	bingGridEvent(rowIndex);
+    },
+    onBeforeSelect:function(){
+   //    	alert("---onBeforeSelect--1---editflg--"+editflg);
+        	if(editflg){
+        	   return false;
+            }
+    },
+    onBeforeEdit:function(){
+    //	alert("---onBeforeEdit--2--editflg-"+editflg);
+    	editflg=true;
+   	},
+
+    onAfterEdit:function(row,changes){
+  //	alert("---onAfterEdit--3--editflg-"+editflg);
+    	editflg=false;
+   	},
+});
+
+//-----------------------------
+});
+//以上是datagrid
+//-------------------------------------
+//---批量保存数据--增加、删除、修改
+function saverow(){
+	endEdit();//把datagrid所有的行，结束编辑状态	
+	if ($('#dg').datagrid('getChanges').length) {
+		var inserted= $('#dg').datagrid('getChanges', "inserted");//插入2行
+		var deleted = $('#dg').datagrid('getChanges', "deleted");
+		var updated = $('#dg').datagrid('getChanges', "updated");
+	}else{
+		alert("没有修改数据，无法保存");
+		return;
+	}
+	    var url;
+        if (inserted.length) {
+        	url='/admin/user/saveuserBatch';
+        	sendtospring(JSON.stringify(inserted),url);
+			}
+		if (deleted.length) {
+			url='/admin/user/deleuser';
+        	sendtospring(JSON.stringify(deleted),url);
+		}
+		if (updated.length) {
+        	url='/admin/user/modiuserBatch';
+        	sendtospring(JSON.stringify(updated),url);
+		}
+}
+//---批量保存数据--增加、删除、修改
+//--------------------
+//---datagrid数据发送到后台
+function sendtospring(data,url){
+	$.ajax({
+???????url:url,
+???????type:'post',
+???????async:false,
+       dataType: 'json',
+       contentType:"application/json",
+???????data: data,
+	   success: function (result) {
+          if(result.success){ 
+              alert("保存成功！");
+         	 useraction='null';
+        	 updateeasyui();
+        	 editflg=false;
+        	 window.location.reload();//页面重新加载，为了解决 在网格过滤的功能下， datagrid不能刷新的bug
+          }else{
+          alert("保存失败： "+result.errorInfo);
+          }
+        }
+     });
+}
+//---datagrid数据发送到后台
+//--------------------
+//---编辑
+function editrow(){
+
+	if (useraction=='add' || useraction =='edit'){//如果当前处于  add 或 edit 状态
+		alert("当前有未完成的操作,无法编辑");
+    }else{   	
+    	if  (rowselectednum==1){//判断当前是否选择1行	
+    		currentindex=$('#dg').datagrid("getRowIndex",$('#dg').datagrid('getSelected'));
+    		useraction='edit';//---------当前状态 是 “编辑”
+    		updateeasyui(useraction);//---------调用 更新 各按钮 是否可用
+    		$('#dg').datagrid('beginEdit', $('#dg').datagrid("getRowIndex",$('#dg').datagrid('getSelected')));//删除选中行
+    		setEditing(currentindex);
+    		
+    		editflg=true;
+    		alert("editflg="+editflg);
+    	}else{
+    		alert("您选中了多行，或者没有选中行，请选中1行");
+    		$('#dg').datagrid('clearSelections');  //  解除所有行的选中状态
+    	}   	
+	}	 
+}
+//---编辑
+//--------------------
+//---撤销
+function reject(){	
+    $('#dg').datagrid('rejectChanges'); 
+    useraction='null';
+	updateeasyui();
+	$('#dg').datagrid('load'); 
+	editflg=false;
+}
+//---撤销
+//--------------------
+//---删除一行
+function deleterow(){
+	useraction="delete";//---------当前状态 是 “删除”
+	updateeasyui(useraction);//--------- 更新 各按钮 是否可用
+	if (useraction !=='add' && useraction!=='edit'){//如果当前处于  add 或 edit 状态
+		var arr=$('#dg').datagrid('getSelections');
+    	if  (arr.length>=1){//判断当前是否选择1行	 		
+    		$('#dg').datagrid('deleteRow', $('#dg').datagrid("getRowIndex",$('#dg').datagrid('getSelected')));//删除选中行
+    		 useraction='null';//删除完成后，把用户动作 置为 null
+    		 editflg=false;
+    	}else{
+    		alert("请至少选中1行");
+    	}   	
+    }else{
+		alert("当前有未完成的操作，无法删除 ");
+	}		 
+}
+//---删除一行
+//----------------------
+//---增加一行
+function insertrow(){	
+	$('#dg').datagrid('clearSelections');  //  解除所有行的选中状态
+	var mydate=formatDate(new Date());
+	if (useraction!=='add' && useraction!=='edit'){ //判断当前不是 “增加”  或  “删除” 状态	
+		$('#dg').datagrid('insertRow', {//在datagrid中 插入1行
+	 	index: 0,//在datagrid，第一行(索引是0)之前，插入一行
+		row:{
+			used:'否',//把是否已有业务 置 否
+			state:'未启用',//把该用户是否已经穷  置 未启用
+			createDate:mydate,//取当前日期，置为创建该用户的日期
+			lastlogDate:'',//把该用户最近登录日期，置为空
+		    } 
+    	});	
+	   $('#dg').datagrid('beginEdit', 0);    //把插入的行，置为 开始编辑
+	   currentindex=0;   
+	   $('#dg').datagrid('selectRow', 0);
+	   useraction="add";//---------当前状态 是 “增加”
+	   updateeasyui();//---------更新easyui各按钮等的状态
+	}else{
+		alert("当前有未完成的操作，请完成后再做 增加 ");
+	}
+}
+//---增加一行
+//------------------------------------------------------------
+//-----把datagrid所有的行，结束编辑状态
+function endEdit(){
+	var rows = $('#dg').datagrid('getRows');
+	for ( var i = 0; i < rows.length; i++) {
+		$('#dg').datagrid('endEdit', i);
+	}
+}
+//-----把发生数据改变的行，结束编辑状态
+//------------------------------------------------------------
+//-----根据useraction，设置当年radio等的状态，如是否可用等
+function updateeasyui(){
+    if (useraction=='null'){  //如果当前用户操作是 null
+    	if(parseInt(rowselectednum)==0){//如果选择了1行  或多行
+    		$('#btnadd').linkbutton('enable');
+    		$('#btnedit').linkbutton('disable');
+    		$('#btndele').linkbutton('disable');
+    		$('#btnsave').linkbutton('disable');
+    		$('#btnreject').linkbutton('enable');//撤销按钮
+
+    	}
+    	if(parseInt(rowselectednum)>0){//如果选择了1行  或多行
+    		$('#btnadd').linkbutton('enable');
+    		$('#btnedit').linkbutton('enable');
+    		$('#btndele').linkbutton('enable');
+    		$('#btnsave').linkbutton('enable');
+    		$('#btnreject').linkbutton('enable');    	
+
+    	}
+    }
+    if (useraction=='add'){//在用户点击  增加时  	
+    		$('#btnadd').linkbutton('disable');
+    		$('#btnedit').linkbutton('disable');
+    		$('#btndele').linkbutton('disable');
+    		$('#btnsave').linkbutton('enable');
+    		$('#btnreject').linkbutton('enable');    
+    }
+    if (useraction=='edit'){//如果当前用户操作是  edit 时
+    		$('#btnadd').linkbutton('disable');
+    		$('#btnedit').linkbutton('disable');
+    		$('#btndele').linkbutton('disable');
+    		$('#btnsave').linkbutton('enable');
+    		$('#btnreject').linkbutton('enable');//撤销按钮
+    }
+
+ }
+//-----radio点击事件，获取datagrid编辑模式
+//------------------------------------
+//----把日期转换成 年-月-日 -时 -分-秒
+var formatDate = function (datefull) {  
+    var y = date.getFullYear();  
+    var m = date.getMonth() + 1;  
+    m = m < 10 ? ('0' + m) : m;  
+    var d = date.getDate();  
+    d = d < 10 ? ('0' + d) : d;  
+    var h = date.getHours();  
+    var minute = date.getMinutes();  
+    minute = minute < 10 ? ('0' + minute) : minute; 
+    var second= date.getSeconds();  
+    second = minute < 10 ? ('0' + second) : second;  
+    return y + '-' + m + '-' + d+' '+h+':'+minute+':'+ second;  
+};  
+//----把日期转换成 年-月-日 -时 -分-秒
+//------------------------------------
+//----把日期转换成 年-月-日 
+var formatDate = function (date) {  
+    var y = date.getFullYear();  
+    var m = date.getMonth() + 1;  
+    m = m < 10 ? ('0' + m) : m;  
+    var d = date.getDate();  
+    d = d < 10 ? ('0' + d) : d;  
+    return y + '-' + m + '-' + d;  
+};  
+//----把日期转换成 年-月-日 -时 -分-秒
+//-------------------------
+//easyui datagrid 动态添加、移除editor---------------可以使用，但是本程序没有使用
+//$("#dg").datagrid('removeEditor','cardNo');//这里的cardNo是需要移除editor的列的field值
+//--以下是添加cardNo列editor	
+//$("#dg").datagrid('addEditor',{ 
+//            {field:'cardNo',editor:{
+ //               type:'textbox',
+//                options:{
+//                    required:true,
+//                    validType:'length[3,3]', 
+//                    invalidMessage:'请输入3位号码!'
+//                }
+//            }
+//        } }
+
+//--以上是添加cardNo列editor
+   $.extend($.fn.datagrid.methods, {    
+        addEditor : function(jq, param) {   
+            if (param instanceof Array) {   
+                $.each(param, function(index, item) {  
+                    var e = $(jq).datagrid('getColumnOption', item.field); 
+                    e.editor = item.editor; }); 
+                } else {    
+                    var e = $(jq).datagrid('getColumnOption', param.field);    
+                    e.editor = param.editor;    
+                }   
+            },  
+        removeEditor : function(jq, param) {    
+            if (param instanceof Array) {   
+                $.each(param, function(index, item) {  
+                    var e = $(jq).datagrid('getColumnOption', item);   
+                    e.editor = {};  
+                    }); 
+            } else {    
+                var e = $(jq).datagrid('getColumnOption', param);
+                e.editor = {};  
+            }   
+        }
+    });
+//easyui datagrid 动态添加、移除editor
+//--------------------- 
+</script>
+</head>
+<body>
+
+<div>
+	<a href="#"  id="btnadd"    class="easyui-linkbutton" iconCls="icon-add"     onclick="insertrow()">增加</a>
+	<a href="#"  id="btnedit"   class="easyui-linkbutton" iconCls="icon-edit"    onclick="editrow()">修改</a>
+	<a href="#"  id="btndele"   class="easyui-linkbutton" iconCls="icon-remove"  onclick="deleterow()">删除</a>
+	<a href="#"  id="btnsave"   class="easyui-linkbutton" iconCls="icon-ok"      onclick="saverow()">保存到数据库</a>
+	<a href="#"  id="btnreject" class="easyui-linkbutton" iconCls="icon-undo"    onclick="reject()">撤销</a>
+</div>
+
+<table id="dg"></table>
+</body>
+</html>
