@@ -8,6 +8,16 @@ package com.personal.business.constant;
 public interface CommonConstant {
 
     /**
+     * 出库
+     */
+    Integer OUT_WAREHOUSE = 1;
+
+    /**
+     * 入库
+     */
+    Integer IN_WAREHOUSE = 2;
+
+    /**
      * 公司 - 默认本部
      */
     String COMPANY_CENTRAL_DEPARTMENT = "本部";

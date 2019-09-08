@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>出入库概况</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/layui/css/eleTree.css" media="all">
+</head>
+<body>
+<div class="layui-body">
+    <!-- 内容主体区域 -->
+    <div class="center" style="padding: 15px;">
+        <div class="layui-form">
+            <div class="layui-row layui-col-space15">
+
+                <div class="layui-col-md2 layui-col-md-offset1">
+                    <div class="layui-inline">
+                        <input class="layui-input" placeholder="用户名" name="id" id="username" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-col-md2">
+                    <div class="layui-inline">
+                        <input class="layui-input" placeholder="手机号" name="id" id="mobile" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="layui-col-md2">
+                    <div class="layui-inline">
+                        <input class="layui-input" placeholder="邮箱" name="id" id="email" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-col-md2">
+                    <div class="layui-input-inline">
+                        <select id="status">
+                            <option value="">状态</option>
+                            <option value="0">启用</option>
+                            <option value="1">禁用</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-col-md1">
+                    <button class="layui-btn layui-btn-radius" data-type="reload" id="search"><i class="layui-icon">&#xe615;</i>&nbsp;搜索</button>
+                </div>
+                <div class="layui-col-md1">
+                    <button class="layui-btn layui-btn-radius layui-btn-normal" id="addUser" onclick="addUser()">+ 添加用户</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row" style="margin-top: 10px">
+            <table class="layui-hide" id="general" lay-filter="general"></table>
+        </div>
+        <div class="layui-btn-container" hidden id="tools">
+            <button class='layui-btn layui-btn-sm layui-btn-normal float-left' id="authorize" lay-event='authorize'>授权</button>
+            <button class='layui-btn layui-btn-sm layui-btn-primary float-left' id="modifyUser" lay-event='modify'>修改</button>
+            <button class='layui-btn layui-btn-sm layui-btn-danger float-left' id="deleteUser" lay-event='delete'>删除</button>
+            <button class='layui-btn layui-btn-sm float-left' id="resetUser" lay-event='reset'>重置密码</button>
+            <button class='layui-btn layui-btn-sm layui-btn-warm float-left' id="unauthorize" lay-event='unauthorize'>取消授权</button>
+        </div>
+    </div>
+
+    <script src="/layui/layui.js"></script>
+    <script th:inline="javascript">
+        function init() {
+
+        }
+        var tableId='general',layer,$,form,table,eleTree,notice;
+        layui.config({
+            base: '/layui/'
+        }).extend({
+            eleTree:'eleTree',
+            notice:'notice'
+        }).use(['table','form','eleTree','notice'], function(){
+            $ = layui.$;
+            eleTree = layui.eleTree;
+            layer=layui.layer;
+            form=layui.form;
+            notice=layui.notice;
+            table = layui.table;
+            init();
+            table.render({
+                elem: '#' + tableId
+                ,id:tableId
+                ,url:'/inOutGeneral/searchList'
+                ,method:'post'
+                ,contentType: 'application/json'
+                ,page: true
+                ,toolbar: '#tools'
+                ,defaultToolbar: ['filter']
+                ,limits : [10,15,20,25]
+                ,limit : 10
+                ,response:{
+                    statusCode:'S001'
+                }
+                ,parseData: function(res){
+                    if(res.status!=='S001'){
+                        return{
+                            "code": res.status,
+                            "msg": res.statusDesc
+                        };
+                    }else{
+                        return {
+                            "code": res.status,
+                            "msg": res.statusDesc,
+                            "count": res.data.total,
+                            "data": res.data.records
+                        };
+                    }
+                }
+                ,cols: [
+                    [
+                        {checkbox: true}
+                        ,{field:'mapCode', width:80, title: '核销码',style:'text-align: left;'}
+                        ,{field:'inOut', width:90, title: '出/入库',style:'text-align: left;',templet:function (data) {
+                            if(data.inOut===1){
+                                return "出库";
+                            }else if(data.inOut===2){
+                                return "入库";
+                            }else{
+                                return "未知";
+                            }
+                        }}
+                        ,{field:'inOutType', width:100, title: '类型',style:'text-align: left;'}
+                        ,{field:'inOutNo', minWidth:120, title: '单号',style:'text-align: left;'}
+                        ,{field:'warehouse', width:100, title: '仓库',hide:true ,style:'text-align: left;'}
+                        ,{field:'companyName', width:80, title: '供应商',style:'text-align: left;'}
+                        ,{field:'inOutFinish', width:100, title: '出入库核销',style:'text-align: left;',templet:function (data) {
+                            if(data.inOutFinish===0){
+                                return "否";
+                            }else if(data.inOutFinish===1){
+                                return "是";
+                            }else{
+                                return "未知";
+                            }
+                        }}
+                        ,{field:'orderFinish', width:100, title: '订单核销',style:'text-align: left;',templet:function (data) {
+                            if(data.orderFinish===0){
+                                return "否";
+                            }else if(data.orderFinish===1){
+                                return "是";
+                            }else{
+                                return "未知";
+                            }
+                        }}
+                        ,{field:'financeFinish', width:100, title: '财务完结',style:'text-align: left;',templet:function (data) {
+                            if(data.financeFinish===0){
+                                return "否";
+                            }else if(data.financeFinish===1){
+                                return "是";
+                            }else{
+                                return "未知";
+                            }
+                        }}
+                        ,{field:'businessFinish', width:100, title: '业务完结',style:'text-align: left;',templet:function (data) {
+                            if(data.businessFinish===0){
+                                return "否";
+                            }else if(data.businessFinish===1){
+                                return "是";
+                            }else{
+                                return "未知";
+                            }
+                        }}
+                        ,{field:'inOutDate', width:160, title: '出入库时间',style:'text-align: left;',templet:function (data) {
+                            return timeFormat(data.inOutDate);
+                        }}
+                    ]
+                ]
+            });
+            // 监听点击按钮
+            table.on('toolbar(general)',function (obj) {
+                var users = table.checkStatus(obj.config.id).data;
+                // 过滤"筛选列","删除"操作，因为筛选列不涉及后台交互，删除操作可以多选
+                if(obj.event!=='LAYTABLE_COLS' && obj.event!=='delete' && users.length!==1){
+                    layer.msg("请选择一个用户",{icon:5});
+                    return;
+                }
+                if(obj.event === 'authorize'){//授权
+                    authorize(users[0]);
+                }else if(obj.event==="modify"){//修改
+                    modify(users[0]);
+                }else if(obj.event==='reset'){
+                    reset(users[0].userId);
+                }else if(obj.event==='unauthorize'){
+                    unAuthorize(users[0]);
+                }else if(obj.event==='delete'){
+                    if(users===null || users===undefined || users.length<1){
+                        layer.msg("未选择任何用户",{icon:5});
+                        return;
+                    }
+                    var ids = new Array();
+                    for(var i=0;i<users.length;i++){
+                        var position = users[i];
+                        ids.push(position.id);
+                    }
+                    delUser(ids);
+                }
+
+            });
+            // 删除用户操作
+            function delUser(ids) {
+                layer.open({
+                    type: 1
+                    ,content: '<div style="text-align: center;margin-top: 30px;">确定要删除用户？</div>'
+                    ,title:'删除'
+                    ,shadeClose: true
+                    ,skin: 'layui-layer-rim'
+                    ,area:['300px','180px']
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        $.get("/user/delete/" + ids.toString(), function(result){
+                            layer.closeAll();
+                            if(result.status === 'S001'){
+                                // 更新成功 - 关掉
+                                table.reload(tableId);
+                                layer.msg(result.statusDesc,{icon: 6});
+                            }else{
+                                // 更新失败 - 给出错误提示
+                                layer.msg(result.statusDesc,{icon: 5});
+                            }
+                        });
+                    }
+                });
+            }
+            // 授权操作
+            function authorize(user) {
+                var ids = "",tree;
+                var treeText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">姓名</label>'
+                    + '<div class="layui-input-block"><input type="text" placeholder="请输入用户名" disabled value="' + user.trueName + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">菜单</label>'
+                    + '<div class="layui-input-block"><input type="text" placeholder="选择授权菜单" class="layui-input" id="treeTitle" lay-filter="menus"><div class="eleTree eleTree-hide" id="menuTree" lay-filter="treeData"></div></div></div>'
+                    + '</form>';
+                layer.open({
+                    type: 1
+                    ,content: treeText
+                    ,title:'授权'
+                    ,shadeClose: true
+                    ,skin: 'layui-layer-rim'
+                    ,area:['450px','500px']
+                    ,btn: ['确定', '取消']
+                    ,success: function(layero, index){
+                        $("#treeTitle").on("click",function (e) {
+                            e.stopPropagation();
+                            $("#treeTitle").val("");
+                            // 渲染树形结构
+                            if (!tree) {
+                                tree = eleTree.render({
+                                    // 选择器
+                                    elem: '#menuTree',
+                                    // 请求数据接口
+                                    url: '/system/menu/getUnAuthorizeMenus/' + user.userId,
+                                    response: {
+                                        statusName: "status",
+                                        statusCode: 'S001',
+                                        dataName: "data"
+                                    },
+                                    // 默认不展开
+                                    defaultExpandAll: false,
+                                    // 点击节点展开
+                                    expandOnClickNode: true,
+                                    // 高亮
+                                    highlightCurrent: true,
+                                    // 开启复选框
+                                    showCheckbox: true,
+                                    // 是否开启连接线。默认 true，若设为 false，则节点左侧出现三角图标。
+                                    showLine: false,
+                                    id: 'menus'
+                                });
+                            }
+                            $("#menuTree").toggle();
+                        });
+                    }
+                    ,yes: function(index, layero){
+                        if(ids===''){
+                            if(tree){
+                                ids = assign(tree);
+                            }else{
+                                layer.msg("未选择任何权限",{icon: 5});
+                                return;
+                            }
+                        }
+                        $.ajax({
+                            type: 'POST',
+                            url: "/permissions/authorize",
+                            contentType: "application/json;charset=utf-8",
+                            data: JSON.stringify({
+                                userId:user.userId,
+                                ids:ids
+                            }),
+                            success: function(result){
+                                // 销毁树
+                                tree = null;
+                                // 关掉弹出层
+                                layer.closeAll();
+                                if(result.status === 'S001'){
+                                    // 更新成功 - 关掉
+                                    layer.msg(result.statusDesc,{icon: 6});
+                                }else{
+                                    // 更新失败 - 给出错误提示
+                                    layer.msg(result.statusDesc,{icon: 5});
+                                }
+                            }
+                        });
+                        tree = null;
+                    }
+                    ,btn2: function(index, layero){
+                        tree = null;
+                        layer.closeAll();
+                    }
+                    ,cancel: function(){
+                        // 销毁树
+                        tree = null;
+                        layer.closeAll();
+                    }
+                });
+                $(".layui-layer").on("click",function() {
+                    ids = assign(tree);
+                    $("#menuTree").hide();
+                });
+            }
+            // 修改用户信息
+            function modify(user) {
+                var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">用户名</label>'
+                    + '<div class="layui-input-block"><input type="text" name="userName" required  lay-verify="required" placeholder="请输入用户名" disabled value="' + user.userName + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">姓名</label>'
+                    + '<div class="layui-input-block"><input type="text" name="trueName" required  lay-verify="required" placeholder="请输入姓名" value="' + user.trueName + '" autocomplete="off" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">手机</label>'
+                    + '<div class="layui-input-block"><input type="text" name="mobile" required  lay-verify="required" placeholder="请输入手机号" value="' + user.mobile + '" autocomplete="off" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">邮箱</label>'
+                    + '<div class="layui-input-block"><input type="text" name="email" required  lay-verify="required" placeholder="请输入邮箱地址" value="' + user.email + '" autocomplete="off" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">年龄</label>'
+                    + '<div class="layui-input-block"><input type="text" name="age" required  lay-verify="required" placeholder="请输入年龄" value="' + user.age + '" autocomplete="off" class="layui-input"></div></div>';
+                // 性别
+                formText+='<div class="layui-form-item"><label class="layui-form-label">性别</label>';
+                if(user.gender===1){
+                    formText+='<div class="layui-input-block"><input type="radio" name="gender" value="1" title="男" checked><input type="radio" name="gender" value="2" title="女"><input type="radio" name="gender" value="0" title="未知"></div></div>';
+                }else if(user.gender===2){
+                    formText+='<div class="layui-input-block"><input type="radio" name="gender" value="1" title="男"><input type="radio" name="gender" value="2" title="女" checked><input type="radio" name="gender" value="0" title="未知"></div></div>';
+                }else if(user.gender===0){
+                    formText+='<div class="layui-input-block"><input type="radio" name="gender" value="1" title="男"><input type="radio" name="gender" value="2" title="女"><input type="radio" name="gender" value="0" title="未知" checked></div></div>';
+                }
+                // 状态
+                formText+='<div class="layui-form-item"><label class="layui-form-label">状态</label>';
+                if(user.status===0){
+                    formText+='<div class="layui-input-block"><input type="radio" name="status" value="0" title="启用" checked><input type="radio" name="status" value="1" title="禁用"></div></div>';
+                }else if(user.status===1){
+                    formText+='<div class="layui-input-block"><input type="radio" name="status" value="0" title="启用"><input type="radio" name="status" value="1" title="禁用" checked></div></div>';
+                }
+                formText += '</form>';
+                layer.open({
+                    type: 1
+                    ,content: formText
+                    ,title:'修改'
+                    ,shadeClose: true
+                    ,skin: 'layui-layer-rim'
+                    ,area:['450px','500px']
+                    ,btn: ['确定', '取消']
+                    ,success: function(layero, index){
+                        form.render('radio');
+                    }
+                    ,yes: function(index, layero){
+                        var trueName = $("input[name='trueName']").val();
+                        var userName = $("input[name='userName']").val();
+                        var mobile = $("input[name='mobile']").val();
+                        var email = $("input[name='email']").val();
+                        var age = $("input[name='age']").val();
+
+                        var gender = $("input[name='gender']:checked").val();
+                        var status = $("input[name='status']:checked").val();
+                        $.ajax({
+                            type: 'POST',
+                            url: "/user/update",
+                            contentType: "application/json;charset=utf-8",
+                            data: JSON.stringify({
+                                userId:user.userId,
+                                trueName:trueName,
+                                userName:userName,
+                                mobile:mobile,
+                                email:email,
+                                age:age,
+                                gender:gender,
+                                status:status
+                            }),
+                            success: function(result){
+                                // 关掉弹出层
+                                layer.closeAll();
+                                if(result.status === 'S001'){
+                                    // 更新成功 - 关掉
+                                    table.reload(tableId);
+                                    layer.msg(result.statusDesc,{icon: 6});
+                                }else{
+                                    // 更新失败 - 给出错误提示
+                                    layer.msg(result.statusDesc,{icon: 5});
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            // 重置用户密码
+            function reset(userId) {
+                layer.open({
+                    type: 1
+                    ,content: '<div style="text-align: center;margin-top: 30px;">确定要重置密码？</div>'
+                    ,title:'重置密码'
+                    ,shadeClose: true
+                    ,skin: 'layui-layer-rim'
+                    ,area:['300px','180px']
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        $.get("/user/password/reset/" + userId, function(result){
+                            layer.closeAll();
+                            if(result.status === 'S001'){
+                                // 更新成功 - 关掉
+                                table.reload(tableId);
+                                layer.msg(result.statusDesc,{icon: 6});
+                            }else{
+                                // 更新失败 - 给出错误提示
+                                layer.msg(result.statusDesc,{icon: 5});
+                            }
+                        });
+                    }
+                });
+            }
+            // 取消用户授权
+            function unAuthorize(user) {
+                var ids = "",tree;
+                var treeText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">姓名</label>'
+                    + '<div class="layui-input-block"><input type="text" placeholder="请输入用户名" disabled value="' + user.trueName + '" autocomplete="off" class="layui-input layui-disabled"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">菜单</label>'
+                    + '<div class="layui-input-block"><input type="text" placeholder="选择取消授权菜单" class="layui-input" id="treeTitle" lay-filter="menus"><div class="eleTree eleTree-hide" id="menuTree" lay-filter="treeData"></div></div></div>'
+                    + '</form>';
+                layer.open({
+                    type: 1
+                    ,content: treeText
+                    ,title:'取消授权'
+                    ,shadeClose: true
+                    ,skin: 'layui-layer-rim'
+                    ,area:['450px','500px']
+                    ,btn: ['确定', '取消']
+                    ,success: function(layero, index){
+                        $("#treeTitle").on("click",function (e) {
+                            e.stopPropagation();
+                            $("#treeTitle").val("");
+                            // 渲染树形结构
+                            if (!tree) {
+                                tree = eleTree.render({
+                                    // 选择器
+                                    elem: '#menuTree',
+                                    // 请求数据接口
+                                    url: '/system/menu/getAuthorizeMenus/' + user.userId,
+                                    response: {
+                                        statusName: "status",
+                                        statusCode: 'S001',
+                                        dataName: "data"
+                                    },
+                                    // 默认不展开
+                                    defaultExpandAll: false,
+                                    // 点击节点展开
+                                    expandOnClickNode: true,
+                                    // 高亮
+                                    highlightCurrent: true,
+                                    // 开启复选框
+                                    showCheckbox: true,
+                                    // 是否开启连接线。默认 true，若设为 false，则节点左侧出现三角图标。
+                                    showLine: false,
+                                    id: 'menus'
+                                });
+                            }
+                            $("#menuTree").toggle();
+                        });
+                    }
+                    ,yes: function(index, layero){
+                        if(ids===''){
+                            if(tree){
+                                ids = assign(tree);
+                            }else{
+                                layer.msg("未选择任何权限",{icon: 5});
+                                return;
+                            }
+                        }
+                        $.ajax({
+                            type: 'POST',
+                            url: "/permissions/unAuthorize",
+                            contentType: "application/json;charset=utf-8",
+                            data: JSON.stringify({
+                                userId:user.userId,
+                                ids:ids
+                            }),
+                            success: function(result){
+                                // 销毁树
+                                tree = null;
+                                // 关掉弹出层
+                                layer.closeAll();
+                                if(result.status === 'S001'){
+                                    // 更新成功 - 关掉
+                                    layer.msg(result.statusDesc,{icon: 6});
+                                }else{
+                                    // 更新失败 - 给出错误提示
+                                    layer.msg(result.statusDesc,{icon: 5});
+                                }
+                            }
+                        });
+                        tree = null;
+                    }
+                    ,btn2: function(index, layero){
+                        tree = null;
+                        layer.closeAll();
+                    }
+                    ,cancel: function(){
+                        // 销毁树
+                        tree = null;
+                        layer.closeAll();
+                    }
+                });
+                $(".layui-layer").on("click",function() {
+                    ids = assign(tree);
+                    $("#menuTree").hide();
+                });
+            }
+            var active = {
+                reload: function(){
+                    var username = $('#username');
+                    var mobile = $('#mobile');
+                    var email = $('#email');
+                    var status = $('#status');
+                    //执行重载
+                    table.reload(tableId, {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        ,where: {
+                            username: username.val(),
+                            mobile:mobile.val(),
+                            email:email.val(),
+                            status:status.val()
+                        }
+                    });
+                }
+            };
+            $('#search').on('click', function(){
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+        });
+        // 添加用户
+        function addUser() {
+            var formText = '<form class="layui-form" style="margin-right: 30px;margin-top: 30px"><div class="layui-form-item"><label class="layui-form-label">用户名</label>'
+                + '<div class="layui-input-block"><input type="text" name="userName" required  lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">姓名</label>'
+                + '<div class="layui-input-block"><input type="text" name="trueName" required  lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">手机</label>'
+                + '<div class="layui-input-block"><input type="text" name="mobile" required  lay-verify="required" placeholder="请输入手机号" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">邮箱</label>'
+                + '<div class="layui-input-block"><input type="text" name="email" required  lay-verify="required" placeholder="请输入邮箱地址" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">年龄</label>'
+                + '<div class="layui-input-block"><input type="text" name="age" required  lay-verify="required" placeholder="请输入年龄" autocomplete="off" class="layui-input"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">性别</label>'
+                + '<div class="layui-input-block"><input type="radio" name="gender" value="1" title="男" checked><input type="radio" name="gender" value="2" title="女"><input type="radio" name="gender" value="0" title="未知"></div></div>'
+                + '<div class="layui-form-item"><label class="layui-form-label">状态</label>'
+                + '<div class="layui-input-block"><input type="radio" name="status" value="0" title="启用" checked><input type="radio" name="status" value="1" title="禁用"></div></div>'
+                + '</form>';
+            layer.open({
+                type: 1
+                ,content: formText
+                ,title:'添加用户'
+                ,shadeClose: true
+                ,skin: 'layui-layer-rim'
+                ,area:['450px','500px']
+                ,btn: ['确定', '取消']
+                ,success: function(layero, index){
+                    form.render('radio');
+                }
+                ,yes: function(index, layero){
+                    var trueName = $("input[name='trueName']").val();
+                    var userName = $("input[name='userName']").val();
+                    var mobile = $("input[name='mobile']").val();
+                    var email = $("input[name='email']").val();
+                    var age = $("input[name='age']").val();
+                    var gender = $("input[name='gender']:checked").val();
+                    var status = $("input[name='status']:checked").val();
+                    $.ajax({
+                        type: 'POST',
+                        url: "/user/insert",
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify({
+                            trueName:trueName,
+                            userName:userName,
+                            mobile:mobile,
+                            email:email,
+                            age:age,
+                            gender:gender,
+                            status:status
+                        }),
+                        success: function(result){
+                            if(result.status === 'S001'){
+                                // 更新成功 - 关掉弹出层
+                                layer.closeAll();
+                                table.reload(tableId);
+                                layer.msg(result.statusDesc,{icon: 6});
+                            }else{
+                                // 更新失败 - 给出错误提示
+                                layer.msg(result.statusDesc,{icon: 5});
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        function assign(tree) {
+            var ids = "";
+            if(tree){
+                var checked = tree.getChecked(true,false);
+                if(checked!==null && checked!==undefined && checked.length>0){
+                    var checkedTitle = "";
+                    for(var i=0;i<checked.length;i++){
+                        if(i===0){
+                            checkedTitle += checked[i].label;
+                            ids += checked[i].id;
+                        }else{
+                            checkedTitle += "、" + checked[i].label;
+                            ids += "," + checked[i].id;
+                        }
+                    }
+                    $("#treeTitle").val(checkedTitle);
+                    // 销毁树
+                    tree = null;
+                }
+            }
+            return ids;
+        }
+        function timeFormat(v){
+            var date = new Date(v);
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            m = m<10?'0'+m:m;
+            var d = date.getDate();
+            d = d<10?("0"+d):d;
+            var h = date.getHours();
+            h = h<10?("0"+h):h;
+            var M = date.getMinutes();
+            M = M<10?("0"+M):M;
+            var s = date.getSeconds();
+            s = s<10?("0"+s):s;
+            var str = y+"-"+m+"-"+d+" "+h+":"+M + ":" + s;
+            return str;
+        }
+    </script>
+</div>
+</body>
+</html>

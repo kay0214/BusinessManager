@@ -40,6 +40,11 @@ public interface ShiroPermissionsConstant {
     String PERM_POSITION = "position:";
 
     /**
+     * 权限 - 单位及个人相关
+     */
+    String PERM_INOUTGENERAL = "inOutGeneral:";
+
+    /**
      * 权限 - 详情
      */
     String PERM_INFO = "info:";
@@ -88,6 +93,26 @@ public interface ShiroPermissionsConstant {
      * 权限 - 导入
      */
     String PERM_IMPORT = "import";
+
+    /**
+     * 权限 - 查询出入库概况
+     */
+    String PERM_INOUTGENERAL_LIST = PERM_BASE + PERM_INOUTGENERAL + PERM_LIST;
+
+    /**
+     * 权限 - 更新出入库概况
+     */
+    String PERM_INOUTGENERAL_EDIT = PERM_BASE + PERM_INOUTGENERAL + PERM_EDIT;
+
+    /**
+     * 权限 - 新增出入库概况
+     */
+    String PERM_INOUTGENERAL_ADD = PERM_BASE + PERM_INOUTGENERAL + PERM_ADD;
+
+    /**
+     * 权限 - 删除出入库概况
+     */
+    String PERM_INOUTGENERAL_DEL = PERM_BASE + PERM_INOUTGENERAL + PERM_DEL;
 
     /**
      * 权限 - 查询用户
