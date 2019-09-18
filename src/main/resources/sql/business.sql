@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 04/09/2019 10:30:24
+ Date: 18/09/2019 18:05:33
 */
 
 SET NAMES utf8mb4;
@@ -44,7 +44,7 @@ CREATE TABLE `bt_company`  (
   INDEX `idx_credit_code`(`credit_code`) USING BTREE,
   INDEX `idx_self_id`(`self_id`) USING BTREE,
   INDEX `idx_parent_id`(`parent_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 37 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of bt_company
@@ -91,7 +91,7 @@ CREATE TABLE `bt_dictionary`  (
   INDEX `idx_type`(`type`) USING BTREE,
   INDEX `idx_parent_id`(`parent_id`) USING BTREE,
   INDEX `idx_self_id`(`self_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 146 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 145 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of bt_dictionary
@@ -154,18 +154,18 @@ INSERT INTO `bt_dictionary` VALUES (59, '#', 1, '资金收支相关设置', 0, 0
 INSERT INTO `bt_dictionary` VALUES (60, '#', 1, '往来相关设置', 0, 0, 4, 0, 0, 0, NULL, '', 0, '2019-08-10 13:49:59', '2019-08-10 22:07:38');
 INSERT INTO `bt_dictionary` VALUES (61, '', 1, '商品分类', 0, 2, 201, 0, 0, 0, NULL, '', 0, '2019-08-10 14:06:09', '2019-08-10 22:29:48');
 INSERT INTO `bt_dictionary` VALUES (62, '#', 1, '出入库相关设置', 0, 0, 7, 0, 0, 0, NULL, '', 0, '2019-08-10 14:08:34', '2019-08-10 22:09:13');
-INSERT INTO `bt_dictionary` VALUES (63, '', 1, '入库类型', 0, 7, 701, 0, 0, 0, NULL, '', 0, '2019-08-10 14:09:41', '2019-08-10 22:09:54');
-INSERT INTO `bt_dictionary` VALUES (64, '', 1, '出库类型', 0, 7, 702, 0, 0, 0, NULL, '', 0, '2019-08-10 14:10:08', '2019-08-10 14:10:08');
-INSERT INTO `bt_dictionary` VALUES (65, '', 1, '商品入库', 0, 701, 70101, 0, 0, 0, NULL, '', 0, '2019-08-10 14:10:40', '2019-08-10 14:10:40');
-INSERT INTO `bt_dictionary` VALUES (66, '', 1, '商品退回', 0, 701, 70103, 0, 0, 0, NULL, '', 0, '2019-08-10 14:10:54', '2019-08-10 22:12:18');
-INSERT INTO `bt_dictionary` VALUES (68, '', 1, '销售出库', 0, 702, 70201, 0, 0, 0, NULL, '', 0, '2019-08-10 14:12:45', '2019-08-10 14:12:45');
-INSERT INTO `bt_dictionary` VALUES (69, '', 1, '退回供货商', 0, 702, 70203, 0, 0, 0, NULL, '', 0, '2019-08-10 14:13:02', '2019-08-10 22:13:11');
+INSERT INTO `bt_dictionary` VALUES (63, '#', 1, '入库类型', 0, 7, 701, 0, 0, 0, NULL, '', 0, '2019-08-10 14:09:41', '2019-09-18 16:46:05');
+INSERT INTO `bt_dictionary` VALUES (64, '#', 1, '出库类型', 0, 7, 702, 0, 0, 0, NULL, '', 0, '2019-08-10 14:10:08', '2019-09-18 16:46:06');
+INSERT INTO `bt_dictionary` VALUES (65, 'inType', 1, '商品入库', 0, 701, 70101, 0, 0, 0, NULL, '', 0, '2019-08-10 14:10:40', '2019-09-18 16:37:29');
+INSERT INTO `bt_dictionary` VALUES (66, 'inType', 2, '商品退回', 0, 701, 70103, 0, 0, 0, NULL, '', 0, '2019-08-10 14:10:54', '2019-09-18 16:49:06');
+INSERT INTO `bt_dictionary` VALUES (68, 'outType', 1, '销售出库', 0, 702, 70201, 0, 0, 0, NULL, '', 0, '2019-08-10 14:12:45', '2019-09-18 16:37:52');
+INSERT INTO `bt_dictionary` VALUES (69, 'outType', 2, '退回供货商', 0, 702, 70203, 0, 0, 0, NULL, '', 0, '2019-08-10 14:13:02', '2019-09-18 16:49:17');
 INSERT INTO `bt_dictionary` VALUES (71, '', 1, '仓库地点', 0, 7, 705, 0, 0, 0, NULL, '', 0, '2019-08-10 14:13:53', '2019-08-10 23:18:35');
-INSERT INTO `bt_dictionary` VALUES (72, '', 1, '东风库', 0, 705, 70501, 0, 0, 0, NULL, '', 0, '2019-08-10 14:14:14', '2019-08-10 14:14:14');
-INSERT INTO `bt_dictionary` VALUES (73, '', 1, '吴家堡', 0, 705, 70503, 0, 0, 0, NULL, '', 0, '2019-08-10 14:14:41', '2019-08-10 22:14:50');
-INSERT INTO `bt_dictionary` VALUES (74, '', 1, '钢材市场', 0, 705, 70505, 0, 0, 0, NULL, '', 0, '2019-08-10 14:15:40', '2019-08-11 10:17:39');
-INSERT INTO `bt_dictionary` VALUES (75, '', 1, '济宁暂存库', 0, 705, 70506, 0, 0, 0, NULL, '', 0, '2019-08-10 14:16:29', '2019-08-10 22:17:26');
-INSERT INTO `bt_dictionary` VALUES (76, '', 1, '直发客户库', 0, 705, 70509, 0, 0, 0, NULL, '', 0, '2019-08-10 14:17:17', '2019-08-10 22:18:09');
+INSERT INTO `bt_dictionary` VALUES (72, 'warehouse', 1, '东风库', 0, 705, 70501, 0, 0, 0, NULL, '', 0, '2019-08-10 14:14:14', '2019-09-18 17:22:19');
+INSERT INTO `bt_dictionary` VALUES (73, 'warehouse', 2, '吴家堡', 0, 705, 70503, 0, 0, 0, NULL, '', 0, '2019-08-10 14:14:41', '2019-09-18 17:22:19');
+INSERT INTO `bt_dictionary` VALUES (74, 'warehouse', 3, '钢材市场', 0, 705, 70505, 0, 0, 0, NULL, '', 0, '2019-08-10 14:15:40', '2019-09-18 17:22:19');
+INSERT INTO `bt_dictionary` VALUES (75, 'warehouse', 4, '济宁暂存库', 0, 705, 70506, 0, 0, 0, NULL, '', 0, '2019-08-10 14:16:29', '2019-09-18 17:22:19');
+INSERT INTO `bt_dictionary` VALUES (76, 'warehouse', 5, '直发客户库', 0, 705, 70509, 0, 0, 0, NULL, '', 0, '2019-08-10 14:17:17', '2019-09-18 17:22:19');
 INSERT INTO `bt_dictionary` VALUES (77, '', 1, '预留核算维度1', 0, 2, 208, 0, 0, 0, NULL, '', 0, '2019-08-10 14:19:59', '2019-08-10 22:29:05');
 INSERT INTO `bt_dictionary` VALUES (78, '', 1, '商品规格型号', 0, 2, 203, 0, 0, 0, NULL, '', 0, '2019-08-10 14:30:08', '2019-08-10 22:30:44');
 INSERT INTO `bt_dictionary` VALUES (79, '', 1, '预留核算维度2', 0, 2, 209, 0, 0, 0, NULL, '', 0, '2019-08-10 14:31:41', '2019-08-10 14:31:41');
@@ -223,8 +223,8 @@ INSERT INTO `bt_dictionary` VALUES (136, '', 1, '财务已完结', 0, 128, 12801
 INSERT INTO `bt_dictionary` VALUES (137, '', 1, '财务未完结', 0, 128, 12803, 0, 0, 0, NULL, '', 0, '2019-08-11 08:31:15', '2019-08-11 08:31:15');
 INSERT INTO `bt_dictionary` VALUES (138, '', 1, '业务已完结', 0, 129, 12901, 0, 0, 0, NULL, '', 0, '2019-08-11 08:31:35', '2019-08-11 08:31:35');
 INSERT INTO `bt_dictionary` VALUES (139, '', 1, '业务未完结', 0, 129, 12902, 0, 0, 0, NULL, '', 0, '2019-08-11 08:31:53', '2019-08-11 08:31:53');
-INSERT INTO `bt_dictionary` VALUES (141, '', 1, '收回委托代销商品', 0, 701, 70105, 0, 0, 0, NULL, '', 0, '2019-08-11 09:37:14', '2019-08-11 17:37:26');
-INSERT INTO `bt_dictionary` VALUES (142, '', 1, '发出委托代销商品', 0, 702, 70206, 0, 0, 0, NULL, '', 0, '2019-08-11 09:37:44', '2019-08-11 17:37:56');
+INSERT INTO `bt_dictionary` VALUES (141, 'inType', 3, '收回委托代销商品', 0, 701, 70105, 0, 0, 0, NULL, '', 0, '2019-08-11 09:37:14', '2019-09-18 16:49:09');
+INSERT INTO `bt_dictionary` VALUES (142, 'outType', 3, '发出委托代销商品', 0, 702, 70206, 0, 0, 0, NULL, '', 0, '2019-08-11 09:37:44', '2019-09-18 16:49:15');
 INSERT INTO `bt_dictionary` VALUES (143, '', 1, '未执行', 0, 124, 12401, 0, 0, 0, NULL, '', 0, '2019-08-12 15:18:17', '2019-08-12 23:19:30');
 INSERT INTO `bt_dictionary` VALUES (144, '', 1, '冻结', 0, 124, 12405, 0, 0, 0, NULL, '', 0, '2019-08-12 15:21:09', '2019-08-12 15:21:09');
 INSERT INTO `bt_dictionary` VALUES (145, 'relationship', 8, '待分类', 8, 102, 100208, 0, 0, 1, NULL, '', 0, '2019-08-13 02:06:45', '2019-08-15 09:32:10');
@@ -275,7 +275,7 @@ DROP TABLE IF EXISTS `bt_in_out_general`;
 CREATE TABLE `bt_in_out_general`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `map_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '核销码',
-  `in_out` tinyint(5) DEFAULT NULL COMMENT '出库or入库',
+  `in_out` tinyint(5) DEFAULT NULL COMMENT '1出库or2入库',
   `in_out_date` timestamp(0) DEFAULT NULL COMMENT '出/入库时间',
   `in_out_type` tinyint(5) DEFAULT NULL COMMENT '出/入库类型',
   `in_out_no` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '出/入库订单号',
@@ -291,6 +291,11 @@ CREATE TABLE `bt_in_out_general`  (
   `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of bt_in_out_general
+-- ----------------------------
+INSERT INTO `bt_in_out_general` VALUES (1, '1', 2, '2019-09-18 14:34:26', 2, '123', 1, 1, '1', 1, 1, 1, 1, 0, '2019-09-18 14:34:42', '2019-09-18 14:34:42');
 
 -- ----------------------------
 -- Table structure for bt_menu
@@ -314,7 +319,7 @@ CREATE TABLE `bt_menu`  (
   `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   `remark` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '备注',
   PRIMARY KEY (`menu_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 37 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '菜单权限表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '菜单权限表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of bt_menu
@@ -373,7 +378,7 @@ CREATE TABLE `bt_position`  (
   `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of bt_position
@@ -395,7 +400,7 @@ CREATE TABLE `bt_position_company`  (
   `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_position_id`(`position_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of bt_position_company
@@ -428,12 +433,12 @@ CREATE TABLE `bt_user`  (
   `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of bt_user
 -- ----------------------------
-INSERT INTO `bt_user` VALUES (1, 'admin', 'c39016fa679e704102bd8ac0e16a4a20', '2rKtmiTD', '管理员', '00', '929525390@qq.com', '15866668888', 1, '/images/avatar.jpg', 25, 0, '127.0.0.1', '2019-09-02 06:56:17', 0, '2019-03-17 18:42:49', '2019-04-14 12:14:38');
+INSERT INTO `bt_user` VALUES (1, 'admin', 'c39016fa679e704102bd8ac0e16a4a20', '2rKtmiTD', '管理员', '00', '929525390@qq.com', '15866668888', 1, '/images/avatar.jpg', 25, 0, '127.0.0.1', '2019-09-18 09:55:12', 0, '2019-03-15 18:42:49', '2019-04-12 12:14:38');
 INSERT INTO `bt_user` VALUES (4, 'qweert', '16efca7001015201498952e8b5c37cc6', 'VIeCPpdB', '123qwed', '00', '166@qq.com', '13333333333', 2, '/images/avatar.jpg', 25, 0, '127.0.0.1', '2019-08-16 06:03:36', 0, '2019-07-23 04:29:46', '2019-07-23 12:30:11');
 
 -- ----------------------------
@@ -446,7 +451,7 @@ CREATE TABLE `bt_user_menu`  (
   `menu_id` int(11) NOT NULL COMMENT '菜单ID',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `user_menu_index`(`user_id`, `menu_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 104 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户和菜单关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 103 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户和菜单关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of bt_user_menu
