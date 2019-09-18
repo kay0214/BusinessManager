@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.personal.business.constant.CommonConstant;
+import com.personal.business.dto.SelectorDto;
 import com.personal.business.entity.BtCompany;
 import com.personal.business.mapper.BtCompanyMapper;
 import com.personal.business.request.CompanyRequest;
@@ -28,7 +29,7 @@ import java.util.List;
  * @since 2019-07-31
  */
 @Slf4j
-@Service
+@Service(value = "company")
 public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany> implements IBtCompanyService {
 
     /**
@@ -213,5 +214,21 @@ public class BtCompanyServiceImpl extends ServiceImpl<BtCompanyMapper, BtCompany
         company.setCreateTime(company.getCreateTime()==null? LocalDateTime.now():company.getCreateTime());
         company.setUpdateTime(LocalDateTime.now());
         return save(company);
+    }
+
+    /**
+     * @description 获取所有数据做成下拉框
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    @Override
+    public List<SelectorDto> getSelector() {
+        List<SelectorDto> result = new ArrayList<>();
+        List<BtCompany> companies = list();
+        companies.forEach(company -> {
+            result.add(new SelectorDto(company.getId(),company.getFullName()));
+        });
+        return result;
     }
 }

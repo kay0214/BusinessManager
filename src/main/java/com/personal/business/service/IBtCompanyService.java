@@ -2,6 +2,7 @@ package com.personal.business.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.personal.business.dto.SelectorDto;
 import com.personal.business.entity.BtCompany;
 import com.personal.business.request.CompanyRequest;
 
@@ -88,4 +89,12 @@ public interface IBtCompanyService extends IService<BtCompany> {
      * @return
      */
     boolean saveCompany(BtCompany company);
+
+    /**
+     * @description 获取所有数据做成下拉框
+     * @auth sunpeikai
+     * @param
+     * @return
+     */
+    List<SelectorDto> getSelector();
 }
